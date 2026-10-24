@@ -16,19 +16,25 @@ Standard library only. Python 3.9+.
 from __future__ import annotations
 
 import argparse
+import gzip
 import html
+import http.client
 import json
 import os
 import re
 import smtplib
 import sys
+import tempfile
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -114,9 +120,27 @@ def load_slugs_notion(cfg: dict) -> list[str] | None:
 
 def load_json(path: Path, default):
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError):
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
         return default
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        raise ValueError(f"Cannot read {path}; repair or restore this state file before running again") from e
+    if not isinstance(data, dict):
+        raise ValueError(f"Expected a JSON object in {path}; existing state was not replaced")
+    return data
+
+
+def write_json(path: Path, data: dict, indent: int = 1):
+    fd, name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=indent, sort_keys=True)
+            f.write("\n")
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(name, path)
+    finally:
+        Path(name).unlink(missing_ok=True)
 
 
 # ---------------------------------------------------------------- discovery
@@ -176,54 +200,115 @@ CC_INDEX = "https://index.commoncrawl.org"
 NOT_SLUGS = {"api", "embed", "static", "favicon.ico", "robots.txt", "sitemap.xml", ""}
 
 
-def _get(url: str, timeout: int = 120, tries: int = 4) -> bytes | None:
-    import time
-    for i in range(tries):
+def read_response(response) -> bytes:
+    body = response.read()
+    if response.headers.get("Content-Encoding", "").strip().lower() == "gzip":
+        body = gzip.decompress(body)
+    return body
+
+
+def request(url: str, timeout: int = 30, tries: int = 2, parse=None):
+    """GET with gzip and bounded retries, including validation of the full body."""
+    for attempt in range(tries):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout) as r:
-                return r.read()
+            headers = {**UA, "Accept-Encoding": "gzip"}
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=timeout) as r:
+                body = read_response(r)
+            return parse(body) if parse else body
         except urllib.error.HTTPError as e:
-            if e.code == 404:
-                return None
+            if e.code not in (408, 429) and not 500 <= e.code < 600:
+                raise
             err = e
-        except Exception as e:  # timeouts, resets
+        except (OSError, EOFError, ValueError, zlib.error, http.client.HTTPException) as e:
             err = e
-        time.sleep(5 * (i + 1))
-    print(f"[harvest] giving up on {url[:90]}: {err}", file=sys.stderr)
-    return None
-
-
-def harvest_common_crawl(n_crawls: int) -> set[str]:
-    """Every company slug Common Crawl has seen under jobs.ashbyhq.com in its latest crawls."""
-    raw = _get(f"{CC_INDEX}/collinfo.json", timeout=60)
-    if not raw:
-        return set()
-    crawls = [c["id"] for c in json.loads(raw)][:n_crawls]
-    slugs: set[str] = set()
-    for cid in crawls:
-        base = f"{CC_INDEX}/{cid}-index?url=jobs.ashbyhq.com/*&output=json&fl=url"
-        info = _get(base + "&showNumPages=true", timeout=60)
-        try:
-            pages = int(json.loads(info)["pages"]) if info else 0
-        except (ValueError, KeyError):
-            pages = 0
-        before = len(slugs)
-        for p in range(pages):
-            body = _get(f"{base}&page={p}")
-            if not body:
-                continue
-            for line in body.decode("utf-8", "replace").splitlines():
+        if attempt + 1 == tries:
+            raise err
+        delay = 5 * (attempt + 1)
+        retry_after = (getattr(err, "headers", None) or {}).get("Retry-After")
+        if retry_after:
+            try:
+                delay = max(0, float(retry_after))
+            except ValueError:
                 try:
-                    url = json.loads(line).get("url", "")
-                except ValueError:
-                    continue
-                m = re.match(r"https?://jobs\.ashbyhq\.com/([^/?#]+)", url)
-                if m:
-                    slug = urllib.parse.unquote(m.group(1)).strip()
-                    if slug.lower() not in NOT_SLUGS and "." not in slug:
-                        slugs.add(slug)
-        print(f"[harvest] {cid}: {pages} pages, +{len(slugs) - before} companies", file=sys.stderr)
-    return slugs
+                    delay = max(0, (parsedate_to_datetime(retry_after)
+                                    - datetime.now(timezone.utc)).total_seconds())
+                except (TypeError, ValueError, OverflowError):
+                    pass
+        if delay > 60:       # leave a long server-requested pause for the next run
+            raise err
+        time.sleep(delay)
+
+
+def _get(url: str, timeout: int = 120, tries: int = 4, parse=None):
+    try:
+        return request(url, timeout=timeout, tries=tries, parse=parse)
+    except Exception as e:
+        print(f"[harvest] giving up on {url[:90]}: {e}", file=sys.stderr)
+        return None
+
+
+def harvest_common_crawl(n_crawls: int) -> tuple[set[str], bool]:
+    """Return found slugs and whether every requested index page was valid."""
+    def parse_crawls(body):
+        data = json.loads(body)
+        if not isinstance(data, list) or not data:
+            raise ValueError("missing crawl list")
+        if not all(isinstance(c, dict) and isinstance(c.get("id"), str) and c["id"] for c in data):
+            raise ValueError("invalid crawl list")
+        return [c["id"] for c in data[:n_crawls]]
+
+    def parse_pages(body):
+        data = json.loads(body)
+        if not isinstance(data, dict) or type(data.get("pages")) is not int or data["pages"] < 0:
+            raise ValueError("invalid page count")
+        if "blocks" in data and (type(data["blocks"]) is not int or data["blocks"] < 0):
+            raise ValueError("invalid block count")
+        if data.get("blocks", 0) > 0 and data["pages"] == 0:
+            raise ValueError("nonempty index has no pages")
+        return data
+
+    def parse_page(body):
+        found = set()
+        lines = [line for line in body.decode("utf-8").splitlines() if line.strip()]
+        if not lines and info.get("blocks") != 0:
+            raise ValueError("empty index page")
+        for line in lines:
+            record = json.loads(line)
+            if not isinstance(record, dict) or not isinstance(record.get("url"), str) or not record["url"]:
+                raise ValueError("index record has no URL")
+            m = re.match(r"https?://jobs\.ashbyhq\.com/([^/?#]+)", record["url"], re.I)
+            if m:
+                slug = urllib.parse.unquote(m.group(1)).strip()
+                if slug.lower() not in NOT_SLUGS and "." not in slug:
+                    found.add(slug)
+        return found
+
+    crawls = _get(f"{CC_INDEX}/collinfo.json", timeout=60, parse=parse_crawls)
+    if crawls is None:
+        return set(), False
+    slugs: set[str] = set()
+    complete = True
+    for cid in crawls:
+        base = f"{CC_INDEX}/{cid}-index?url=jobs.ashbyhq.com/*&output=json&fl=url&pageSize=1"
+        time.sleep(2)        # keep Common Crawl requests serial and paced
+        info = _get(base + "&showNumPages=true", timeout=60, parse=parse_pages)
+        if info is None:
+            complete = False
+            continue
+        pages = info["pages"]
+        before = len(slugs)
+        valid = 0
+        for p in range(pages):
+            time.sleep(2)
+            found = _get(f"{base}&page={p}", parse=parse_page)
+            if found is None:
+                complete = False
+                continue
+            slugs.update(found)
+            valid += 1
+        print(f"[harvest] {cid}: {valid}/{pages} valid pages, +{len(slugs) - before} companies",
+              file=sys.stderr)
+    return slugs, complete
 
 
 def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
@@ -234,17 +319,18 @@ def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
     last = reg.get("_meta", {}).get("harvested")
     if last and (now.date() - datetime.fromisoformat(last).date()).days < hcfg.get("every_days", 7):
         return 0
-    found = harvest_common_crawl(hcfg.get("crawls", 3))
-    if not found:            # keep the previous date so it retries tomorrow
-        return 0
+    found, complete = harvest_common_crawl(hcfg.get("crawls", 3))
     known = {k.lower() for k in reg if k != "_meta"}
     added = 0
-    for s in found:
+    for s in sorted(found, key=str.lower):
         if s.lower() not in known:
             reg[s] = {"de": None}
             known.add(s.lower())
             added += 1
-    reg.setdefault("_meta", {})["harvested"] = now.date().isoformat()
+    if complete:
+        reg.setdefault("_meta", {})["harvested"] = now.date().isoformat()
+    else:
+        print("[harvest] incomplete; keeping previous harvest date to retry next run", file=sys.stderr)
     return added
 
 
@@ -273,15 +359,21 @@ def has_germany(jobs: list[dict], cfg: dict) -> bool:
 
 # ---------------------------------------------------------------- fetching
 def fetch_board(slug: str) -> tuple[str, list[dict] | None, str | None]:
-    req = urllib.request.Request(API.format(slug=urllib.parse.quote(slug)), headers=UA)
+    def parse(body):
+        data = json.loads(body)
+        if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
+            raise ValueError("response has no jobs list")
+        if not all(isinstance(job, dict) for job in data["jobs"]):
+            raise ValueError("response contains an invalid job")
+        return data["jobs"]
+
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            data = json.load(r)
-        return slug, data.get("jobs", []), None
+        jobs = request(API.format(slug=urllib.parse.quote(slug, safe="")), parse=parse)
+        return slug, jobs, None
     except urllib.error.HTTPError as e:
         return slug, None, f"HTTP {e.code}"
     except Exception as e:
-        return slug, None, type(e).__name__
+        return slug, None, f"{type(e).__name__}: {e}"
 
 
 # ---------------------------------------------------------------- filtering
@@ -293,12 +385,12 @@ def norm(s: str) -> str:
 
 
 def job_locations(job: dict) -> list[str]:
-    locs = [job.get("location") or ""]
-    for sl in job.get("secondaryLocations") or []:
-        locs.append(sl.get("location") or "")
-    addr = (job.get("address") or {}).get("postalAddress") or {}
-    locs.append(" ".join(str(addr.get(k) or "") for k in
-                         ("addressLocality", "addressRegion", "addressCountry")))
+    locs = []
+    for location in [job] + (job.get("secondaryLocations") or []):
+        locs.append(location.get("location") or "")
+        addr = (location.get("address") or {}).get("postalAddress") or {}
+        locs.append(" ".join(str(addr.get(k) or "") for k in
+                             ("addressLocality", "addressRegion", "addressCountry")))
     return [l for l in locs if l.strip()]
 
 
@@ -311,9 +403,10 @@ def match_location(job: dict, cfg: dict) -> str | None:
             cities.append(city["label"])
     if cities:
         return " / ".join(cities)
-    country = norm(str(((job.get("address") or {}).get("postalAddress") or {})
-                       .get("addressCountry") or ""))
-    if country in ("de", "deu", "germany", "deutschland") or any(
+    countries = {norm(str(((location.get("address") or {}).get("postalAddress") or {})
+                         .get("addressCountry") or ""))
+                 for location in [job] + (job.get("secondaryLocations") or [])}
+    if countries.intersection({"de", "deu", "germany", "deutschland"}) or any(
             re.search(r"\b" + re.escape(norm(t)) + r"\b", blob) for t in cfg["country_terms"]):
         return "Germany"
     if cfg.get("include_remote_europe") and any(
@@ -450,8 +543,11 @@ def render_md(picks, now, stats) -> str:
               f"{len(picks)} roles in Germany posted in the last {stats['days']} days "
               f"({stats['n_new']} 🆕 since last email) · newest first · ") +
              f"{stats['boards_ok']} companies checked", ""]
+    if stats.get("boards_failed"):
+        lines += [f"_{stats['boards_failed']} boards could not be fetched; see run.json for details._", ""]
     if not picks:
-        lines.append("_Nothing new today._")
+        lines.append("_Nothing new today._" if stats["boards_ok"] else
+                     "_No boards could be fetched; new jobs could not be checked._")
     for j in picks:
         new = "🆕 " if j.get("_new") and stats["mode"] == "week" else ""
         lines.append(f"### {new}[{j['title']}]({j['jobUrl']}) — {company_name(j['_slug'])}")
@@ -463,7 +559,7 @@ def render_md(picks, now, stats) -> str:
         lines += ["---", "Boards that failed (fix or remove the Ashby ID): "
                   + ", ".join(f"`{s}` ({e})" for s, e in stats["bad_slugs"])]
     if stats["new_slugs"]:
-        lines += ["", "New boards discovered and added: "
+        lines += ["", "New boards discovered: "
                   + ", ".join(f"`{s}`" for s in sorted(stats["new_slugs"]))]
     return "\n".join(lines) + "\n"
 
@@ -492,7 +588,8 @@ def render_html(picks, now, stats) -> str:
             f' &nbsp;💶 {e(j["_comp"] or "Salary not listed")}</div>'
             f'<div style="color:#9ca3af;font-size:12px">posted {j["_pub"]:%a %d %b}</div>'
             f'{german}</td></tr>')
-    body = "".join(rows) or '<tr><td style="color:#6b7280">Nothing new today.</td></tr>'
+    empty = "Nothing new today." if stats["boards_ok"] else "No boards could be fetched; new jobs could not be checked."
+    body = "".join(rows) or f'<tr><td style="color:#6b7280">{empty}</td></tr>'
     foot = ""
     if stats["bad_slugs"]:
         foot = ('<p style="color:#9ca3af;font-size:12px">Boards that failed: '
@@ -520,7 +617,9 @@ def send_email(subject: str, html_body: str, text_body: str) -> bool:
     port = int(os.environ.get("SMTP_PORT", "465"))
     with smtplib.SMTP_SSL(host, port, timeout=30) as s:
         s.login(user, pw)
-        s.sendmail(user, [a.strip() for a in to.split(",")], msg.as_string())
+        refused = s.sendmail(user, [a.strip() for a in to.split(",")], msg.as_string())
+        if refused:
+            raise smtplib.SMTPRecipientsRefused(refused)
     return True
 
 
@@ -535,12 +634,15 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default=ROOT / "output", type=Path)
     ap.add_argument("--fixtures", type=Path, help="dir of <slug>.json files (offline test)")
     ap.add_argument("--no-email", action="store_true")
-    ap.add_argument("--dry-run", action="store_true", help="don't update seen.json")
+    ap.add_argument("--dry-run", action="store_true", help="write only the digest; don't send or update inputs/state")
     args = ap.parse_args(argv)
+    args.no_email = args.no_email or args.dry_run
 
     cfg = load_config(args.config)
     now = datetime.now(timezone.utc)
     slugs = load_slugs(args.companies)
+    reg = load_json(args.registry, {})
+    seen = load_json(args.seen, {})
     if not args.fixtures:
         try:
             notion = load_slugs_notion(cfg)
@@ -557,12 +659,12 @@ def main(argv=None) -> int:
     if not args.fixtures:
         new_slugs = {s for s in discover_slugs(cfg) if s.lower() not in own}
         if new_slugs:
-            with open(args.companies, "a", encoding="utf-8") as f:
-                f.write(f"\n# discovered {now:%Y-%m-%d}\n" + "\n".join(sorted(new_slugs)) + "\n")
+            if not args.dry_run:
+                with open(args.companies, "a", encoding="utf-8") as f:
+                    f.write(f"\n# discovered {now:%Y-%m-%d}\n" + "\n".join(sorted(new_slugs)) + "\n")
             slugs += sorted(new_slugs)
             own |= {s.lower() for s in new_slugs}
 
-    reg = load_json(args.registry, {})
     harvested = 0
     if not args.fixtures:
         harvested = update_registry(reg, cfg, now)
@@ -572,7 +674,7 @@ def main(argv=None) -> int:
               f"checking {len(slugs)} listed + {len(extra)} crawled", file=sys.stderr)
         slugs = slugs + extra
 
-    boards, bad = {}, []
+    boards, bad, failures = {}, [], []
     if args.fixtures:
         for p in sorted(args.fixtures.glob("*.json")):
             boards[p.stem] = json.loads(p.read_text())["jobs"]
@@ -580,20 +682,22 @@ def main(argv=None) -> int:
         with ThreadPoolExecutor(max_workers=cfg.get("workers", 16)) as pool:
             for slug, jobs, err in pool.map(fetch_board, slugs):
                 if jobs is None:
+                    failures.append((slug, err))
                     if slug.lower() in own:
                         bad.append((slug, err))
-                    elif slug in reg and err and err.startswith("HTTP 4"):
-                        reg[slug] = {"de": False, "checked": now.date().isoformat()}
+                    elif slug in reg and err == "HTTP 404":
+                        reg[slug] = {**reg[slug], "de": False}
                 else:
                     boards[slug] = jobs
                     if slug in reg or slug.lower() not in own:
                         reg[slug] = {"de": has_germany(jobs, cfg),
                                      "checked": now.date().isoformat()}
-        args.registry.write_text(json.dumps(reg, indent=0, sort_keys=True), encoding="utf-8")
+        if not args.dry_run:
+            write_json(args.registry, reg, indent=0)
 
-    seen = load_json(args.seen, {})
     picks = curate(boards, cfg, seen, now)
     stats = {"boards_ok": len(boards), "bad_slugs": bad, "new_slugs": new_slugs,
+             "boards_requested": len(boards) + len(failures), "boards_failed": len(failures),
              "jobs_total": sum(len(j) for j in boards.values()),
              "days": cfg["lookback_days"], "n_new": sum(1 for j in picks if j.get("_new")),
              "mode": cfg.get("digest_mode", "new_only")}
@@ -608,20 +712,44 @@ def main(argv=None) -> int:
           "german_required": j["_german"], "compensation": j["_comp"]} for j in picks],
         indent=2, ensure_ascii=False), encoding="utf-8")
 
-    if not args.dry_run:
-        for j in picks:
-            seen.setdefault(j.get("id") or j["jobUrl"], now.date().isoformat())
-        cutoff = (now - timedelta(days=cfg.get("forget_after_days", 60))).date().isoformat()
-        seen = {k: v for k, v in seen.items() if k == "_last_run" or v >= cutoff}
-        seen["_last_run"] = now.isoformat()
-        args.seen.write_text(json.dumps(seen, indent=1, sort_keys=True), encoding="utf-8")
+    report = {"generated_at": now.isoformat(), "boards_requested": stats["boards_requested"],
+              "boards_ok": len(boards), "boards_failed": len(failures),
+              "jobs_total": stats["jobs_total"], "matches": len(picks),
+              "failures": [{"company": slug, "error": err} for slug, err in failures]}
+    write_json(args.out / "run.json", report)
+    print(f"[fetch] {len(boards)}/{stats['boards_requested']} boards fetched · "
+          f"{stats['jobs_total']} jobs · {len(failures)} failures", file=sys.stderr)
 
     print(md)
-    if not args.no_email and (stats["n_new"] or cfg.get("email_when_empty")):
+    status = 0 if boards else 1
+    delivery = "disabled" if args.no_email else "not needed"
+    if not boards:
+        delivery = "not attempted"
+    if boards and not args.no_email and (stats["n_new"] or cfg.get("email_when_empty")):
         subj = f"Ashby radar: {stats['n_new']} new roles ({now:%d %b})"
-        if send_email(subj, page, md):
-            print("Email sent.")
-    return 0
+        try:
+            if send_email(subj, page, md):
+                delivery = "sent"
+                for j in picks:
+                    seen.setdefault(j.get("id") or j["jobUrl"], now.date().isoformat())
+                cutoff = (now - timedelta(days=cfg.get("forget_after_days", 60))).date().isoformat()
+                seen = {k: v for k, v in seen.items() if k == "_last_run" or v >= cutoff}
+                seen["_last_run"] = now.isoformat()
+                write_json(args.seen, seen)
+                print("Email sent.")
+            else:
+                delivery, status = "not configured", 1
+                print("[email] SMTP is not configured; jobs remain unsent", file=sys.stderr)
+        except Exception as e:
+            delivery = "sent; state save failed" if delivery == "sent" else "failed"
+            status = 1
+            report["delivery_error"] = f"{type(e).__name__}: {e}"
+            print(f"[email] {delivery}: {e}", file=sys.stderr)
+    report["delivery"] = delivery
+    write_json(args.out / "run.json", report)
+    if not boards:
+        print("[fetch] no board could be fetched; notification progress was preserved", file=sys.stderr)
+    return status
 
 
 if __name__ == "__main__":
