@@ -555,7 +555,7 @@ def render_md(picks, now, stats) -> str:
         lines += ["---", "Boards that failed (fix or remove the Ashby ID): "
                   + ", ".join(f"`{s}` ({e})" for s, e in stats["bad_slugs"])]
     if stats["new_slugs"]:
-        lines += ["", "New boards discovered and added: "
+        lines += ["", "New boards discovered: "
                   + ", ".join(f"`{s}`" for s in sorted(stats["new_slugs"]))]
     return "\n".join(lines) + "\n"
 
@@ -627,8 +627,9 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default=ROOT / "output", type=Path)
     ap.add_argument("--fixtures", type=Path, help="dir of <slug>.json files (offline test)")
     ap.add_argument("--no-email", action="store_true")
-    ap.add_argument("--dry-run", action="store_true", help="don't update seen.json")
+    ap.add_argument("--dry-run", action="store_true", help="write only the digest; don't send or update inputs/state")
     args = ap.parse_args(argv)
+    args.no_email = args.no_email or args.dry_run
 
     cfg = load_config(args.config)
     now = datetime.now(timezone.utc)
@@ -651,8 +652,9 @@ def main(argv=None) -> int:
     if not args.fixtures:
         new_slugs = {s for s in discover_slugs(cfg) if s.lower() not in own}
         if new_slugs:
-            with open(args.companies, "a", encoding="utf-8") as f:
-                f.write(f"\n# discovered {now:%Y-%m-%d}\n" + "\n".join(sorted(new_slugs)) + "\n")
+            if not args.dry_run:
+                with open(args.companies, "a", encoding="utf-8") as f:
+                    f.write(f"\n# discovered {now:%Y-%m-%d}\n" + "\n".join(sorted(new_slugs)) + "\n")
             slugs += sorted(new_slugs)
             own |= {s.lower() for s in new_slugs}
 
@@ -682,7 +684,8 @@ def main(argv=None) -> int:
                     if slug in reg or slug.lower() not in own:
                         reg[slug] = {"de": has_germany(jobs, cfg),
                                      "checked": now.date().isoformat()}
-        write_json(args.registry, reg, indent=0)
+        if not args.dry_run:
+            write_json(args.registry, reg, indent=0)
 
     picks = curate(boards, cfg, seen, now)
     stats = {"boards_ok": len(boards), "bad_slugs": bad, "new_slugs": new_slugs,
