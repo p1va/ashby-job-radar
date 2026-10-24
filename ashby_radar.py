@@ -385,12 +385,12 @@ def norm(s: str) -> str:
 
 
 def job_locations(job: dict) -> list[str]:
-    locs = [job.get("location") or ""]
-    for sl in job.get("secondaryLocations") or []:
-        locs.append(sl.get("location") or "")
-    addr = (job.get("address") or {}).get("postalAddress") or {}
-    locs.append(" ".join(str(addr.get(k) or "") for k in
-                         ("addressLocality", "addressRegion", "addressCountry")))
+    locs = []
+    for location in [job] + (job.get("secondaryLocations") or []):
+        locs.append(location.get("location") or "")
+        addr = (location.get("address") or {}).get("postalAddress") or {}
+        locs.append(" ".join(str(addr.get(k) or "") for k in
+                             ("addressLocality", "addressRegion", "addressCountry")))
     return [l for l in locs if l.strip()]
 
 
@@ -403,9 +403,10 @@ def match_location(job: dict, cfg: dict) -> str | None:
             cities.append(city["label"])
     if cities:
         return " / ".join(cities)
-    country = norm(str(((job.get("address") or {}).get("postalAddress") or {})
-                       .get("addressCountry") or ""))
-    if country in ("de", "deu", "germany", "deutschland") or any(
+    countries = {norm(str(((location.get("address") or {}).get("postalAddress") or {})
+                         .get("addressCountry") or ""))
+                 for location in [job] + (job.get("secondaryLocations") or [])}
+    if countries.intersection({"de", "deu", "germany", "deutschland"}) or any(
             re.search(r"\b" + re.escape(norm(t)) + r"\b", blob) for t in cfg["country_terms"]):
         return "Germany"
     if cfg.get("include_remote_europe") and any(
