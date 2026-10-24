@@ -10,7 +10,7 @@ This radar does the boring part for you. It finds every company in Germany that 
 
 ## What lands in your inbox
 
-A short list of roles **posted since yesterday's email**, newest first, with everything you need to decide in five seconds:
+A short list of **new roles**, newest first, with everything you need to decide in five seconds:
 
 - **The role and the company**, with a link straight to the posting
 - 📍 **City**, like Berlin, Munich or Hamburg ("Germany" if no city is given)
@@ -22,13 +22,15 @@ Already emailed jobs are skipped. If nothing new came out, you get no email.
 
 ## Which jobs count
 
-Titles with things like **growth, product (manager, analyst, owner, marketing), marketing, operations / BizOps / RevOps, strategy, founder's associate, chief of staff, GTM, business development, partnerships, e-commerce**. Each one has to be **in Berlin or Munich** (or remote within Germany) and **published since the last email**.
+Titles with things like **growth, product (manager, analyst, owner, marketing), marketing, operations / BizOps / RevOps, strategy, founder's associate, chief of staff, GTM, business development, partnerships, e-commerce**. Each one has to be **in Berlin or Munich** (or remote within Germany) and **not already emailed**, within the publication window below.
 
 Engineering, design, internships and working-student roles are filtered out.
 
 If a company's board could not be checked or is checked weekly, the next
 successful check catches up from that company's earlier checkpoint. Unsent
 matches stay eligible, including roles beyond the email's result limit.
+The first check uses the existing 24-hour window; later checks normally start
+from the previous email, with the configured overlap buffer.
 
 All of this is editable in `config.json`.
 

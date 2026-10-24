@@ -336,6 +336,7 @@ def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
             added += 1
     if finished:
         reg.setdefault("_meta", {})["completed_crawls"] = sorted(finished)
+    reg.setdefault("_meta", {})["harvest_incomplete"] = not complete
     if complete:
         reg.setdefault("_meta", {})["harvested"] = now.date().isoformat()
     else:
@@ -557,13 +558,15 @@ def job_meta(j: dict) -> list[str]:
 
 def render_md(picks, now, stats) -> str:
     lines = [f"# Ashby Job Radar — {now:%a %d %b %Y}", "",
-             (f"{len(picks)} roles posted since the last email · newest first · "
+             (f"{len(picks)} new roles · newest first · "
               if stats["mode"] == "new_only" else
               f"{len(picks)} roles in Germany posted in the last {stats['days']} days "
               f"({stats['n_new']} 🆕 since last email) · newest first · ") +
              f"{stats['boards_ok']} companies checked", ""]
     if stats.get("boards_failed"):
         lines += [f"_Company boards unavailable: {stats['boards_failed']}. Results may be incomplete._", ""]
+    if stats.get("harvest_incomplete"):
+        lines += ["_Company discovery was incomplete; known company boards were still checked._", ""]
     if not picks:
         lines.append("_Nothing new today._" if stats["boards_ok"] else
                      "_No boards could be fetched; new jobs could not be checked._")
@@ -616,10 +619,12 @@ def render_html(picks, now, stats) -> str:
                 + e(", ".join(s for s, _ in stats["bad_slugs"])) + "</p>")
     warning = (f'<p style="color:#6b7280">Company boards unavailable: {stats["boards_failed"]}. '
                'Results may be incomplete.</p>') if stats.get("boards_failed") else ""
+    if stats.get("harvest_incomplete"):
+        warning += '<p style="color:#6b7280">Company discovery was incomplete; known company boards were still checked.</p>'
     return (f'<div style="font-family:-apple-system,Segoe UI,sans-serif;max-width:640px">'
             f'<h2 style="margin:0">Ashby Job Radar</h2>'
             f'<p style="color:#6b7280;margin:4px 0 12px">{now:%A %d %B %Y} · '
-            + (f'{len(picks)} roles posted since the last email'
+            + (f'{len(picks)} new roles'
                if stats["mode"] == "new_only" else
                f'{len(picks)} roles in Germany from the last {stats["days"]} days · '
                f'{stats["n_new"]} new since last email')
@@ -727,6 +732,8 @@ def main(argv=None) -> int:
     stats = {"boards_ok": len(boards), "bad_slugs": bad, "new_slugs": new_slugs,
              "boards_requested": len(boards) + len(failures), "boards_failed": len(errors),
              "boards_not_found": not_found, "dry_run": args.dry_run,
+             "harvest_incomplete": bool(cfg.get("harvest", {}).get("enabled", True)
+                                        and reg.get("_meta", {}).get("harvest_incomplete")),
              "jobs_total": sum(len(j) for j in boards.values()),
              "days": cfg["lookback_days"], "n_new": sum(1 for j in picks if j.get("_new")),
              "mode": cfg.get("digest_mode", "new_only")}
@@ -744,6 +751,8 @@ def main(argv=None) -> int:
     report = {"generated_at": now.isoformat(), "boards_requested": stats["boards_requested"],
               "boards_ok": len(boards), "boards_failed": len(errors), "boards_not_found": not_found,
               "jobs_total": stats["jobs_total"], "matches": len(picks), "matches_total": len(matches),
+              "harvest_incomplete": stats["harvest_incomplete"],
+              "completed_crawls": reg.get("_meta", {}).get("completed_crawls", []),
               "failures": [{"company": slug, "error": err} for slug, err in errors]}
     write_json(args.out / "run.json", report)
     print(f"[fetch] {len(boards)}/{stats['boards_requested']} boards fetched · "
