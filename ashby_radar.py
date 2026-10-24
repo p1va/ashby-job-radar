@@ -16,6 +16,7 @@ Standard library only. Python 3.9+.
 from __future__ import annotations
 
 import argparse
+import gzip
 import html
 import json
 import os
@@ -176,12 +177,20 @@ CC_INDEX = "https://index.commoncrawl.org"
 NOT_SLUGS = {"api", "embed", "static", "favicon.ico", "robots.txt", "sitemap.xml", ""}
 
 
+def read_response(response) -> bytes:
+    body = response.read()
+    if response.headers.get("Content-Encoding", "").strip().lower() == "gzip":
+        body = gzip.decompress(body)
+    return body
+
+
 def _get(url: str, timeout: int = 120, tries: int = 4) -> bytes | None:
     import time
     for i in range(tries):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout) as r:
-                return r.read()
+            headers = {**UA, "Accept-Encoding": "gzip"}
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=timeout) as r:
+                return read_response(r)
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 return None
@@ -273,10 +282,11 @@ def has_germany(jobs: list[dict], cfg: dict) -> bool:
 
 # ---------------------------------------------------------------- fetching
 def fetch_board(slug: str) -> tuple[str, list[dict] | None, str | None]:
-    req = urllib.request.Request(API.format(slug=urllib.parse.quote(slug)), headers=UA)
+    req = urllib.request.Request(API.format(slug=urllib.parse.quote(slug)),
+                                 headers={**UA, "Accept-Encoding": "gzip"})
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
-            data = json.load(r)
+            data = json.loads(read_response(r))
         return slug, data.get("jobs", []), None
     except urllib.error.HTTPError as e:
         return slug, None, f"HTTP {e.code}"
