@@ -2,15 +2,18 @@
 "name": "Ashby job radar",
 "on": {"schedule": [{"cron": "40 5 * * *"}], "workflow_dispatch": {}},
 "permissions": {"contents": "write"},
+"concurrency": {"group": "ashby-radar", "queue": "max", "cancel-in-progress": false},
 "jobs": {"radar": {"runs-on": "ubuntu-latest", "steps": [
-{"uses": "actions/checkout@v4"},
-{"uses": "actions/setup-python@v5", "with": {"python-version": "3.12"}},
-{"name": "Run radar", "run": "python ashby_radar.py", "env": {
+{"uses": "actions/checkout@v7", "with": {"ref": "main", "fetch-depth": 0}},
+{"uses": "actions/setup-python@v7", "with": {"python-version": "3.12"}},
+{"name": "Run radar", "run": "python ashby_radar.py --out \"$RUNNER_TEMP/radar-output\"", "env": {
 "SMTP_USER": "${{ secrets.SMTP_USER }}",
 "SMTP_PASS": "${{ secrets.SMTP_PASS }}",
 "EMAIL_TO": "${{ secrets.EMAIL_TO }}",
 "NOTION_TOKEN": "${{ secrets.NOTION_TOKEN }}",
 "NOTION_DATABASE_ID": "${{ secrets.NOTION_DATABASE_ID }}"}},
-{"name": "Save state and digest", "run": "git config user.name ashby-radar-bot && git config user.email actions@users.noreply.github.com && git add seen.json companies.txt output/ && (git diff --cached --quiet || git commit -m \"radar: $(date -u +%F)\") && git push"}
+{"name": "Show digest", "if": "always()", "run": "if [ -f \"$RUNNER_TEMP/radar-output/digest.md\" ]; then cat \"$RUNNER_TEMP/radar-output/digest.md\" >> \"$GITHUB_STEP_SUMMARY\"; fi"},
+{"name": "Save run files", "if": "always()", "uses": "actions/upload-artifact@v7", "with": {"name": "radar-${{ github.run_id }}-${{ github.run_attempt }}", "path": "${{ runner.temp }}/radar-output/", "if-no-files-found": "ignore", "retention-days": 30}},
+{"name": "Save state and digest", "run": "mkdir -p output\ncp \"$RUNNER_TEMP/radar-output/\"* output/\ngit config user.name ashby-radar-bot\ngit config user.email actions@users.noreply.github.com\ngit add seen.json companies.txt output/\nif ! git diff --cached --quiet; then\n  git commit -m \"radar: $(date -u +%F)\"\n  git pull --rebase origin main\n  git push origin HEAD:main\nfi"}
 ]}}
 }

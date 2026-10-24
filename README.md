@@ -92,3 +92,9 @@ Only needs Python 3.9+. No packages to install.
 untouched. `--dry-run` saves only files under `output/`. Jobs are marked as sent
 only after email delivery succeeds. `output/run.json` records fetch failures and
 delivery status, including skipped or failed delivery.
+
+To run the current code and state again, use **Actions → Run workflow** rather
+than re-running a historical job. Runs queue so they can save state one at a time.
+If saving state fails after an email was sent, a later run can repeat those roles;
+the Actions run will show the failure. Each run also saves its digest and report
+as an artifact for 30 days.
