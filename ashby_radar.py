@@ -130,12 +130,25 @@ def load_json(path: Path, default):
     return data
 
 
-def write_json(path: Path, data: dict, indent: int = 1):
+def load_registry(path: Path) -> dict:
+    data = load_json(path, {})
+    registry = {slug if slug == "_meta" else slug.lower(): state for slug, state in data.items()}
+    if len(registry) != len(data):
+        raise ValueError(f"Duplicate company IDs differing only by case in {path}; merge them before running again")
+    return registry
+
+
+def write_json(path: Path, data: dict, indent: int = 1, one_per_line: bool = False):
     fd, name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=indent, sort_keys=True)
-            f.write("\n")
+            if one_per_line:
+                rows = [f"{json.dumps(key)}: {json.dumps(value, sort_keys=True)}"
+                        for key, value in sorted(data.items(), key=lambda item: (item[0] != "_meta", item[0]))]
+                f.write("{\n" + ",\n".join(rows) + "\n}\n")
+            else:
+                json.dump(data, f, indent=indent, sort_keys=True)
+                f.write("\n")
             f.flush()
             os.fsync(f.fileno())
         os.replace(name, path)
@@ -330,6 +343,7 @@ def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
     known = {k.lower() for k in reg if k != "_meta"}
     added = 0
     for s in found:
+        s = s.lower()
         if s.lower() not in known:
             reg[s] = {"de": None}
             known.add(s.lower())
@@ -668,7 +682,7 @@ def main(argv=None) -> int:
     cfg = load_config(args.config)
     now = datetime.now(timezone.utc)
     slugs = load_slugs(args.companies)
-    reg = load_json(args.registry, {})
+    reg = load_registry(args.registry)
     seen = load_json(args.seen, {})
     if not args.fixtures:
         try:
@@ -702,14 +716,13 @@ def main(argv=None) -> int:
         slugs = slugs + extra
 
     boards, bad, failures = {}, [], []
-    registry_names = {slug.lower(): slug for slug in reg if slug != "_meta"}
     if args.fixtures:
         for p in sorted(args.fixtures.glob("*.json")):
             boards[p.stem] = json.loads(p.read_text())["jobs"]
     else:
         with ThreadPoolExecutor(max_workers=cfg.get("workers", 16)) as pool:
             for slug, jobs, err in pool.map(fetch_board, slugs):
-                registry_slug = registry_names.setdefault(slug.lower(), slug)
+                registry_slug = slug.lower()
                 if jobs is None:
                     failures.append((slug, err))
                     if slug.lower() in own:
@@ -789,11 +802,10 @@ def main(argv=None) -> int:
     pending = [j for j in matches if j["_new"] and (j.get("id") or j["jobUrl"]) not in delivered]
     pending_boards = {j["_slug"].lower() for j in pending}
     for slug in boards:
-        if slug.lower() not in pending_boards and slug.lower() in registry_names:
-            reg[registry_names[slug.lower()]]["eligible_since"] = (
-                now - timedelta(hours=cfg.get("overlap_hours", 3))).isoformat()
+        if slug.lower() not in pending_boards and slug.lower() in reg:
+            reg[slug.lower()].pop("eligible_since", None)
     if not args.dry_run and not args.fixtures:
-        write_json(args.registry, reg, indent=0)
+        write_json(args.registry, reg, one_per_line=True)
     report["pending_matches"] = len(pending)
     write_json(args.out / "run.json", report)
     if not boards:
