@@ -1,16 +1,76 @@
-{
-"name": "Ashby job radar",
-"on": {"schedule": [{"cron": "40 5 * * *"}], "workflow_dispatch": {}},
-"permissions": {"contents": "write"},
-"jobs": {"radar": {"runs-on": "ubuntu-latest", "steps": [
-{"uses": "actions/checkout@v4"},
-{"uses": "actions/setup-python@v5", "with": {"python-version": "3.12"}},
-{"name": "Run radar", "run": "python ashby_radar.py", "env": {
-"SMTP_USER": "${{ secrets.SMTP_USER }}",
-"SMTP_PASS": "${{ secrets.SMTP_PASS }}",
-"EMAIL_TO": "${{ secrets.EMAIL_TO }}",
-"NOTION_TOKEN": "${{ secrets.NOTION_TOKEN }}",
-"NOTION_DATABASE_ID": "${{ secrets.NOTION_DATABASE_ID }}"}},
-{"name": "Save state and digest", "run": "git config user.name ashby-radar-bot && git config user.email actions@users.noreply.github.com && git add seen.json companies.txt output/ && (git diff --cached --quiet || git commit -m \"radar: $(date -u +%F)\") && git push"}
-]}}
-}
+name: Digest preview (no email)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag or commit in this fork to test
+        required: true
+        default: main
+        type: string
+      scope:
+        description: Listed companies only, or include Common Crawl discovery
+        required: true
+        default: listed
+        type: choice
+        options:
+          - listed
+          - full
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Prepare preview config
+        env:
+          PREVIEW_SCOPE: ${{ inputs.scope }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          config = json.loads(Path("config.json").read_text())
+          if os.environ["PREVIEW_SCOPE"] == "listed":
+              config.setdefault("harvest", {})["enabled"] = False
+              config["discovery_queries"] = []
+          path = Path(os.environ["RUNNER_TEMP"]) / "preview-config.json"
+          path.write_text(json.dumps(config), encoding="utf-8")
+          PY
+
+      - name: Generate digest without email
+        run: |
+          python ashby_radar.py --no-email \
+            --config "$RUNNER_TEMP/preview-config.json" \
+            --seen "$RUNNER_TEMP/preview-seen.json" \
+            --registry "$RUNNER_TEMP/preview-boards.json" \
+            --out "$RUNNER_TEMP/preview-digest"
+
+      - name: Show digest in run summary
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/preview-digest/digest.md" ]; then
+            cat "$RUNNER_TEMP/preview-digest/digest.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Save digest
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: digest-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/preview-digest/
+          if-no-files-found: error
+          retention-days: 30
