@@ -544,7 +544,7 @@ def render_md(picks, now, stats) -> str:
               f"({stats['n_new']} 🆕 since last email) · newest first · ") +
              f"{stats['boards_ok']} companies checked", ""]
     if stats.get("boards_failed"):
-        lines += [f"_{stats['boards_failed']} boards could not be fetched; see run.json for details._", ""]
+        lines += [f"_Company boards unavailable: {stats['boards_failed']}. Results may be incomplete._", ""]
     if not picks:
         lines.append("_Nothing new today._" if stats["boards_ok"] else
                      "_No boards could be fetched; new jobs could not be checked._")
@@ -559,7 +559,8 @@ def render_md(picks, now, stats) -> str:
         lines += ["---", "Boards that failed (fix or remove the Ashby ID): "
                   + ", ".join(f"`{s}` ({e})" for s, e in stats["bad_slugs"])]
     if stats["new_slugs"]:
-        lines += ["", "New boards discovered: "
+        label = "New boards discovered" if stats.get("dry_run") else "New boards discovered and added"
+        lines += ["", label + ": "
                   + ", ".join(f"`{s}`" for s in sorted(stats["new_slugs"]))]
     return "\n".join(lines) + "\n"
 
@@ -594,6 +595,8 @@ def render_html(picks, now, stats) -> str:
     if stats["bad_slugs"]:
         foot = ('<p style="color:#9ca3af;font-size:12px">Boards that failed: '
                 + e(", ".join(s for s, _ in stats["bad_slugs"])) + "</p>")
+    warning = (f'<p style="color:#6b7280">Company boards unavailable: {stats["boards_failed"]}. '
+               'Results may be incomplete.</p>') if stats.get("boards_failed") else ""
     return (f'<div style="font-family:-apple-system,Segoe UI,sans-serif;max-width:640px">'
             f'<h2 style="margin:0">Ashby Job Radar</h2>'
             f'<p style="color:#6b7280;margin:4px 0 12px">{now:%A %d %B %Y} · '
@@ -602,7 +605,7 @@ def render_html(picks, now, stats) -> str:
                f'{len(picks)} roles in Germany from the last {stats["days"]} days · '
                f'{stats["n_new"]} new since last email')
             + f' · {stats["boards_ok"]} companies checked</p>'
-            f'<table style="width:100%;border-collapse:collapse">{body}</table>{foot}</div>')
+            f'{warning}<table style="width:100%;border-collapse:collapse">{body}</table>{foot}</div>')
 
 
 def send_email(subject: str, html_body: str, text_body: str) -> bool:
@@ -695,9 +698,13 @@ def main(argv=None) -> int:
         if not args.dry_run:
             write_json(args.registry, reg, indent=0)
 
+    # Crawl URLs can outlive a board; count 404s separately from fetch errors.
+    errors = [(slug, err) for slug, err in failures if err != "HTTP 404"]
+    not_found = len(failures) - len(errors)
     picks = curate(boards, cfg, seen, now)
     stats = {"boards_ok": len(boards), "bad_slugs": bad, "new_slugs": new_slugs,
-             "boards_requested": len(boards) + len(failures), "boards_failed": len(failures),
+             "boards_requested": len(boards) + len(failures), "boards_failed": len(errors),
+             "boards_not_found": not_found, "dry_run": args.dry_run,
              "jobs_total": sum(len(j) for j in boards.values()),
              "days": cfg["lookback_days"], "n_new": sum(1 for j in picks if j.get("_new")),
              "mode": cfg.get("digest_mode", "new_only")}
@@ -713,12 +720,12 @@ def main(argv=None) -> int:
         indent=2, ensure_ascii=False), encoding="utf-8")
 
     report = {"generated_at": now.isoformat(), "boards_requested": stats["boards_requested"],
-              "boards_ok": len(boards), "boards_failed": len(failures),
+              "boards_ok": len(boards), "boards_failed": len(errors), "boards_not_found": not_found,
               "jobs_total": stats["jobs_total"], "matches": len(picks),
-              "failures": [{"company": slug, "error": err} for slug, err in failures]}
+              "failures": [{"company": slug, "error": err} for slug, err in errors]}
     write_json(args.out / "run.json", report)
     print(f"[fetch] {len(boards)}/{stats['boards_requested']} boards fetched · "
-          f"{stats['jobs_total']} jobs · {len(failures)} failures", file=sys.stderr)
+          f"{stats['jobs_total']} jobs · {len(errors)} errors · {not_found} not found", file=sys.stderr)
 
     print(md)
     status = 0 if boards else 1
