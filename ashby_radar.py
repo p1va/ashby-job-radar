@@ -228,37 +228,68 @@ def _get(url: str, timeout: int = 120, tries: int = 4, parse=None):
         return None
 
 
-def harvest_common_crawl(n_crawls: int) -> set[str]:
-    """Every company slug Common Crawl has seen under jobs.ashbyhq.com in its latest crawls."""
-    raw = _get(f"{CC_INDEX}/collinfo.json", timeout=60)
-    if not raw:
-        return set()
-    crawls = [c["id"] for c in json.loads(raw)][:n_crawls]
+def harvest_common_crawl(n_crawls: int) -> tuple[set[str], bool]:
+    """Return found slugs and whether every requested index page was valid."""
+    def parse_crawls(body):
+        data = json.loads(body)
+        if not isinstance(data, list) or not data:
+            raise ValueError("missing crawl list")
+        if not all(isinstance(c, dict) and isinstance(c.get("id"), str) and c["id"] for c in data):
+            raise ValueError("invalid crawl list")
+        return [c["id"] for c in data[:n_crawls]]
+
+    def parse_pages(body):
+        data = json.loads(body)
+        if not isinstance(data, dict) or type(data.get("pages")) is not int or data["pages"] < 0:
+            raise ValueError("invalid page count")
+        if "blocks" in data and (type(data["blocks"]) is not int or data["blocks"] < 0):
+            raise ValueError("invalid block count")
+        if data.get("blocks", 0) > 0 and data["pages"] == 0:
+            raise ValueError("nonempty index has no pages")
+        return data
+
+    def parse_page(body):
+        found = set()
+        lines = [line for line in body.decode("utf-8").splitlines() if line.strip()]
+        if not lines and info.get("blocks") != 0:
+            raise ValueError("empty index page")
+        for line in lines:
+            record = json.loads(line)
+            if not isinstance(record, dict) or not isinstance(record.get("url"), str) or not record["url"]:
+                raise ValueError("index record has no URL")
+            m = re.match(r"https?://jobs\.ashbyhq\.com/([^/?#]+)", record["url"], re.I)
+            if m:
+                slug = urllib.parse.unquote(m.group(1)).strip()
+                if slug.lower() not in NOT_SLUGS and "." not in slug:
+                    found.add(slug)
+        return found
+
+    crawls = _get(f"{CC_INDEX}/collinfo.json", timeout=60, parse=parse_crawls)
+    if crawls is None:
+        return set(), False
     slugs: set[str] = set()
+    complete = True
     for cid in crawls:
-        base = f"{CC_INDEX}/{cid}-index?url=jobs.ashbyhq.com/*&output=json&fl=url"
-        info = _get(base + "&showNumPages=true", timeout=60)
-        try:
-            pages = int(json.loads(info)["pages"]) if info else 0
-        except (ValueError, KeyError):
-            pages = 0
+        base = f"{CC_INDEX}/{cid}-index?url=jobs.ashbyhq.com/*&output=json&fl=url&pageSize=1"
+        time.sleep(2)        # keep Common Crawl requests serial and paced
+        info = _get(base + "&showNumPages=true", timeout=60, parse=parse_pages)
+        if info is None:
+            complete = False
+            continue
+        pages = info["pages"]
         before = len(slugs)
+        valid = 0
         for p in range(pages):
-            body = _get(f"{base}&page={p}")
-            if not body:
+            time.sleep(2)
+            found = _get(f"{base}&page={p}", parse=parse_page)
+            if found is None:
+                complete = False
                 continue
-            for line in body.decode("utf-8", "replace").splitlines():
-                try:
-                    url = json.loads(line).get("url", "")
-                except ValueError:
-                    continue
-                m = re.match(r"https?://jobs\.ashbyhq\.com/([^/?#]+)", url)
-                if m:
-                    slug = urllib.parse.unquote(m.group(1)).strip()
-                    if slug.lower() not in NOT_SLUGS and "." not in slug:
-                        slugs.add(slug)
-        print(f"[harvest] {cid}: {pages} pages, +{len(slugs) - before} companies", file=sys.stderr)
-    return slugs
+            slugs.update(found)
+            valid += 1
+        print(f"[harvest] {cid}: {valid}/{pages} valid pages, +{len(slugs) - before} companies",
+              file=sys.stderr)
+    return slugs, complete
 
 
 def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
@@ -269,17 +300,18 @@ def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
     last = reg.get("_meta", {}).get("harvested")
     if last and (now.date() - datetime.fromisoformat(last).date()).days < hcfg.get("every_days", 7):
         return 0
-    found = harvest_common_crawl(hcfg.get("crawls", 3))
-    if not found:            # keep the previous date so it retries tomorrow
-        return 0
+    found, complete = harvest_common_crawl(hcfg.get("crawls", 3))
     known = {k.lower() for k in reg if k != "_meta"}
     added = 0
-    for s in found:
+    for s in sorted(found, key=str.lower):
         if s.lower() not in known:
             reg[s] = {"de": None}
             known.add(s.lower())
             added += 1
-    reg.setdefault("_meta", {})["harvested"] = now.date().isoformat()
+    if complete:
+        reg.setdefault("_meta", {})["harvested"] = now.date().isoformat()
+    else:
+        print("[harvest] incomplete; keeping previous harvest date to retry next run", file=sys.stderr)
     return added
 
 
