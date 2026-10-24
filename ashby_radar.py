@@ -18,18 +18,22 @@ from __future__ import annotations
 import argparse
 import gzip
 import html
+import http.client
 import json
 import os
 import re
 import smtplib
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -184,22 +188,44 @@ def read_response(response) -> bytes:
     return body
 
 
-def _get(url: str, timeout: int = 120, tries: int = 4) -> bytes | None:
-    import time
-    for i in range(tries):
+def request(url: str, timeout: int = 30, tries: int = 2, parse=None):
+    """GET with gzip and bounded retries, including validation of the full body."""
+    for attempt in range(tries):
         try:
             headers = {**UA, "Accept-Encoding": "gzip"}
             with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=timeout) as r:
-                return read_response(r)
+                body = read_response(r)
+            return parse(body) if parse else body
         except urllib.error.HTTPError as e:
-            if e.code == 404:
-                return None
+            if e.code not in (408, 429) and not 500 <= e.code < 600:
+                raise
             err = e
-        except Exception as e:  # timeouts, resets
+        except (OSError, EOFError, ValueError, zlib.error, http.client.HTTPException) as e:
             err = e
-        time.sleep(5 * (i + 1))
-    print(f"[harvest] giving up on {url[:90]}: {err}", file=sys.stderr)
-    return None
+        if attempt + 1 == tries:
+            raise err
+        delay = 5 * (attempt + 1)
+        retry_after = (getattr(err, "headers", None) or {}).get("Retry-After")
+        if retry_after:
+            try:
+                delay = max(0, float(retry_after))
+            except ValueError:
+                try:
+                    delay = max(0, (parsedate_to_datetime(retry_after)
+                                    - datetime.now(timezone.utc)).total_seconds())
+                except (TypeError, ValueError, OverflowError):
+                    pass
+        if delay > 60:       # leave a long server-requested pause for the next run
+            raise err
+        time.sleep(delay)
+
+
+def _get(url: str, timeout: int = 120, tries: int = 4, parse=None):
+    try:
+        return request(url, timeout=timeout, tries=tries, parse=parse)
+    except Exception as e:
+        print(f"[harvest] giving up on {url[:90]}: {e}", file=sys.stderr)
+        return None
 
 
 def harvest_common_crawl(n_crawls: int) -> set[str]:
@@ -282,16 +308,21 @@ def has_germany(jobs: list[dict], cfg: dict) -> bool:
 
 # ---------------------------------------------------------------- fetching
 def fetch_board(slug: str) -> tuple[str, list[dict] | None, str | None]:
-    req = urllib.request.Request(API.format(slug=urllib.parse.quote(slug)),
-                                 headers={**UA, "Accept-Encoding": "gzip"})
+    def parse(body):
+        data = json.loads(body)
+        if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
+            raise ValueError("response has no jobs list")
+        if not all(isinstance(job, dict) for job in data["jobs"]):
+            raise ValueError("response contains an invalid job")
+        return data["jobs"]
+
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            data = json.loads(read_response(r))
-        return slug, data.get("jobs", []), None
+        jobs = request(API.format(slug=urllib.parse.quote(slug, safe="")), parse=parse)
+        return slug, jobs, None
     except urllib.error.HTTPError as e:
         return slug, None, f"HTTP {e.code}"
     except Exception as e:
-        return slug, None, type(e).__name__
+        return slug, None, f"{type(e).__name__}: {e}"
 
 
 # ---------------------------------------------------------------- filtering
@@ -592,8 +623,8 @@ def main(argv=None) -> int:
                 if jobs is None:
                     if slug.lower() in own:
                         bad.append((slug, err))
-                    elif slug in reg and err and err.startswith("HTTP 4"):
-                        reg[slug] = {"de": False, "checked": now.date().isoformat()}
+                    elif slug in reg and err == "HTTP 404":
+                        reg[slug] = {**reg[slug], "de": False}
                 else:
                     boards[slug] = jobs
                     if slug in reg or slug.lower() not in own:
