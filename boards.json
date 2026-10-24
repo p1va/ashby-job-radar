@@ -1,0 +1,112 @@
+{
+"billie": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"black-forest-labs": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"buena": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"choco": {
+"checked": "2026-10-24",
+"de": false,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"deepl": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"elevenlabs": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"enpal": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"forto": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"heyjobs": {
+"checked": "2026-10-24",
+"de": false,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"knowunity": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"langdock": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"langfuse": {
+"checked": "2026-10-24",
+"de": false,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"n8n": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"nelly": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-23T07:27:18.044204+00:00"
+},
+"openai": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"parloa": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"perplexity": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"pliant": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"proxima-fusion": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"synthesia": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"tacto": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+},
+"upvest": {
+"checked": "2026-10-24",
+"de": true,
+"eligible_since": "2026-10-24T09:33:26.572393+00:00"
+}
+}

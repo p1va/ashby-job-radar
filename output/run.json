@@ -1,0 +1,13 @@
+{
+ "boards_failed": 0,
+ "boards_not_found": 20,
+ "boards_ok": 22,
+ "boards_requested": 42,
+ "delivery": "disabled",
+ "failures": [],
+ "generated_at": "2026-10-24T12:33:26.572393+00:00",
+ "jobs_total": 1583,
+ "matches": 1,
+ "matches_total": 1,
+ "pending_matches": 1
+}
