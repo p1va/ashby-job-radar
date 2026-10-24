@@ -1,8 +1,6 @@
 # Ashby Job Radar — Sat 24 Oct 2026
 
-9 new roles · newest first · 1854 companies checked
-
-_Company discovery was incomplete; known company boards were still checked._
+9 new roles · newest first · 446 companies checked
 
 ### [Founding GTM Lead, UK](https://jobs.ashbyhq.com/clera/1021567f-b77c-45ee-9ab2-6ffb58d576b5) — Clera
 📍 Berlin · Office · 💶 Salary not listed · posted 23 Oct
