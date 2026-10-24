@@ -24,6 +24,7 @@ import os
 import re
 import smtplib
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.parse
@@ -119,9 +120,27 @@ def load_slugs_notion(cfg: dict) -> list[str] | None:
 
 def load_json(path: Path, default):
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError):
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
         return default
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        raise ValueError(f"Cannot read {path}; repair or restore this state file before running again") from e
+    if not isinstance(data, dict):
+        raise ValueError(f"Expected a JSON object in {path}; existing state was not replaced")
+    return data
+
+
+def write_json(path: Path, data: dict, indent: int = 1):
+    fd, name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=indent, sort_keys=True)
+            f.write("\n")
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(name, path)
+    finally:
+        Path(name).unlink(missing_ok=True)
 
 
 # ---------------------------------------------------------------- discovery
@@ -614,6 +633,8 @@ def main(argv=None) -> int:
     cfg = load_config(args.config)
     now = datetime.now(timezone.utc)
     slugs = load_slugs(args.companies)
+    reg = load_json(args.registry, {})
+    seen = load_json(args.seen, {})
     if not args.fixtures:
         try:
             notion = load_slugs_notion(cfg)
@@ -635,7 +656,6 @@ def main(argv=None) -> int:
             slugs += sorted(new_slugs)
             own |= {s.lower() for s in new_slugs}
 
-    reg = load_json(args.registry, {})
     harvested = 0
     if not args.fixtures:
         harvested = update_registry(reg, cfg, now)
@@ -662,9 +682,8 @@ def main(argv=None) -> int:
                     if slug in reg or slug.lower() not in own:
                         reg[slug] = {"de": has_germany(jobs, cfg),
                                      "checked": now.date().isoformat()}
-        args.registry.write_text(json.dumps(reg, indent=0, sort_keys=True), encoding="utf-8")
+        write_json(args.registry, reg, indent=0)
 
-    seen = load_json(args.seen, {})
     picks = curate(boards, cfg, seen, now)
     stats = {"boards_ok": len(boards), "bad_slugs": bad, "new_slugs": new_slugs,
              "jobs_total": sum(len(j) for j in boards.values()),
@@ -687,7 +706,7 @@ def main(argv=None) -> int:
         cutoff = (now - timedelta(days=cfg.get("forget_after_days", 60))).date().isoformat()
         seen = {k: v for k, v in seen.items() if k == "_last_run" or v >= cutoff}
         seen["_last_run"] = now.isoformat()
-        args.seen.write_text(json.dumps(seen, indent=1, sort_keys=True), encoding="utf-8")
+        write_json(args.seen, seen)
 
     print(md)
     if not args.no_email and (stats["n_new"] or cfg.get("email_when_empty")):
