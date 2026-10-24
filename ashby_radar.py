@@ -617,7 +617,9 @@ def send_email(subject: str, html_body: str, text_body: str) -> bool:
     port = int(os.environ.get("SMTP_PORT", "465"))
     with smtplib.SMTP_SSL(host, port, timeout=30) as s:
         s.login(user, pw)
-        s.sendmail(user, [a.strip() for a in to.split(",")], msg.as_string())
+        refused = s.sendmail(user, [a.strip() for a in to.split(",")], msg.as_string())
+        if refused:
+            raise smtplib.SMTPRecipientsRefused(refused)
     return True
 
 
@@ -718,23 +720,36 @@ def main(argv=None) -> int:
     print(f"[fetch] {len(boards)}/{stats['boards_requested']} boards fetched · "
           f"{stats['jobs_total']} jobs · {len(failures)} failures", file=sys.stderr)
 
-    if not args.dry_run and boards:
-        for j in picks:
-            seen.setdefault(j.get("id") or j["jobUrl"], now.date().isoformat())
-        cutoff = (now - timedelta(days=cfg.get("forget_after_days", 60))).date().isoformat()
-        seen = {k: v for k, v in seen.items() if k == "_last_run" or v >= cutoff}
-        seen["_last_run"] = now.isoformat()
-        write_json(args.seen, seen)
-
     print(md)
+    status = 0 if boards else 1
+    delivery = "disabled" if args.no_email else "not needed"
+    if not boards:
+        delivery = "not attempted"
     if boards and not args.no_email and (stats["n_new"] or cfg.get("email_when_empty")):
         subj = f"Ashby radar: {stats['n_new']} new roles ({now:%d %b})"
-        if send_email(subj, page, md):
-            print("Email sent.")
+        try:
+            if send_email(subj, page, md):
+                delivery = "sent"
+                for j in picks:
+                    seen.setdefault(j.get("id") or j["jobUrl"], now.date().isoformat())
+                cutoff = (now - timedelta(days=cfg.get("forget_after_days", 60))).date().isoformat()
+                seen = {k: v for k, v in seen.items() if k == "_last_run" or v >= cutoff}
+                seen["_last_run"] = now.isoformat()
+                write_json(args.seen, seen)
+                print("Email sent.")
+            else:
+                delivery, status = "not configured", 1
+                print("[email] SMTP is not configured; jobs remain unsent", file=sys.stderr)
+        except Exception as e:
+            delivery = "sent; state save failed" if delivery == "sent" else "failed"
+            status = 1
+            report["delivery_error"] = f"{type(e).__name__}: {e}"
+            print(f"[email] {delivery}: {e}", file=sys.stderr)
+    report["delivery"] = delivery
+    write_json(args.out / "run.json", report)
     if not boards:
         print("[fetch] no board could be fetched; notification progress was preserved", file=sys.stderr)
-        return 1
-    return 0
+    return status
 
 
 if __name__ == "__main__":

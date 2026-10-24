@@ -18,7 +18,7 @@ A short list of roles **posted since yesterday's email**, newest first, with eve
 - 💶 **Salary**, when the company shares it
 - 🇩🇪 **German required**, flagged when the ad asks for fluent or native German, or is written in German
 
-You only ever see a job **once**, and never anything older than the previous email. If nothing new came out, you get no email.
+Already emailed jobs are skipped. If nothing new came out, you get no email.
 
 ## Which jobs count
 
@@ -87,3 +87,8 @@ python3 ashby_radar.py --dry-run     # write output/ only; no email or input/sta
 ```
 
 Only needs Python 3.9+. No packages to install.
+
+`--no-email` refreshes the company list and registry while leaving delivery history
+untouched. `--dry-run` saves only files under `output/`. Jobs are marked as sent
+only after email delivery succeeds. `output/run.json` records fetch failures and
+delivery status, including skipped or failed delivery.
