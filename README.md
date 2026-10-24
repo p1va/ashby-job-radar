@@ -42,6 +42,9 @@ There are three sources, and they all feed the same daily check:
 
 Jobs always come straight from **Ashby's official public job API**. No page scraping.
 
+Completed Common Crawl snapshots are remembered in `boards.json`, so retries can
+skip finished crawls while continuing any that failed.
+
 ## Setup (≈10 min, free)
 
 1. **Make a private GitHub repo** and upload these files. Keep `.github/workflows/daily.yml`.

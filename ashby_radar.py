@@ -247,8 +247,9 @@ def _get(url: str, timeout: int = 60, tries: int = 2, parse=None):
         return None
 
 
-def harvest_common_crawl(n_crawls: int) -> tuple[set[str], bool]:
-    """Return found slugs and whether every requested index page was valid."""
+def harvest_common_crawl(n_crawls: int, completed=()) -> tuple[set[str], bool, set[str]]:
+    """Return found slugs, completion, and crawl IDs whose pages were all valid."""
+    finished = set(completed)
     def parse_crawls(body):
         data = json.loads(body)
         if not isinstance(data, list) or not data:
@@ -285,10 +286,13 @@ def harvest_common_crawl(n_crawls: int) -> tuple[set[str], bool]:
 
     crawls = _get(f"{CC_INDEX}/collinfo.json", timeout=60, parse=parse_crawls)
     if crawls is None:
-        return set(), False
+        return set(), False, finished
     slugs: set[str] = set()
     complete = True
     for cid in crawls:
+        if cid in finished:
+            print(f"[harvest] {cid}: already complete", file=sys.stderr)
+            continue
         base = f"{CC_INDEX}/{cid}-index?url=jobs.ashbyhq.com/*&output=json&fl=url"
         time.sleep(2)        # keep Common Crawl requests serial and paced
         info = _get(base + "&showNumPages=true", timeout=60, parse=parse_pages)
@@ -308,7 +312,9 @@ def harvest_common_crawl(n_crawls: int) -> tuple[set[str], bool]:
             valid += 1
         print(f"[harvest] {cid}: {valid}/{pages} valid pages, +{len(slugs) - before} companies",
               file=sys.stderr)
-    return slugs, complete
+        if valid == pages:
+            finished.add(cid)
+    return slugs, complete, finished
 
 
 def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
@@ -319,7 +325,8 @@ def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
     last = reg.get("_meta", {}).get("harvested")
     if last and (now.date() - datetime.fromisoformat(last).date()).days < hcfg.get("every_days", 7):
         return 0
-    found, complete = harvest_common_crawl(hcfg.get("crawls", 3))
+    completed = reg.get("_meta", {}).get("completed_crawls", [])
+    found, complete, finished = harvest_common_crawl(hcfg.get("crawls", 3), completed)
     known = {k.lower() for k in reg if k != "_meta"}
     added = 0
     for s in found:
@@ -327,6 +334,8 @@ def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
             reg[s] = {"de": None}
             known.add(s.lower())
             added += 1
+    if finished:
+        reg.setdefault("_meta", {})["completed_crawls"] = sorted(finished)
     if complete:
         reg.setdefault("_meta", {})["harvested"] = now.date().isoformat()
     else:
