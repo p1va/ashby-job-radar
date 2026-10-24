@@ -495,7 +495,7 @@ def in_focus(loc: str, style: str, cfg: dict) -> bool:
 
 
 def publish_cutoff(seen: dict, cfg: dict, now: datetime, board=None) -> datetime:
-    """new_only: jobs published since the previous run (minus a small buffer).
+    """new_only: recover unsent board coverage within sent-history retention.
     week: jobs published in the last lookback_days."""
     if cfg.get("digest_mode", "new_only") == "new_only":
         last = parse_date(seen.get("_last_run"))
@@ -508,7 +508,7 @@ def publish_cutoff(seen: dict, cfg: dict, now: datetime, board=None) -> datetime
                 since = checked - buffer if checked else None
             if since:
                 cutoff = min(cutoff, since)
-        return cutoff
+        return max(cutoff, now - timedelta(days=cfg.get("forget_after_days", 60)))
     return now - timedelta(days=cfg["lookback_days"])
 
 
