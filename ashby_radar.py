@@ -543,8 +543,11 @@ def render_md(picks, now, stats) -> str:
               f"{len(picks)} roles in Germany posted in the last {stats['days']} days "
               f"({stats['n_new']} 🆕 since last email) · newest first · ") +
              f"{stats['boards_ok']} companies checked", ""]
+    if stats.get("boards_failed"):
+        lines += [f"_{stats['boards_failed']} boards could not be fetched; see run.json for details._", ""]
     if not picks:
-        lines.append("_Nothing new today._")
+        lines.append("_Nothing new today._" if stats["boards_ok"] else
+                     "_No boards could be fetched; new jobs could not be checked._")
     for j in picks:
         new = "🆕 " if j.get("_new") and stats["mode"] == "week" else ""
         lines.append(f"### {new}[{j['title']}]({j['jobUrl']}) — {company_name(j['_slug'])}")
@@ -585,7 +588,8 @@ def render_html(picks, now, stats) -> str:
             f' &nbsp;💶 {e(j["_comp"] or "Salary not listed")}</div>'
             f'<div style="color:#9ca3af;font-size:12px">posted {j["_pub"]:%a %d %b}</div>'
             f'{german}</td></tr>')
-    body = "".join(rows) or '<tr><td style="color:#6b7280">Nothing new today.</td></tr>'
+    empty = "Nothing new today." if stats["boards_ok"] else "No boards could be fetched; new jobs could not be checked."
+    body = "".join(rows) or f'<tr><td style="color:#6b7280">{empty}</td></tr>'
     foot = ""
     if stats["bad_slugs"]:
         foot = ('<p style="color:#9ca3af;font-size:12px">Boards that failed: '
@@ -668,7 +672,7 @@ def main(argv=None) -> int:
               f"checking {len(slugs)} listed + {len(extra)} crawled", file=sys.stderr)
         slugs = slugs + extra
 
-    boards, bad = {}, []
+    boards, bad, failures = {}, [], []
     if args.fixtures:
         for p in sorted(args.fixtures.glob("*.json")):
             boards[p.stem] = json.loads(p.read_text())["jobs"]
@@ -676,6 +680,7 @@ def main(argv=None) -> int:
         with ThreadPoolExecutor(max_workers=cfg.get("workers", 16)) as pool:
             for slug, jobs, err in pool.map(fetch_board, slugs):
                 if jobs is None:
+                    failures.append((slug, err))
                     if slug.lower() in own:
                         bad.append((slug, err))
                     elif slug in reg and err == "HTTP 404":
@@ -690,6 +695,7 @@ def main(argv=None) -> int:
 
     picks = curate(boards, cfg, seen, now)
     stats = {"boards_ok": len(boards), "bad_slugs": bad, "new_slugs": new_slugs,
+             "boards_requested": len(boards) + len(failures), "boards_failed": len(failures),
              "jobs_total": sum(len(j) for j in boards.values()),
              "days": cfg["lookback_days"], "n_new": sum(1 for j in picks if j.get("_new")),
              "mode": cfg.get("digest_mode", "new_only")}
@@ -704,7 +710,15 @@ def main(argv=None) -> int:
           "german_required": j["_german"], "compensation": j["_comp"]} for j in picks],
         indent=2, ensure_ascii=False), encoding="utf-8")
 
-    if not args.dry_run:
+    report = {"generated_at": now.isoformat(), "boards_requested": stats["boards_requested"],
+              "boards_ok": len(boards), "boards_failed": len(failures),
+              "jobs_total": stats["jobs_total"], "matches": len(picks),
+              "failures": [{"company": slug, "error": err} for slug, err in failures]}
+    write_json(args.out / "run.json", report)
+    print(f"[fetch] {len(boards)}/{stats['boards_requested']} boards fetched · "
+          f"{stats['jobs_total']} jobs · {len(failures)} failures", file=sys.stderr)
+
+    if not args.dry_run and boards:
         for j in picks:
             seen.setdefault(j.get("id") or j["jobUrl"], now.date().isoformat())
         cutoff = (now - timedelta(days=cfg.get("forget_after_days", 60))).date().isoformat()
@@ -713,10 +727,13 @@ def main(argv=None) -> int:
         write_json(args.seen, seen)
 
     print(md)
-    if not args.no_email and (stats["n_new"] or cfg.get("email_when_empty")):
+    if boards and not args.no_email and (stats["n_new"] or cfg.get("email_when_empty")):
         subj = f"Ashby radar: {stats['n_new']} new roles ({now:%d %b})"
         if send_email(subj, page, md):
             print("Email sent.")
+    if not boards:
+        print("[fetch] no board could be fetched; notification progress was preserved", file=sys.stderr)
+        return 1
     return 0
 
 
