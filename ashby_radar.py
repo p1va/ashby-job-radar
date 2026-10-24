@@ -579,8 +579,6 @@ def render_md(picks, now, stats) -> str:
              f"{stats['boards_ok']} companies checked", ""]
     if stats.get("boards_failed"):
         lines += [f"_Company boards unavailable: {stats['boards_failed']}. Results may be incomplete._", ""]
-    if stats.get("harvest_incomplete"):
-        lines += ["_Company discovery was incomplete; known company boards were still checked._", ""]
     if not picks:
         lines.append("_Nothing new today._" if stats["boards_ok"] else
                      "_No boards could be fetched; new jobs could not be checked._")
@@ -633,8 +631,6 @@ def render_html(picks, now, stats) -> str:
                 + e(", ".join(s for s, _ in stats["bad_slugs"])) + "</p>")
     warning = (f'<p style="color:#6b7280">Company boards unavailable: {stats["boards_failed"]}. '
                'Results may be incomplete.</p>') if stats.get("boards_failed") else ""
-    if stats.get("harvest_incomplete"):
-        warning += '<p style="color:#6b7280">Company discovery was incomplete; known company boards were still checked.</p>'
     return (f'<div style="font-family:-apple-system,Segoe UI,sans-serif;max-width:640px">'
             f'<h2 style="margin:0">Ashby Job Radar</h2>'
             f'<p style="color:#6b7280;margin:4px 0 12px">{now:%A %d %B %Y} · '
