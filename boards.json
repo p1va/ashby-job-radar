@@ -1,53 +1,1787 @@
 {
+"0g": {
+"de": null
+},
+"0x": {
+"de": null
+},
+"115ventures": {
+"de": null
+},
+"1password": {
+"de": null
+},
+"1x": {
+"de": null
+},
+"3e": {
+"de": null
+},
+"9-mothers": {
+"de": null
+},
+"9fin": {
+"de": null
+},
+"Abridge": {
+"de": null
+},
+"Adaptive": {
+"de": null
+},
+"Addi": {
+"de": null
+},
+"AeroVect": {
+"de": null
+},
+"Anthos Capital": {
+"de": null
+},
+"Arlo": {
+"de": null
+},
+"Bifrost": {
+"de": null
+},
+"Blossom-Health": {
+"de": null
+},
+"CUBE": {
+"de": null
+},
+"ChartHop": {
+"de": null
+},
+"Citizen": {
+"de": null
+},
+"CodaMetrix": {
+"de": null
+},
+"Cohere": {
+"de": null
+},
+"Commure": {
+"de": null
+},
+"Crusoe": {
+"de": null
+},
+"Deel": {
+"de": null
+},
+"Directive": {
+"de": null
+},
+"Dominion Dynamics": {
+"de": null
+},
+"Doppel": {
+"de": null
+},
+"DoubleZero": {
+"de": null
+},
+"Epistemix": {
+"de": null
+},
+"Eragon": {
+"de": null
+},
+"Etched": {
+"de": null
+},
+"Evvy": {
+"de": null
+},
+"FINNY": {
+"de": null
+},
+"FamiliarMachines": {
+"de": null
+},
+"FleetWorks": {
+"de": null
+},
+"FloatMe": {
+"de": null
+},
+"Flock Safety": {
+"de": null
+},
+"Formance": {
+"de": null
+},
+"Fort Health": {
+"de": null
+},
+"Foundational Industries": {
+"de": null
+},
+"Fourier": {
+"de": null
+},
+"Fundamental": {
+"de": null
+},
+"Fuse": {
+"de": null
+},
+"G2": {
+"de": null
+},
+"GPTZero": {
+"de": null
+},
+"Gardens": {
+"de": null
+},
+"GigaML": {
+"de": null
+},
+"GoVenti": {
+"de": null
+},
+"GravityClimate": {
+"de": null
+},
+"HUMAN": {
+"de": null
+},
+"Harmonic": {
+"de": null
+},
+"Headway": {
+"de": null
+},
+"HighlightTA": {
+"de": null
+},
+"Hiive": {
+"de": null
+},
+"Hyperliquid Labs": {
+"de": null
+},
+"Hyperscience": {
+"de": null
+},
+"Inferact": {
+"de": null
+},
+"Intellistack": {
+"de": null
+},
+"Irregular": {
+"de": null
+},
+"Jasper AI": {
+"de": null
+},
+"Kobalt Labs": {
+"de": null
+},
+"Kustomer": {
+"de": null
+},
+"Lapel": {
+"de": null
+},
+"Levelpath": {
+"de": null
+},
+"Lime": {
+"de": null
+},
+"Local Infusion": {
+"de": null
+},
+"Luminovo": {
+"de": null
+},
+"M-KOPA": {
+"de": null
+},
+"MUBI": {
+"de": null
+},
+"Merge Labs": {
+"de": null
+},
+"MioDottore": {
+"de": null
+},
+"Molg": {
+"de": null
+},
+"Mollie": {
+"de": null
+},
+"Neuromorphic-Labs": {
+"de": null
+},
+"Nivoda": {
+"de": null
+},
+"NormalComputing": {
+"de": null
+},
+"NorthwoodSpace": {
+"de": null
+},
+"Notion": {
+"de": null
+},
+"Ohr": {
+"de": null
+},
+"Opal": {
+"de": null
+},
+"OpenSea": {
+"de": null
+},
+"OurRitual": {
+"de": null
+},
+"Owner": {
+"de": null
+},
+"PRISM": {
+"de": null
+},
+"Paradigm": {
+"de": null
+},
+"PaveBank": {
+"de": null
+},
+"Peec": {
+"de": null
+},
+"Perk": {
+"de": null
+},
+"Plaud": {
+"de": null
+},
+"Playlab": {
+"de": null
+},
+"Pocket Worlds": {
+"de": null
+},
+"Profound": {
+"de": null
+},
+"Promise": {
+"de": null
+},
+"Reaktor": {
+"de": null
+},
+"Redesign Health": {
+"de": null
+},
+"Redis": {
+"de": null
+},
+"Relling": {
+"de": null
+},
+"Renuity": {
+"de": null
+},
+"Replicant": {
+"de": null
+},
+"Replit": {
+"de": null
+},
+"Revecore": {
+"de": null
+},
+"Ricursive Intelligence": {
+"de": null
+},
+"Runbook": {
+"de": null
+},
+"SageOx": {
+"de": null
+},
+"Scale Army Careers": {
+"de": null
+},
+"Second-Front-Systems": {
+"de": null
+},
+"Serval": {
+"de": null
+},
+"Sierra": {
+"de": null
+},
+"Silver": {
+"de": null
+},
+"SkyLink": {
+"de": null
+},
+"Solvd": {
+"de": null
+},
+"Solvea": {
+"de": null
+},
+"Sondermind": {
+"de": null
+},
+"Spoton": {
+"de": null
+},
+"StandInsurance": {
+"de": null
+},
+"StandardBots": {
+"de": null
+},
+"Stepful": {
+"de": null
+},
+"SunnyData": {
+"de": null
+},
+"Superhuman Platform Inc": {
+"de": null
+},
+"Talos-Trading": {
+"de": null
+},
+"TerraFirma-Inc": {
+"de": null
+},
+"The-Flex": {
+"de": null
+},
+"Toku": {
+"de": null
+},
+"Tools for Humanity": {
+"de": null
+},
+"Transfr": {
+"de": null
+},
+"Unlearn": {
+"de": null
+},
+"Valon": {
+"de": null
+},
+"Verne Robotics": {
+"de": null
+},
+"Vibrant Planet": {
+"de": null
+},
+"Vogel": {
+"de": null
+},
+"Voya Energy": {
+"de": null
+},
+"WRITER": {
+"de": null
+},
+"Watershed": {
+"de": null
+},
+"Wonderful": {
+"de": null
+},
+"Zania": {
+"de": null
+},
+"Zip Security": {
+"de": null
+},
+"_meta": {
+"completed_crawls": [
+"CC-MAIN-2026-43"
+],
+"harvest_incomplete": true
+},
+"a-team": {
+"de": null
+},
+"a37": {
+"de": null
+},
+"aboon": {
+"de": null
+},
+"abound": {
+"de": null
+},
+"absentia-labs": {
+"de": null
+},
+"acorns": {
+"de": null
+},
+"acquisition": {
+"de": null
+},
+"adaption": {
+"de": null
+},
+"adaptive-innovations": {
+"de": null
+},
+"adapty-io": {
+"de": null
+},
+"adjoe": {
+"de": null
+},
+"adonis": {
+"de": null
+},
+"agent": {
+"de": null
+},
+"agi-inc": {
+"de": null
+},
+"agiholdings": {
+"de": null
+},
+"aim-solutions": {
+"de": null
+},
+"airapps": {
+"de": null
+},
+"airwallex": {
+"de": null
+},
+"alan": {
+"de": null
+},
+"alembic": {
+"de": null
+},
+"aleph": {
+"de": null
+},
+"allarahealth": {
+"de": null
+},
+"allen-control-systems": {
+"de": null
+},
+"alleviatehealth": {
+"de": null
+},
+"allium": {
+"de": null
+},
+"allspice": {
+"de": null
+},
+"almetra": {
+"de": null
+},
+"alta-ares": {
+"de": null
+},
+"altimate": {
+"de": null
+},
+"altitude": {
+"de": null
+},
+"altura": {
+"de": null
+},
+"ambiencehealthcare": {
+"de": null
+},
+"amboss": {
+"de": null
+},
+"amenitiz": {
+"de": null
+},
+"american-turbines": {
+"de": null
+},
+"ami": {
+"de": null
+},
+"amo": {
+"de": null
+},
+"ampeers": {
+"de": null
+},
+"andela": {
+"de": null
+},
+"andromeda": {
+"de": null
+},
+"ankar": {
+"de": null
+},
+"anrok": {
+"de": null
+},
+"answerthis": {
+"de": null
+},
+"antares": {
+"de": null
+},
+"anterior": {
+"de": null
+},
+"anthrogen": {
+"de": null
+},
+"antithesis": {
+"de": null
+},
+"anyscale": {
+"de": null
+},
+"anysignal": {
+"de": null
+},
+"apex-technology-inc": {
+"de": null
+},
+"apify": {
+"de": null
+},
+"apolink": {
+"de": null
+},
+"apollo-graphql": {
+"de": null
+},
+"applied": {
+"de": null
+},
+"april": {
+"de": null
+},
+"aquark": {
+"de": null
+},
+"aquila": {
+"de": null
+},
+"arcade-ai": {
+"de": null
+},
+"arclight-consulting": {
+"de": null
+},
+"arcturus": {
+"de": null
+},
+"arena": {
+"de": null
+},
+"arena-magazine": {
+"de": null
+},
+"arketa": {
+"de": null
+},
+"armadin": {
+"de": null
+},
+"arqu": {
+"de": null
+},
+"array-behavioral-care": {
+"de": null
+},
+"arrive": {
+"de": null
+},
+"artemis": {
+"de": null
+},
+"ashby": {
+"de": null
+},
+"aslan": {
+"de": null
+},
+"aspora": {
+"de": null
+},
+"assembledhq": {
+"de": null
+},
+"assorthealth": {
+"de": null
+},
+"assured": {
+"de": null
+},
+"astera": {
+"de": null
+},
+"astra": {
+"de": null
+},
+"astro-mechanica": {
+"de": null
+},
+"astronomer": {
+"de": null
+},
+"ataraxis-ai": {
+"de": null
+},
+"atg": {
+"de": null
+},
+"atlan": {
+"de": null
+},
+"atob": {
+"de": null
+},
+"atominvest": {
+"de": null
+},
+"atria": {
+"de": null
+},
+"atticus": {
+"de": null
+},
+"attio": {
+"de": null
+},
+"audiohook": {
+"de": null
+},
+"augur": {
+"de": null
+},
+"august-health": {
+"de": null
+},
+"aureliussystems": {
+"de": null
+},
+"auror": {
+"de": null
+},
+"aurorasolar": {
+"de": null
+},
+"ava-labs": {
+"de": null
+},
+"avantos": {
+"de": null
+},
+"avoca": {
+"de": null
+},
+"avra": {
+"de": null
+},
+"away": {
+"de": null
+},
+"axion": {
+"de": null
+},
+"axle-careers": {
+"de": null
+},
+"backmarket": {
+"de": null
+},
+"bankjoy": {
+"de": null
+},
+"barkbus": {
+"de": null
+},
+"barnes": {
+"de": null
+},
+"base": {
+"de": null
+},
+"base-power": {
+"de": null
+},
+"baseten": {
+"de": null
+},
+"basiccapital": {
+"de": null
+},
+"basis-ai": {
+"de": null
+},
+"basis-research": {
+"de": null
+},
+"beaconsoftware": {
+"de": null
+},
+"beam-up": {
+"de": null
+},
+"beamimpact": {
+"de": null
+},
+"bedrock-robotics": {
+"de": null
+},
+"believer": {
+"de": null
+},
+"bem": {
+"de": null
+},
+"benchling": {
+"de": null
+},
+"benevity": {
+"de": null
+},
+"beside": {
+"de": null
+},
+"bespokelabs": {
+"de": null
+},
+"bestow": {
+"de": null
+},
+"better-mortgage": {
+"de": null
+},
+"bettermile": {
+"de": null
+},
+"betterup": {
+"de": null
+},
+"bicara-therapeutics": {
+"de": null
+},
 "billie": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"billups": {
+"de": null
+},
+"binti": {
+"de": null
+},
+"bio": {
+"de": null
+},
+"bioptimizers": {
+"de": null
+},
+"bite": {
+"de": null
+},
+"bjakcareer": {
+"de": null
 },
 "black-forest-labs": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"blacksemiconductor": {
+"de": null
+},
+"blacksmith": {
+"de": null
+},
+"blitzy": {
+"de": null
+},
+"block-labs": {
+"de": null
+},
+"blocktech": {
+"de": null
+},
+"blue-energy": {
+"de": null
+},
+"blueberrypediatrics": {
+"de": null
+},
+"blumen": {
+"de": null
+},
+"boon": {
+"de": null
+},
+"braintrust": {
+"de": null
+},
+"bravehealth": {
+"de": null
+},
+"brellium": {
+"de": null
+},
+"brightwheel": {
+"de": null
+},
+"broccoli": {
+"de": null
+},
+"brooklyn-health": {
+"de": null
+},
 "buena": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"butterflymx": {
+"de": null
+},
+"callosum": {
+"de": null
+},
+"camber": {
+"de": null
+},
+"cambio": {
+"de": null
+},
+"cambium": {
+"de": null
+},
+"camunda": {
+"de": null
+},
+"candidhealth": {
+"de": null
+},
+"cantina": {
+"de": null
+},
+"canvas-medical": {
+"de": null
+},
+"cape": {
+"de": null
+},
+"capsule": {
+"de": null
+},
+"cardboard": {
+"de": null
+},
+"cardless": {
+"de": null
+},
+"careerstrengo": {
+"de": null
+},
+"cartesia": {
+"de": null
+},
+"caruso": {
+"de": null
+},
+"catena": {
+"de": null
+},
+"causal": {
+"de": null
+},
+"centari": {
+"de": null
+},
+"centerfield": {
+"de": null
+},
+"centivo": {
+"de": null
+},
+"cerebras": {
+"de": null
+},
+"certifyos": {
+"de": null
+},
+"chaidiscovery": {
+"de": null
+},
+"chainalysis-careers": {
+"de": null
+},
+"character": {
+"de": null
+},
+"charge-robotics": {
+"de": null
+},
+"check-technologies": {
+"de": null
+},
+"checkly": {
+"de": null
 },
 "choco": {
 "checked": "2026-10-24",
 "de": false,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"civilgrid": {
+"de": null
+},
+"clera": {
+"de": null
+},
+"clickhouse": {
+"de": null
+},
+"clickup": {
+"de": null
+},
+"clipboard": {
+"de": null
+},
+"clubhouse": {
+"de": null
+},
+"cobot": {
+"de": null
+},
+"cocodelivery": {
+"de": null
+},
+"codat": {
+"de": null
+},
+"code-metal": {
+"de": null
+},
+"coderabbit": {
+"de": null
+},
+"codeway": {
+"de": null
+},
+"coefficientgiving": {
+"de": null
+},
+"cogent-security": {
+"de": null
+},
+"cognition": {
+"de": null
+},
+"cointracker": {
+"de": null
+},
+"collinear-ai": {
+"de": null
+},
+"complir": {
+"de": null
+},
+"composio": {
+"de": null
+},
+"compoundcontentstudio": {
+"de": null
+},
+"conduit-health": {
+"de": null
+},
+"consensys": {
+"de": null
+},
+"constellation": {
+"de": null
+},
+"constructor": {
+"de": null
+},
+"conversion": {
+"de": null
+},
+"convex-dev": {
+"de": null
+},
+"convey": {
+"de": null
+},
+"corridor": {
+"de": null
+},
+"cowboyspace": {
+"de": null
+},
+"cradlebio": {
+"de": null
+},
+"creatoriq": {
+"de": null
+},
+"critical-energy": {
+"de": null
+},
+"criticalloop": {
+"de": null
+},
+"crosby": {
+"de": null
+},
+"cruxclimate": {
+"de": null
+},
+"cryptio": {
+"de": null
+},
+"cubic3": {
+"de": null
+},
+"cursor": {
+"de": null
+},
+"cuspai": {
+"de": null
+},
+"cylake-inc": {
+"de": null
+},
+"cyvl": {
+"de": null
+},
+"dandelion": {
+"de": null
+},
+"dandy": {
+"de": null
+},
+"darkroom": {
+"de": null
+},
+"datafold": {
+"de": null
+},
+"david-ai": {
+"de": null
+},
+"ddn": {
+"de": null
+},
+"decagon": {
+"de": null
+},
+"dedalus-labs": {
+"de": null
+},
 "deepl": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"deeter-analytics": {
+"de": null
+},
+"deliveroo": {
+"de": null
+},
+"demandbase": {
+"de": null
+},
+"depthfirst": {
+"de": null
+},
+"dewarmte": {
+"de": null
+},
+"dfd001cc-f1d3-494c-a350-b14cfef0f0e1": {
+"de": null
+},
+"distill": {
+"de": null
+},
+"distributed-spectrum": {
+"de": null
+},
+"distyl": {
+"de": null
+},
+"ditto": {
+"de": null
+},
+"docker": {
+"de": null
+},
+"doss": {
+"de": null
+},
+"double": {
+"de": null
+},
+"doubleblindbio": {
+"de": null
+},
+"drata": {
+"de": null
+},
+"dreamthree": {
+"de": null
+},
+"dualentry": {
+"de": null
+},
+"duck-duck-go": {
+"de": null
+},
+"duet": {
+"de": null
+},
+"dyna-robotics": {
+"de": null
+},
+"dynamic-creatures": {
+"de": null
+},
+"eagle": {
+"de": null
+},
+"edia": {
+"de": null
+},
+"edisyl": {
+"de": null
+},
+"edra": {
+"de": null
+},
+"edwin": {
+"de": null
+},
+"eightsleep": {
+"de": null
+},
+"ekarobotics": {
+"de": null
+},
+"ekho": {
+"de": null
+},
+"ekumenlabs": {
+"de": null
+},
+"electricplant": {
+"de": null
+},
+"eleos": {
+"de": null
 },
 "elevenlabs": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"eliseai": {
+"de": null
+},
+"ellipsis-health": {
+"de": null
+},
+"ellipsislabs": {
+"de": null
+},
+"elliptic": {
+"de": null
+},
+"ello": {
+"de": null
+},
+"eloquentai": {
+"de": null
+},
+"elyos": {
+"de": null
+},
+"ema": {
+"de": null
+},
+"embedding-vc": {
+"de": null
+},
+"emerald-ai": {
+"de": null
+},
+"encord": {
+"de": null
+},
+"engram": {
+"de": null
+},
 "enpal": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"entendre": {
+"de": null
+},
+"epianeuro": {
+"de": null
+},
+"equal1": {
+"de": null
+},
+"equip": {
+"de": null
+},
+"eradrive": {
+"de": null
+},
+"eventualcomputing": {
+"de": null
+},
+"evenup": {
+"de": null
+},
+"everai": {
+"de": null
+},
+"evervault": {
+"de": null
+},
+"exo": {
+"de": null
+},
+"eye-security": {
+"de": null
+},
+"fab2": {
+"de": null
+},
+"factory": {
+"de": null
+},
+"faculty": {
+"de": null
+},
+"faculty-fellowship": {
+"de": null
+},
+"fal-ai": {
+"de": null
+},
+"farmersd40": {
+"de": null
+},
+"feathery": {
+"de": null
+},
+"feathr": {
+"de": null
+},
+"ferocia": {
+"de": null
+},
+"fiddler-ai": {
+"de": null
+},
+"fieldguide": {
+"de": null
+},
+"fieldmaterials": {
+"de": null
+},
+"filmhub": {
+"de": null
+},
+"fin": {
+"de": null
+},
+"finch-legal": {
+"de": null
+},
+"finni-health": {
+"de": null
+},
+"finout": {
+"de": null
+},
+"firebirdmusic": {
+"de": null
+},
+"fireworks": {
+"de": null
+},
+"first-resonance": {
+"de": null
+},
+"fizz": {
+"de": null
+},
+"flaglerhealth": {
+"de": null
+},
+"flowgen labs": {
+"de": null
+},
+"fluidstack": {
+"de": null
+},
+"flux": {
+"de": null
+},
+"fonio": {
+"de": null
+},
+"fonzi": {
+"de": null
+},
+"forgd-ai": {
+"de": null
+},
+"forgepoint": {
+"de": null
+},
+"formenergy": {
+"de": null
 },
 "forto": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"forus": {
+"de": null
+},
+"foundational": {
+"de": null
+},
+"foundationhealthcareers": {
+"de": null
+},
+"foxglove": {
+"de": null
+},
+"freda": {
+"de": null
+},
+"freehand": {
+"de": null
+},
+"fs-studio": {
+"de": null
+},
+"futrue": {
+"de": null
+},
+"futurefitai": {
+"de": null
+},
+"gainsight": {
+"de": null
+},
+"galvany": {
+"de": null
+},
+"gamechanger": {
+"de": null
+},
+"gamma": {
+"de": null
+},
+"garage": {
+"de": null
+},
+"gc-ai": {
+"de": null
+},
+"gecko-robotics": {
+"de": null
+},
+"generalrobotics": {
+"de": null
+},
+"generatorhealth": {
+"de": null
+},
+"gimlet": {
+"de": null
+},
+"gismart": {
+"de": null
+},
+"givebutter": {
+"de": null
+},
+"glia": {
+"de": null
+},
+"glinttglobal": {
+"de": null
+},
+"go-nimbly": {
+"de": null
+},
+"goaly": {
+"de": null
+},
+"goodie-ai": {
+"de": null
+},
+"goodstack": {
+"de": null
+},
+"goody": {
+"de": null
+},
+"gorgias": {
+"de": null
+},
+"govsignals": {
+"de": null
+},
+"gradient": {
+"de": null
+},
+"gratia": {
+"de": null
+},
+"gray swan ai": {
+"de": null
+},
+"graymatter-robotics": {
+"de": null
+},
+"greatsky": {
+"de": null
+},
+"greptile": {
+"de": null
+},
+"grounded": {
+"de": null
+},
+"groundnews": {
+"de": null
+},
+"grow-therapy": {
+"de": null
+},
+"hackerone": {
+"de": null
+},
+"hadrian-automation": {
+"de": null
+},
+"halobraid": {
+"de": null
+},
+"halter": {
+"de": null
+},
+"handshake": {
+"de": null
+},
+"harmattan-ai": {
+"de": null
+},
+"harvey": {
+"de": null
+},
+"hatch": {
+"de": null
+},
+"hauler-hero": {
+"de": null
+},
+"havocai": {
+"de": null
+},
+"healthleap": {
+"de": null
+},
+"heirloomcarbon": {
+"de": null
+},
+"hellobrightline": {
+"de": null
+},
+"helogen": {
+"de": null
+},
+"heron-power": {
+"de": null
+},
+"herondata": {
+"de": null
+},
 "heyjobs": {
 "checked": "2026-10-24",
 "de": false,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"higgsfieldai": {
+"de": null
+},
+"higharc": {
+"de": null
+},
+"hike-medical": {
+"de": null
+},
+"hilberts": {
+"de": null
+},
+"hims-and-hers": {
+"de": null
+},
+"hinge-health": {
+"de": null
+},
+"hipp": {
+"de": null
+},
+"hived": {
+"de": null
+},
+"hiverge": {
+"de": null
+},
+"honeybook": {
+"de": null
+},
+"honeydew": {
+"de": null
+},
+"honeyinsurance": {
+"de": null
+},
+"hopper": {
+"de": null
+},
+"horizon3ai": {
+"de": null
+},
+"hostinger": {
+"de": null
+},
+"hud": {
+"de": null
+},
+"hume-ai": {
+"de": null
+},
+"hyde": {
+"de": null
+},
+"hyperbolic": {
+"de": null
+},
+"hyperexponential": {
+"de": null
+},
+"ideal dental": {
+"de": null
+},
+"idler": {
+"de": null
+},
+"illumio": {
+"de": null
+},
+"impact-justice": {
+"de": null
+},
+"imprint": {
+"de": null
+},
+"impulse": {
+"de": null
+},
+"inato": {
+"de": null
+},
+"inductive-automation-llc": {
+"de": null
+},
+"inductive-bio": {
+"de": null
+},
+"infinite": {
+"de": null
+},
+"infinitefield": {
+"de": null
+},
+"infinity-constellation": {
+"de": null
+},
+"insitro": {
+"de": null
+},
+"instructure": {
+"de": null
+},
+"interaction": {
+"de": null
+},
+"interface-ai": {
+"de": null
+},
+"intrinsic-safety": {
+"de": null
+},
+"investa": {
+"de": null
+},
+"ironcladhq": {
+"de": null
+},
+"ispeedtolead": {
+"de": null
+},
+"jack-jill-external-ats": {
+"de": null
+},
+"jane": {
+"de": null
+},
+"january": {
+"de": null
+},
+"jellyfish": {
+"de": null
+},
+"jellyfishcareers": {
+"de": null
+},
+"jito-labs": {
+"de": null
+},
+"jobber": {
+"de": null
+},
+"join9am": {
+"de": null
+},
+"judgmentlabs": {
+"de": null
+},
+"julius": {
+"de": null
+},
+"jump-app": {
+"de": null
+},
+"junior": {
+"de": null
+},
+"kaizenlabs": {
+"de": null
+},
+"kalshi": {
+"de": null
+},
+"kandou-ai": {
+"de": null
+},
+"kantiv": {
+"de": null
+},
+"kayak": {
+"de": null
+},
+"keep": {
+"de": null
+},
+"keplar": {
+"de": null
+},
+"keyrock": {
+"de": null
+},
+"kijimea": {
+"de": null
+},
+"kin": {
+"de": null
+},
+"kinetic": {
+"de": null
+},
+"kingdom": {
+"de": null
+},
+"kins": {
+"de": null
+},
+"klarify": {
+"de": null
+},
 "knowunity": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"koahlabs": {
+"de": null
+},
+"kognitos": {
+"de": null
+},
+"koho": {
+"de": null
+},
+"kong": {
+"de": null
+},
+"kontakt": {
+"de": null
+},
+"koro": {
+"de": null
+},
+"kota": {
+"de": null
+},
+"laelaps": {
+"de": null
+},
+"lambda": {
+"de": null
+},
+"lancedb": {
+"de": null
+},
+"langchain": {
+"de": null
 },
 "langdock": {
 "checked": "2026-10-24",
@@ -59,54 +1793,1440 @@
 "de": false,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"latamcent": {
+"de": null
+},
+"latent": {
+"de": null
+},
+"laurel": {
+"de": null
+},
+"leadbank": {
+"de": null
+},
+"leantech": {
+"de": null
+},
+"legora": {
+"de": null
+},
+"leland": {
+"de": null
+},
+"lemon-io": {
+"de": null
+},
+"lemrock": {
+"de": null
+},
+"lendable": {
+"de": null
+},
+"leovegasgroup": {
+"de": null
+},
+"lexroom": {
+"de": null
+},
+"lighthousehq": {
+"de": null
+},
+"lightning": {
+"de": null
+},
+"lightspark": {
+"de": null
+},
+"lightspeedhq": {
+"de": null
+},
+"lilt-production": {
+"de": null
+},
+"limble": {
+"de": null
+},
+"lindy": {
+"de": null
+},
+"linear": {
+"de": null
+},
+"liquid-ai": {
+"de": null
+},
+"listenlabs": {
+"de": null
+},
+"litellm": {
+"de": null
+},
+"lithosquare": {
+"de": null
+},
+"livekit": {
+"de": null
+},
+"lorikeet": {
+"de": null
+},
+"lovable": {
+"de": null
+},
+"loveholidays": {
+"de": null
+},
+"lumaai": {
+"de": null
+},
+"lumbermanufactory": {
+"de": null
+},
+"luxor": {
+"de": null
+},
+"mach": {
+"de": null
+},
+"mach10usa": {
+"de": null
+},
+"magentic": {
+"de": null
+},
+"maintainx": {
+"de": null
+},
+"manifest-os": {
+"de": null
+},
+"mapbox": {
+"de": null
+},
+"marianaminerals": {
+"de": null
+},
+"marloo": {
+"de": null
+},
+"marqeta-inc": {
+"de": null
+},
+"material": {
+"de": null
+},
+"materialsecurity": {
+"de": null
+},
+"maticrobots": {
+"de": null
+},
+"matter-intelligence": {
+"de": null
+},
+"matter-labs": {
+"de": null
+},
+"matx": {
+"de": null
+},
+"maven-agi": {
+"de": null
+},
+"maximor": {
+"de": null
+},
+"maxinsights": {
+"de": null
+},
+"maybern": {
+"de": null
+},
+"mercor": {
+"de": null
+},
+"meridianlink": {
+"de": null
+},
+"metadao": {
+"de": null
+},
+"metal": {
+"de": null
+},
+"metamorphic": {
+"de": null
+},
+"metaview": {
+"de": null
+},
+"meter": {
+"de": null
+},
+"midjourney": {
+"de": null
+},
+"mimica": {
+"de": null
+},
+"mindrobotics": {
+"de": null
+},
+"mintlify": {
+"de": null
+},
+"mintmcp": {
+"de": null
+},
+"mirage": {
+"de": null
+},
+"mitti": {
+"de": null
+},
+"moab": {
+"de": null
+},
+"mobi": {
+"de": null
+},
+"modal": {
+"de": null
+},
+"moderntreasury": {
+"de": null
+},
+"monaco": {
+"de": null
+},
+"mondoo": {
+"de": null
+},
+"monei": {
+"de": null
+},
+"monumental": {
+"de": null
+},
+"moonshot": {
+"de": null
+},
+"morpho": {
+"de": null
+},
+"moss": {
+"de": null
+},
+"movement": {
+"de": null
+},
+"mubit": {
+"de": null
+},
+"n1": {
+"de": null
+},
 "n8n": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"nautilus biotechnology": {
+"de": null
+},
+"neara": {
+"de": null
+},
+"nectar-social": {
+"de": null
+},
+"neko-health": {
+"de": null
 },
 "nelly": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-23T07:27:18.044204+00:00"
 },
+"nen-creative": {
+"de": null
+},
+"neonredwood": {
+"de": null
+},
+"neptune": {
+"de": null
+},
+"nerdwallet": {
+"de": null
+},
+"nest-health": {
+"de": null
+},
+"netboxlabs": {
+"de": null
+},
+"netgear": {
+"de": null
+},
+"netic": {
+"de": null
+},
+"neuroscale": {
+"de": null
+},
+"newtonx": {
+"de": null
+},
+"niantic-spatial": {
+"de": null
+},
+"nightfall-ai": {
+"de": null
+},
+"niramedical": {
+"de": null
+},
+"noda-ai": {
+"de": null
+},
+"nomad": {
+"de": null
+},
+"nomos": {
+"de": null
+},
+"nooks": {
+"de": null
+},
+"norm-ai": {
+"de": null
+},
+"notabene": {
+"de": null
+},
+"nous": {
+"de": null
+},
+"novo": {
+"de": null
+},
+"nox-metals": {
+"de": null
+},
+"nubank": {
+"de": null
+},
+"nucleus": {
+"de": null
+},
+"numeric": {
+"de": null
+},
+"numo": {
+"de": null
+},
+"observable-space": {
+"de": null
+},
+"odewithanthropic": {
+"de": null
+},
+"odysseyml": {
+"de": null
+},
+"office-hours": {
+"de": null
+},
+"oktoberagency": {
+"de": null
+},
+"olix": {
+"de": null
+},
+"ollama": {
+"de": null
+},
+"omaze": {
+"de": null
+},
+"omnea": {
+"de": null
+},
+"omni": {
+"de": null
+},
+"onebrief": {
+"de": null
+},
+"onehealth": {
+"de": null
+},
+"onepot": {
+"de": null
+},
+"onoshealth": {
+"de": null
+},
+"ontra": {
+"de": null
+},
 "openai": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"openart": {
+"de": null
+},
+"opengov": {
+"de": null
+},
+"openly": {
+"de": null
+},
+"openrouter": {
+"de": null
+},
+"openstandard": {
+"de": null
+},
+"oplabs": {
+"de": null
+},
+"opus-training": {
+"de": null
+},
+"opusclip": {
+"de": null
+},
+"oratomic": {
+"de": null
+},
+"orbitalindustries": {
+"de": null
+},
+"orca": {
+"de": null
+},
+"oscilar": {
+"de": null
+},
+"outersignal": {
+"de": null
+},
+"outset": {
+"de": null
+},
+"overviewenergy": {
+"de": null
+},
+"oviva": {
+"de": null
+},
+"padlet": {
+"de": null
+},
+"paireyewear": {
+"de": null
+},
+"palette-media": {
+"de": null
+},
+"palladio": {
+"de": null
+},
+"palo-it": {
+"de": null
+},
+"panacea": {
+"de": null
+},
+"pano-ai": {
+"de": null
+},
+"paradigmai": {
+"de": null
+},
+"paradox": {
+"de": null
+},
+"parafin": {
+"de": null
+},
+"paraform": {
+"de": null
+},
+"parity": {
+"de": null
 },
 "parloa": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"partiful": {
+"de": null
+},
+"partyhat": {
+"de": null
+},
+"passagehealth": {
+"de": null
+},
+"passport": {
+"de": null
+},
+"paxos": {
+"de": null
+},
+"peek": {
+"de": null
+},
+"pennylane": {
+"de": null
+},
+"people-data-labs": {
+"de": null
+},
+"percepta": {
+"de": null
+},
+"permitflow": {
+"de": null
+},
 "perplexity": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"perryweather": {
+"de": null
+},
+"phantom": {
+"de": null
+},
+"phil": {
+"de": null
+},
+"philo": {
+"de": null
+},
+"phonely": {
+"de": null
+},
+"photoroom": {
+"de": null
+},
+"physicalintelligence": {
+"de": null
+},
+"pika": {
+"de": null
+},
+"pilgrim": {
+"de": null
+},
+"pivotal-health": {
+"de": null
+},
+"plaid": {
+"de": null
+},
+"plasmidsaurus": {
+"de": null
+},
+"playson": {
+"de": null
+},
+"pleo": {
+"de": null
 },
 "pliant": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"plotlineso": {
+"de": null
+},
+"pluralis-research": {
+"de": null
+},
+"poetiq": {
+"de": null
+},
+"polaranalytics": {
+"de": null
+},
+"polaroid": {
+"de": null
+},
+"polymarket": {
+"de": null
+},
+"poolside": {
+"de": null
+},
+"posh": {
+"de": null
+},
+"posh-ai": {
+"de": null
+},
+"poshmark": {
+"de": null
+},
+"positive-development": {
+"de": null
+},
+"possible-finance": {
+"de": null
+},
+"posthog": {
+"de": null
+},
+"powerverse": {
+"de": null
+},
+"pramaana-labs": {
+"de": null
+},
+"predikt": {
+"de": null
+},
+"primary": {
+"de": null
+},
+"primer": {
+"de": null
+},
+"probablygenetic": {
+"de": null
+},
+"procurify": {
+"de": null
+},
+"productgenius": {
+"de": null
+},
+"proofofhuman": {
+"de": null
+},
+"propel": {
+"de": null
+},
+"prose": {
+"de": null
+},
+"prosus": {
+"de": null
+},
+"protege": {
+"de": null
+},
+"proto-town": {
+"de": null
+},
 "proxima-fusion": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"psi": {
+"de": null
+},
+"publiccloudgroup": {
+"de": null
+},
+"pure-app": {
+"de": null
+},
+"pythnetwork": {
+"de": null
+},
+"qlub": {
+"de": null
+},
+"quadrillion-labs": {
+"de": null
+},
+"quantware": {
+"de": null
+},
+"quartermaster": {
+"de": null
+},
+"qumulo": {
+"de": null
+},
+"quora": {
+"de": null
+},
+"radai": {
+"de": null
+},
+"radar": {
+"de": null
+},
+"radiant-industries": {
+"de": null
+},
+"radical-health": {
+"de": null
+},
+"radixark": {
+"de": null
+},
+"rain": {
+"de": null
+},
+"rainfallhealth": {
+"de": null
+},
+"rainmaker": {
+"de": null
+},
+"ramp": {
+"de": null
+},
+"range": {
+"de": null
+},
+"rasa": {
+"de": null
+},
+"readme": {
+"de": null
+},
+"realmalliance": {
+"de": null
+},
+"recharge": {
+"de": null
+},
+"redmetals": {
+"de": null
+},
+"redpanda-data": {
+"de": null
+},
+"redpine": {
+"de": null
+},
+"reflectionai": {
+"de": null
+},
+"reflow": {
+"de": null
+},
+"reframesystems": {
+"de": null
+},
+"relayfi": {
+"de": null
+},
+"reliable-robotics": {
+"de": null
+},
+"remarcable-inc": {
+"de": null
+},
+"remilia": {
+"de": null
+},
+"render": {
+"de": null
+},
+"repeatbuilders": {
+"de": null
+},
+"replimune": {
+"de": null
+},
+"rescale": {
+"de": null
+},
+"resend": {
+"de": null
+},
+"reset": {
+"de": null
+},
+"retell-ai": {
+"de": null
+},
+"revel": {
+"de": null
+},
+"revenuecat": {
+"de": null
+},
+"revic": {
+"de": null
+},
+"revin": {
+"de": null
+},
+"rho": {
+"de": null
+},
+"rhoda-ai": {
+"de": null
+},
+"rillet": {
+"de": null
+},
+"river": {
+"de": null
+},
+"robco": {
+"de": null
+},
+"robert-rauschenberg-foundation": {
+"de": null
+},
+"robin-radar": {
+"de": null
+},
+"rowan": {
+"de": null
+},
+"ruby-labs": {
+"de": null
+},
+"rula": {
+"de": null
+},
+"runlayer": {
+"de": null
+},
+"runpod": {
+"de": null
+},
+"runway-ml": {
+"de": null
+},
+"rxvantage": {
+"de": null
+},
+"sabi": {
+"de": null
+},
+"sable": {
+"de": null
+},
+"sail": {
+"de": null
+},
+"sailorhealth": {
+"de": null
+},
+"salient": {
+"de": null
+},
+"salonkee": {
+"de": null
+},
+"sampura": {
+"de": null
+},
+"sandboxaq": {
+"de": null
+},
+"sardine": {
+"de": null
+},
+"saronic": {
+"de": null
+},
+"sarvam": {
+"de": null
+},
+"sash": {
+"de": null
+},
+"satispay": {
+"de": null
+},
+"scaled-cognition": {
+"de": null
+},
+"scarlet": {
+"de": null
+},
+"scribe": {
+"de": null
+},
+"secfix": {
+"de": null
+},
+"second-nature": {
+"de": null
+},
+"security-level-5": {
+"de": null
+},
+"seifoundation": {
+"de": null
+},
+"semperis": {
+"de": null
+},
+"seneca": {
+"de": null
+},
+"sensmore": {
+"de": null
+},
+"sensor-tower": {
+"de": null
+},
+"sentilink": {
+"de": null
+},
+"sereact": {
+"de": null
+},
+"serverobotics": {
+"de": null
+},
+"sfcompute": {
+"de": null
+},
+"sibill": {
+"de": null
+},
+"sidekick": {
+"de": null
+},
+"sideshift": {
+"de": null
+},
+"siena": {
+"de": null
+},
+"siteminder": {
+"de": null
+},
+"skelar": {
+"de": null
+},
+"skin-analytics": {
+"de": null
+},
+"skydio": {
+"de": null
+},
+"skylo": {
+"de": null
+},
+"skymavis": {
+"de": null
+},
+"sleeper": {
+"de": null
+},
+"slide": {
+"de": null
+},
+"slingshotai": {
+"de": null
+},
+"snapmagic": {
+"de": null
+},
+"snowflake": {
+"de": null
+},
+"socure": {
+"de": null
+},
+"solace": {
+"de": null
+},
+"solveintelligence": {
+"de": null
+},
+"sound-ventures": {
+"de": null
+},
+"spacial": {
+"de": null
+},
+"span": {
+"de": null
+},
+"speak": {
+"de": null
+},
+"speakeasy": {
+"de": null
+},
+"spear-ai": {
+"de": null
+},
+"squads": {
+"de": null
+},
+"ssi": {
+"de": null
+},
+"stack-infrastructure-apac-pte-ltd": {
+"de": null
+},
+"stacks": {
+"de": null
+},
+"standardfleet": {
+"de": null
+},
+"statista": {
+"de": null
+},
+"statsig": {
+"de": null
+},
+"stellarentertainment": {
+"de": null
+},
+"stensul": {
+"de": null
+},
+"stora": {
+"de": null
+},
+"stratum-ai": {
+"de": null
+},
+"strongdm": {
+"de": null
+},
+"stuut-ai": {
+"de": null
+},
+"subconscious": {
+"de": null
+},
+"successionai": {
+"de": null
+},
+"suno": {
+"de": null
+},
+"supabase": {
+"de": null
+},
+"swans": {
+"de": null
+},
+"sxaler": {
+"de": null
+},
+"sygaldry-technologies": {
+"de": null
 },
 "synthesia": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"synthetic": {
+"de": null
+},
+"tabs": {
+"de": null
+},
 "tacto": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
 },
+"tailor": {
+"de": null
+},
+"taktile": {
+"de": null
+},
+"tavily": {
+"de": null
+},
+"tavus": {
+"de": null
+},
+"teamworks": {
+"de": null
+},
+"tekion": {
+"de": null
+},
+"teleskope": {
+"de": null
+},
+"temper": {
+"de": null
+},
+"tempo-xyz": {
+"de": null
+},
+"temporal": {
+"de": null
+},
+"tenexlabs": {
+"de": null
+},
+"tennr": {
+"de": null
+},
+"tensorwave": {
+"de": null
+},
+"terac": {
+"de": null
+},
+"teragenenergy": {
+"de": null
+},
+"terminal": {
+"de": null
+},
+"tern": {
+"de": null
+},
+"teton": {
+"de": null
+},
+"teya": {
+"de": null
+},
+"tfc": {
+"de": null
+},
+"tgc": {
+"de": null
+},
+"that1detailer": {
+"de": null
+},
+"the-global-talent-co": {
+"de": null
+},
+"thebotcompany": {
+"de": null
+},
+"theprimary": {
+"de": null
+},
+"third-space-therapy": {
+"de": null
+},
+"thorit": {
+"de": null
+},
+"thread-ai": {
+"de": null
+},
+"thumbtack": {
+"de": null
+},
+"tiny-health": {
+"de": null
+},
+"titan": {
+"de": null
+},
+"tomo": {
+"de": null
+},
+"tonal": {
+"de": null
+},
+"toogoodtogo": {
+"de": null
+},
+"topline-pro": {
+"de": null
+},
+"trading212": {
+"de": null
+},
+"trainline": {
+"de": null
+},
+"transgrid-energy": {
+"de": null
+},
+"treefera": {
+"de": null
+},
+"treeswift": {
+"de": null
+},
+"trener-robotics": {
+"de": null
+},
+"tribe-ai": {
+"de": null
+},
+"triomics": {
+"de": null
+},
+"trm-labs": {
+"de": null
+},
+"trove": {
+"de": null
+},
+"trovehq": {
+"de": null
+},
+"truelogic": {
+"de": null
+},
+"trulioo": {
+"de": null
+},
+"turquoise-health": {
+"de": null
+},
+"twelve": {
+"de": null
+},
+"twenty": {
+"de": null
+},
+"tycho-ai": {
+"de": null
+},
+"typesafe-ai": {
+"de": null
+},
+"tzafon": {
+"de": null
+},
+"uipath": {
+"de": null
+},
+"unify": {
+"de": null
+},
+"union-tech": {
+"de": null
+},
+"uniswap": {
+"de": null
+},
+"united-talent-agency": {
+"de": null
+},
+"unlikelyai": {
+"de": null
+},
+"up": {
+"de": null
+},
 "upvest": {
 "checked": "2026-10-24",
 "de": true,
 "eligible_since": "2026-10-24T09:34:33.615784+00:00"
+},
+"valency": {
+"de": null
+},
+"valkai": {
+"de": null
+},
+"vandenboomassociates": {
+"de": null
+},
+"vanishid": {
+"de": null
+},
+"vanta": {
+"de": null
+},
+"vapi": {
+"de": null
+},
+"veeda-ai": {
+"de": null
+},
+"vegatech": {
+"de": null
+},
+"veho-tech-inc": {
+"de": null
+},
+"velocfo": {
+"de": null
+},
+"vendelux": {
+"de": null
+},
+"verlo": {
+"de": null
+},
+"vertical-aerospace": {
+"de": null
+},
+"virtahealth": {
+"de": null
+},
+"virtuous": {
+"de": null
+},
+"vital-lyfe": {
+"de": null
+},
+"vitalize": {
+"de": null
+},
+"vizcom": {
+"de": null
+},
+"vmax": {
+"de": null
+},
+"voize": {
+"de": null
+},
+"voldex": {
+"de": null
+},
+"vynca": {
+"de": null
+},
+"vytalize health": {
+"de": null
+},
+"wallbit": {
+"de": null
+},
+"wayflyer": {
+"de": null
+},
+"wayve": {
+"de": null
+},
+"wealthsimple": {
+"de": null
+},
+"weave-os": {
+"de": null
+},
+"webAI": {
+"de": null
+},
+"welltheory": {
+"de": null
+},
+"westmag": {
+"de": null
+},
+"wetravel": {
+"de": null
+},
+"whatnot": {
+"de": null
+},
+"when": {
+"de": null
+},
+"whisk": {
+"de": null
+},
+"whitecircle": {
+"de": null
+},
+"whoop": {
+"de": null
+},
+"widgetfactory": {
+"de": null
+},
+"windborne-systems": {
+"de": null
+},
+"withclutch": {
+"de": null
+},
+"within-ai": {
+"de": null
+},
+"witnessai": {
+"de": null
+},
+"workerbase": {
+"de": null
+},
+"workwhilejobs": {
+"de": null
+},
+"workyard": {
+"de": null
+},
+"wynd-labs": {
+"de": null
+},
+"xds": {
+"de": null
+},
+"xero": {
+"de": null
+},
+"xona-space": {
+"de": null
+},
+"yobi": {
+"de": null
+},
+"yondr": {
+"de": null
+},
+"you-health": {
+"de": null
+},
+"yubo": {
+"de": null
+},
+"zapier": {
+"de": null
+},
+"zeely": {
+"de": null
+},
+"zefir": {
+"de": null
+},
+"zeit-ai": {
+"de": null
+},
+"zello": {
+"de": null
+},
+"zenjob": {
+"de": null
+},
+"zeno": {
+"de": null
+},
+"zenos": {
+"de": null
+},
+"zip": {
+"de": null
+},
+"zippymh": {
+"de": null
+},
+"zodl": {
+"de": null
+},
+"zyphra": {
+"de": null
+},
+"zzazz": {
+"de": null
 }
 }
