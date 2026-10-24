@@ -1,13 +1,17 @@
 {
  "boards_failed": 0,
- "boards_not_found": 20,
- "boards_ok": 22,
- "boards_requested": 42,
+ "boards_not_found": 206,
+ "boards_ok": 1854,
+ "boards_requested": 2060,
+ "completed_crawls": [
+  "CC-MAIN-2026-43"
+ ],
  "delivery": "disabled",
  "failures": [],
- "generated_at": "2026-10-24T12:34:33.615784+00:00",
- "jobs_total": 1583,
- "matches": 1,
- "matches_total": 1,
- "pending_matches": 1
+ "generated_at": "2026-10-24T12:42:55.473452+00:00",
+ "harvest_incomplete": true,
+ "jobs_total": 43120,
+ "matches": 9,
+ "matches_total": 9,
+ "pending_matches": 9
 }
