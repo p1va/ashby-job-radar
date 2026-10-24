@@ -26,6 +26,10 @@ Titles with things like **growth, product (manager, analyst, owner, marketing), 
 
 Engineering, design, internships and working-student roles are filtered out.
 
+If a company's board could not be checked or is checked weekly, the next
+successful check catches up from that company's earlier checkpoint. Unsent
+matches stay eligible, including roles beyond the email's result limit.
+
 All of this is editable in `config.json`.
 
 ## How it finds the companies

@@ -440,7 +440,8 @@ def parse_date(s: str | None) -> datetime | None:
     if not s:
         return None
     try:
-        return datetime.fromisoformat(s.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
     except ValueError:
         return None
 
@@ -483,20 +484,29 @@ def in_focus(loc: str, style: str, cfg: dict) -> bool:
     return bool(cfg.get("include_remote_germany", True)) and loc == "Germany" and style == "Remote"
 
 
-def publish_cutoff(seen: dict, cfg: dict, now: datetime) -> datetime:
+def publish_cutoff(seen: dict, cfg: dict, now: datetime, board=None) -> datetime:
     """new_only: jobs published since the previous run (minus a small buffer).
     week: jobs published in the last lookback_days."""
     if cfg.get("digest_mode", "new_only") == "new_only":
         last = parse_date(seen.get("_last_run"))
         buffer = timedelta(hours=cfg.get("overlap_hours", 3))
-        return (last - buffer) if last else now - timedelta(hours=24)
+        cutoff = (last - buffer) if last else now - timedelta(hours=24)
+        if board:
+            since = parse_date(board.get("eligible_since"))
+            if since is None:
+                checked = parse_date(board.get("checked"))
+                since = checked - buffer if checked else None
+            if since:
+                cutoff = min(cutoff, since)
+        return cutoff
     return now - timedelta(days=cfg["lookback_days"])
 
 
-def curate(boards: dict[str, list[dict]], cfg: dict, seen: dict, now: datetime):
-    cutoff = publish_cutoff(seen, cfg, now)
+def curate(boards: dict[str, list[dict]], cfg: dict, seen: dict, now: datetime, registry=None):
+    states = {slug.lower(): st for slug, st in (registry or {}).items() if slug != "_meta"}
     picks = []
     for slug, jobs in boards.items():
+        cutoff = publish_cutoff(seen, cfg, now, states.get(slug.lower()))
         for job in jobs:
             if job.get("isListed") is False:
                 continue
@@ -523,7 +533,7 @@ def curate(boards: dict[str, list[dict]], cfg: dict, seen: dict, now: datetime):
             job["_comp"] = compensation(job)
             picks.append(job)
     picks.sort(key=lambda j: j["_pub"], reverse=True)       # newest release first
-    return picks[: cfg["max_results"]]
+    return picks
 
 
 # ---------------------------------------------------------------- output
@@ -678,30 +688,33 @@ def main(argv=None) -> int:
         slugs = slugs + extra
 
     boards, bad, failures = {}, [], []
+    registry_names = {slug.lower(): slug for slug in reg if slug != "_meta"}
     if args.fixtures:
         for p in sorted(args.fixtures.glob("*.json")):
             boards[p.stem] = json.loads(p.read_text())["jobs"]
     else:
         with ThreadPoolExecutor(max_workers=cfg.get("workers", 16)) as pool:
             for slug, jobs, err in pool.map(fetch_board, slugs):
+                registry_slug = registry_names.setdefault(slug.lower(), slug)
                 if jobs is None:
                     failures.append((slug, err))
                     if slug.lower() in own:
                         bad.append((slug, err))
-                    elif slug in reg and err == "HTTP 404":
-                        reg[slug] = {**reg[slug], "de": False}
+                    if registry_slug in reg and err == "HTTP 404":
+                        reg[registry_slug] = {**reg[registry_slug], "de": False}
                 else:
                     boards[slug] = jobs
-                    if slug in reg or slug.lower() not in own:
-                        reg[slug] = {"de": has_germany(jobs, cfg),
-                                     "checked": now.date().isoformat()}
-        if not args.dry_run:
-            write_json(args.registry, reg, indent=0)
+                    previous = reg.get(registry_slug, {})
+                    since = publish_cutoff(seen, cfg, now, previous)
+                    reg[registry_slug] = {**previous, "de": has_germany(jobs, cfg),
+                                          "checked": now.date().isoformat(),
+                                          "eligible_since": since.isoformat()}
 
     # Crawl URLs can outlive a board; count 404s separately from fetch errors.
     errors = [(slug, err) for slug, err in failures if err != "HTTP 404"]
     not_found = len(failures) - len(errors)
-    picks = curate(boards, cfg, seen, now)
+    matches = curate(boards, cfg, seen, now, registry=reg)
+    picks = matches[: cfg["max_results"]]
     stats = {"boards_ok": len(boards), "bad_slugs": bad, "new_slugs": new_slugs,
              "boards_requested": len(boards) + len(failures), "boards_failed": len(errors),
              "boards_not_found": not_found, "dry_run": args.dry_run,
@@ -721,7 +734,7 @@ def main(argv=None) -> int:
 
     report = {"generated_at": now.isoformat(), "boards_requested": stats["boards_requested"],
               "boards_ok": len(boards), "boards_failed": len(errors), "boards_not_found": not_found,
-              "jobs_total": stats["jobs_total"], "matches": len(picks),
+              "jobs_total": stats["jobs_total"], "matches": len(picks), "matches_total": len(matches),
               "failures": [{"company": slug, "error": err} for slug, err in errors]}
     write_json(args.out / "run.json", report)
     print(f"[fetch] {len(boards)}/{stats['boards_requested']} boards fetched · "
@@ -729,6 +742,7 @@ def main(argv=None) -> int:
 
     print(md)
     status = 0 if boards else 1
+    delivered = set()
     delivery = "disabled" if args.no_email else "not needed"
     if not boards:
         delivery = "not attempted"
@@ -743,6 +757,7 @@ def main(argv=None) -> int:
                 seen = {k: v for k, v in seen.items() if k == "_last_run" or v >= cutoff}
                 seen["_last_run"] = now.isoformat()
                 write_json(args.seen, seen)
+                delivered = {j.get("id") or j["jobUrl"] for j in picks}
                 print("Email sent.")
             else:
                 delivery, status = "not configured", 1
@@ -753,6 +768,15 @@ def main(argv=None) -> int:
             report["delivery_error"] = f"{type(e).__name__}: {e}"
             print(f"[email] {delivery}: {e}", file=sys.stderr)
     report["delivery"] = delivery
+    pending = [j for j in matches if j["_new"] and (j.get("id") or j["jobUrl"]) not in delivered]
+    pending_boards = {j["_slug"].lower() for j in pending}
+    for slug in boards:
+        if slug.lower() not in pending_boards and slug.lower() in registry_names:
+            reg[registry_names[slug.lower()]]["eligible_since"] = (
+                now - timedelta(hours=cfg.get("overlap_hours", 3))).isoformat()
+    if not args.dry_run and not args.fixtures:
+        write_json(args.registry, reg, indent=0)
+    report["pending_matches"] = len(pending)
     write_json(args.out / "run.json", report)
     if not boards:
         print("[fetch] no board could be fetched; notification progress was preserved", file=sys.stderr)

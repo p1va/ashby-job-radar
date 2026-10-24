@@ -8,8 +8,9 @@ The fork's `main` contains the tested fixes together. Focused commits make it
 easy to prepare upstream contributions later; separate fix branches are optional.
 
 The fork's workflow is **manual only**. It passes `--no-email`, uses no SMTP
-or Notion secrets, has read-only repository permissions, and does not commit
-state or results. The original project's email workflow remains unchanged.
+or Notion secrets, and saves runs on `main` back to this fork. It commits
+`boards.json`, `companies.txt`, any delivery-state changes, and the current
+files under `output/`. The original project's workflow is unchanged.
 
 ## Run a preview
 
@@ -18,15 +19,21 @@ and select **Run workflow**:
 
 - Leave the workflow branch as `main`.
 - Set `ref` to the branch, tag, or commit in this fork that you want to test.
-- Use `listed` for a quick check of `companies.txt`, or `full` to include
-  Common Crawl discovery. Full runs can take much longer.
+- The default `full` run includes Common Crawl discovery. Use `listed` for a
+  quick check of `companies.txt`. Full runs can take much longer.
 
 The digest appears in the run summary. Download its Markdown, HTML, and JSON,
 plus the `run.json` report, from the run's `digest-…` artifact, retained for 30 days.
-Every preview starts
-with fresh temporary seen/registry state; it does not reuse the original
-owner's email history or remember progress between runs. The existing first-run
-publication cutoff and result limit still apply.
+Runs reuse the committed registry and delivery history. On `main`, the same
+digest is copied to `output/` and committed with the updated registry, so the
+run summary, artifact and repository show the same result. Runs queue and rebase
+before pushing. A run against a different `ref` saves artifacts without pushing.
+
+With `--no-email`, delivery history remains unchanged. Successful fetches update
+company classifications and fetch dates; a separate eligibility checkpoint
+keeps unsent roles available for later runs. The result limit remains unchanged.
+Diagnostics and partial registry progress are saved after fetch failures too;
+the run still reports failure when no board could be checked.
 
 ## Keep upstream pull requests focused
 
