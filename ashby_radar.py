@@ -239,11 +239,11 @@ def request(url: str, timeout: int = 30, tries: int = 2, parse=None):
         time.sleep(delay)
 
 
-def _get(url: str, timeout: int = 120, tries: int = 4, parse=None):
+def _get(url: str, timeout: int = 60, tries: int = 2, parse=None):
     try:
         return request(url, timeout=timeout, tries=tries, parse=parse)
     except Exception as e:
-        print(f"[harvest] giving up on {url[:90]}: {e}", file=sys.stderr)
+        print(f"[harvest] giving up on {url}: {e}", file=sys.stderr)
         return None
 
 
@@ -289,7 +289,7 @@ def harvest_common_crawl(n_crawls: int) -> tuple[set[str], bool]:
     slugs: set[str] = set()
     complete = True
     for cid in crawls:
-        base = f"{CC_INDEX}/{cid}-index?url=jobs.ashbyhq.com/*&output=json&fl=url&pageSize=1"
+        base = f"{CC_INDEX}/{cid}-index?url=jobs.ashbyhq.com/*&output=json&fl=url"
         time.sleep(2)        # keep Common Crawl requests serial and paced
         info = _get(base + "&showNumPages=true", timeout=60, parse=parse_pages)
         if info is None:
@@ -322,7 +322,7 @@ def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
     found, complete = harvest_common_crawl(hcfg.get("crawls", 3))
     known = {k.lower() for k in reg if k != "_meta"}
     added = 0
-    for s in sorted(found, key=str.lower):
+    for s in found:
         if s.lower() not in known:
             reg[s] = {"de": None}
             known.add(s.lower())
