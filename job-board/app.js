@@ -41,8 +41,7 @@ function avatar(job) {
     logo.loading = "lazy";
     logo.decoding = "async";
     logo.referrerPolicy = "no-referrer";
-    logo.hidden = true;
-    logo.addEventListener("load", () => { logo.hidden = false; }, { once: true });
+    logo.addEventListener("load", () => logo.classList.add("loaded"), { once: true });
     logo.addEventListener("error", () => logo.remove(), { once: true });
     node.append(logo);
   }

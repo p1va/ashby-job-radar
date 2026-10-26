@@ -535,6 +535,10 @@ legend,.filter-field>label {
   background:white;
   border-radius:inherit;
   padding:3px;
+  opacity:0;
+}
+.avatar img.loaded {
+  opacity:1;
 }
 .company-heading h3 {
   font-size:16px;
