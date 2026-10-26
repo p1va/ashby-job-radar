@@ -1,0 +1,93 @@
+name: Catch-up preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ashby-radar
+  queue: max
+
+jobs:
+  catch-up:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Snapshot original config and sent history
+        run: |
+          git fetch --no-tags https://github.com/betklab/ashby-job-radar.git main
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          folder = Path(os.environ["RUNNER_TEMP"]) / "catch-up-inputs"
+          folder.mkdir()
+          def git(*args):
+              return subprocess.run(["git", *args], check=True, capture_output=True, text=True).stdout
+
+          history_commit = git("rev-parse", "FETCH_HEAD").strip()
+          for name in ("seen.json", "config.json", "companies.txt"):
+              (folder / name).write_text(git("show", history_commit + ":" + name), encoding="utf-8")
+          source = {"repository": "betklab/ashby-job-radar", "commit": history_commit,
+                    "fork_commit": git("rev-parse", "HEAD").strip()}
+          extra = []
+          for name in ("boards.json", "embedded-boards/boards.txt"):
+              saved = subprocess.run(["git", "show", history_commit + ":" + name],
+                                     capture_output=True, text=True)
+              if saved.returncode == 0:
+                  source.setdefault("extra_upstream_files", []).append(name)
+                  if name.endswith(".json"):
+                      registry = json.loads(saved.stdout)
+                      extra.append("\n".join(k for k in registry if not k.startswith("_")))
+                  else:
+                      extra.append(saved.stdout)
+          ref = "origin/pr/5-serper"
+          available = subprocess.run(["git", "rev-parse", "--verify", ref], capture_output=True, text=True)
+          if available.returncode == 0:
+              source["extra_company_ref"] = available.stdout.strip()
+              for name in ("companies.txt", "embedded-boards/boards.txt"):
+                  extra.append(git("show", ref + ":" + name))
+          (folder / "extra-companies.txt").write_text("\n".join(extra), encoding="utf-8")
+          (folder / "source.json").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+          print("Sent-history source: " + history_commit)
+          PY
+
+      - name: Preview every unseen matching role
+        run: |
+          python -B catch-up/preview.py \
+            --config "$RUNNER_TEMP/catch-up-inputs/config.json" \
+            --seen "$RUNNER_TEMP/catch-up-inputs/seen.json" \
+            --companies companies.txt \
+            --companies "$RUNNER_TEMP/catch-up-inputs/companies.txt" \
+            --companies "$RUNNER_TEMP/catch-up-inputs/extra-companies.txt" \
+            --source-info "$RUNNER_TEMP/catch-up-inputs/source.json" \
+            --out "$RUNNER_TEMP/catch-up-output"
+
+      - name: Show catch-up summary
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f "$RUNNER_TEMP/catch-up-output/summary.md" ]; then
+            cat "$RUNNER_TEMP/catch-up-output/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Save complete catch-up report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: catch-up-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/catch-up-output/
+          if-no-files-found: warn
+          retention-days: 30
