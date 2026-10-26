@@ -95,12 +95,16 @@ and preserve the normal daily cursor. That delivery behavior is not implemented.
 
 | File | Contents |
 | --- | --- |
-| `digest.html` | Complete report, newest first, undated jobs last |
-| `digest.md` | Complete Markdown report |
-| `matches.csv`, `matches.json` | Every unseen match with metadata and links |
+| `digest.html` | Complete report grouped by company, alphabetically, with role counts |
+| `digest.md` | Complete Markdown report with the same company sections |
+| `matches.csv`, `matches.json` | Every unseen match, grouped by company, with metadata and links |
 | `summary.md` | Counts and the first 20 matches for the Actions summary |
 | `boards.csv` | Every checked board, job count and fetch status |
 | `run.json` | Scope, counts, skipped seen matches, input hashes and failures |
+
+Within each company, roles are newest first and undated jobs come last. Company
+names appear once as a section heading. The 20-role Actions summary uses the same
+grouping and labels a partially shown company with its shown and total counts.
 
 A missing or invalid sent-history file stops the run instead of assuming
 everything is unseen. Missing boards (404) are reported separately from temporary

@@ -30,6 +30,15 @@ def read_object(path: Path, required: bool = True) -> dict:
     return data
 
 
+def company_groups(matches: list[dict]) -> list[tuple[str, list[dict]]]:
+    groups = {}
+    for job in matches:
+        groups.setdefault(job["_slug"], []).append(job)
+    return [(slug, sorted(groups[slug], key=lambda job: job["_pub"] or
+                         datetime.min.replace(tzinfo=timezone.utc), reverse=True))
+            for slug in sorted(groups, key=lambda slug: (radar.company_name(slug).casefold(), slug))]
+
+
 def select_matches(boards: dict, cfg: dict, seen: dict) -> tuple[list[dict], dict]:
     """Reuse the radar's predicates, with no publication cutoff or result cap."""
     matches, encountered = [], set()
@@ -70,8 +79,7 @@ def select_matches(boards: dict, cfg: dict, seen: dict) -> tuple[list[dict], dic
             matches.append({**job, "_slug": slug, "_loc": location, "_style": style,
                             "_pub": published, "_german": radar.german_required(job, cfg),
                             "_comp": radar.compensation(job)})
-    matches.sort(key=lambda job: job["_pub"] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
-    return matches, counts
+    return [job for _, jobs in company_groups(matches) for job in jobs], counts
 
 
 def public_row(job: dict) -> dict:
@@ -101,13 +109,21 @@ def retention_note(report: dict) -> str:
 
 
 def render_md(matches: list[dict], report: dict, summary: bool = False) -> str:
-    lines = ["# Catch-up preview", "", report_text(report), "", retention_note(report), ""]
+    lines = ["# Catch-up preview", "", report_text(report), "",
+             "Companies A–Z; newest roles first within each company.", "", retention_note(report), ""]
     if not matches:
         lines.append("No unseen matching jobs found." if report["boards_ok"] else
                      "No boards could be fetched; matching jobs could not be checked.")
-    for job in matches[:20] if summary else matches:
-        lines += [f"### [{job['title']}]({job['jobUrl']}) — {radar.company_name(job['_slug'])}",
-                  job_meta(job), ""]
+    remaining = 20 if summary else len(matches)
+    for slug, jobs in company_groups(matches):
+        if not remaining:
+            break
+        shown = jobs[:remaining]
+        count = str(len(jobs)) if len(shown) == len(jobs) else f"{len(shown)} of {len(jobs)}"
+        lines += [f"## {radar.company_name(slug)} — {count} {'role' if len(jobs) == 1 else 'roles'}", ""]
+        for job in shown:
+            lines += [f"### [{job['title']}]({job['jobUrl']})", job_meta(job), ""]
+        remaining -= len(shown)
     if summary and len(matches) > 20:
         lines += [f"Showing the first 20 of {len(matches)} roles. Download the artifact for the complete report.", ""]
     return "\n".join(lines) + "\n"
@@ -115,19 +131,25 @@ def render_md(matches: list[dict], report: dict, summary: bool = False) -> str:
 
 def render_html(matches: list[dict], report: dict) -> str:
     e = html.escape
-    rows = "".join(f'<article><h2><a href="{e(job["jobUrl"])}">{e(job["title"])}</a></h2>'
-                   f'<strong>{e(radar.company_name(job["_slug"]))}</strong>'
-                   f'<p>{e(job_meta(job))}</p></article>' for job in matches)
+    sections = []
+    for slug, jobs in company_groups(matches):
+        heading = f'{e(radar.company_name(slug))} <span>{len(jobs)} {"role" if len(jobs) == 1 else "roles"}</span>'
+        roles = "".join(f'<article><h3><a href="{e(job["jobUrl"])}">{e(job["title"])}</a></h3>'
+                        f'<p>{e(job_meta(job))}</p></article>' for job in jobs)
+        sections.append(f'<section class="company"><h2>{heading}</h2>{roles}</section>')
+    rows = "".join(sections)
     if not matches:
         rows = "<p>No unseen matching jobs found.</p>" if report["boards_ok"] else "<p>No boards could be fetched.</p>"
     return ('<!doctype html><html lang="en"><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width, initial-scale=1">'
             '<title>Catch-up preview</title><style>body{font:16px/1.5 system-ui,sans-serif;'
             'max-width:900px;margin:32px auto;padding:0 20px;color:#172033}'
-            'h1{font-size:30px}h2{font-size:19px;margin-bottom:6px}a{color:#1d4ed8}'
-            'article{border-top:1px solid #ddd;padding:14px 0}p{color:#475569}'
+            'h1{font-size:30px}h2{font-size:23px;margin-bottom:6px}h2 span{font-size:15px;'
+            'font-weight:400;color:#64748b}h3{font-size:18px;margin:0 0 6px}a{color:#1d4ed8}'
+            '.company{margin-top:28px}article{border-top:1px solid #ddd;padding:14px 0}p{color:#475569}'
             '</style><body><h1>Catch-up preview</h1>'
-            f'<p>{e(report_text(report))}</p><p>{e(retention_note(report))}</p>{rows}</body></html>\n')
+            f'<p>{e(report_text(report))}</p><p>Companies A–Z; newest roles first within each company.</p>'
+            f'<p>{e(retention_note(report))}</p>{rows}</body></html>\n')
 
 
 def write_csv(path: Path, rows: list[dict], fields: list[str]):
@@ -210,6 +232,7 @@ def main(argv=None) -> int:
               "boards_ok": len(boards), "boards_not_found": sum(r["status"] == "not found" for r in statuses),
               "boards_failed": len(errors), "jobs_read": sum(len(jobs) for jobs in boards.values()),
               **counts, "matches": len(matches), "matching_companies": len({j["_slug"] for j in matches}),
+              "grouping": "company", "company_order": "alphabetical", "job_order": "newest_first_within_company",
               "saved_seen_ids": sum(not k.startswith("_") for k in seen),
               "history_retention_days": cfg.get("forget_after_days", 60), "history_last_run": seen.get("_last_run"),
               "inputs": {"config": provenance(args.config), "seen": provenance(args.seen), "registry": provenance(args.registry),
