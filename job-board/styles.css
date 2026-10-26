@@ -141,14 +141,20 @@ input[type=checkbox] {
   margin-left:9px;
 }
 .hero {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 240px;
+  align-items:stretch;
   padding:60px 0 40px;
-  gap:48px;
+  gap:20px 48px;
 }
 .hero-copy {
   min-width:0;
+  grid-column:1;
+  grid-row:1;
+}
+.hero>.intro {
+  grid-column:1;
+  grid-row:2;
 }
 .hero-kicker {
   display:flex;
@@ -188,7 +194,7 @@ h1 {
   line-height:1.04;
   letter-spacing:-3.2px;
   font-weight:700;
-  margin:0 0 23px;
+  margin:0;
 }
 h1 em {
   font-family:var(--serif);
@@ -211,57 +217,40 @@ h1 em {
   margin:0;
 }
 .hero-aside {
-  width:240px;
-  padding:10px 0 10px 32px;
-  position:relative;
-  flex-shrink:0;
+  grid-column:2;
+  grid-row:1;
+  padding-left:32px;
   border-left:1px solid var(--line);
-}
-.hero-asterisk {
-  font-size:56px;
-  color:#8c80c8;
-  font-family:var(--serif);
-  line-height:1;
-  display:block;
-  transform:rotate(12deg);
-  width:max-content;
-  margin-bottom:20px;
 }
 .hero-stats {
   display:flex;
   flex-direction:column;
-  gap:22px;
+  justify-content:space-between;
+  height:100%;
+  gap:12px;
   margin:0;
 }
 .hero-stats>div {
   display:flex;
   flex-direction:column;
-  gap:7px;
+  gap:4px;
 }
 .hero-stats dt {
   color:var(--muted);
   font-size:12px;
+  line-height:1.2;
   letter-spacing:1.2px;
   text-transform:uppercase;
 }
 .hero-stats dd {
-  order:-1;
   color:var(--ink);
   font-family:var(--heading-font);
-  font-size:64px;
+  font-size:clamp(40px,4.2vw,64px);
   font-weight:700;
   line-height:1;
   letter-spacing:-3px;
   font-variant-numeric:tabular-nums;
   margin:0;
-}
-.little-note {
-  font-family:var(--serif);
-  font-size:13px;
-  font-style:italic;
-  color:#776c95;
-  display:block;
-  margin-top:22px;
 }
 .search-area {
   padding:0 0 37px;
@@ -859,32 +848,13 @@ legend,.filter-field>label {
 }
 footer {
   border-top:1px solid var(--line);
-  padding:36px 0 28px;
-}
-.footer-wordmark {
-  font-family:var(--serif);
-  font-style:italic;
-  font-size:clamp(26px,3.6vw,43px);
-  letter-spacing:-1.1px;
-  color:#8b829f;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding-bottom:31px;
-}
-.footer-wordmark span {
-  font-family:Arial,sans-serif;
-  font-style:normal;
-  font-size:48px;
-  font-weight:300;
+  padding:28px 0;
 }
 .footer-bottom {
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:25px;
-  border-top:1px solid var(--line);
-  padding-top:23px;
 }
 .footer-bottom .brand {
   font-size:20px;
@@ -1069,9 +1039,7 @@ dialog::backdrop {
   }
   .hero {
     padding-top:70px;
-  }
-  .hero-aside {
-    width:265px;
+    grid-template-columns:minmax(0,1fr) 265px;
   }
   .job-row {
     padding:21px 24px;
@@ -1095,14 +1063,11 @@ dialog::backdrop {
     padding-right:20px;
   }
   .hero-aside {
-    width:190px;
     padding-left:24px;
   }
   .hero {
-    gap:28px;
-  }
-  .hero-stats dd {
-    font-size:56px;
+    grid-template-columns:minmax(0,1fr) 190px;
+    column-gap:28px;
   }
   .toolbar-controls {
     gap:7px;
@@ -1155,6 +1120,7 @@ dialog::backdrop {
     align-items:center;
   }
   .hero {
+    display:flex;
     padding:28px 0 24px;
     gap:15px;
     align-items:flex-start;
@@ -1168,7 +1134,7 @@ dialog::backdrop {
   h1 {
     font-size:clamp(34px,10.3vw,49px);
     letter-spacing:-1.7px;
-    margin-bottom:16px;
+    margin-bottom:0;
   }
   h1 em {
     letter-spacing:-1.4px;
@@ -1198,6 +1164,7 @@ dialog::backdrop {
   }
   .hero-stats {
     flex-direction:row;
+    height:auto;
     gap:32px;
   }
   .hero-stats>div {
@@ -1209,9 +1176,6 @@ dialog::backdrop {
   }
   .hero-stats dt {
     font-size:11px;
-  }
-  .hero-aside .hero-asterisk,.hero-aside .little-note {
-    display:none;
   }
   .search-area {
     padding-bottom:22px;
@@ -1362,17 +1326,9 @@ dialog::backdrop {
     height:32px;
     font-size:12px;
   }
-  .footer-wordmark {
-    font-size:27px;
-    padding-bottom:23px;
-  }
-  .footer-wordmark span {
-    font-size:34px;
-  }
   .footer-bottom {
     flex-wrap:wrap;
     gap:18px;
-    padding-top:20px;
   }
   .footer-bottom p {
     order:3;
