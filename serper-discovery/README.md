@@ -190,3 +190,32 @@ Saved [board report](results/2026-10-26/boards.csv),
 [run summary](results/2026-10-26/summary.json). Raw responses remain in the local
 exploration directories. The script and fifteen offline regressions passed
 Python 3.9 grammar checks; live trials used the configured Serper key.
+
+### Munich follow-up
+
+Ran the original OR query with only `"Berlin"` replaced by `"Munich"`, using
+the same two-page limit and no date filter. It returned 20 search results and
+15 distinct live boards, including **11 absent from the updated 2,159-company
+registry**. All eleven had currently listed jobs with Munich, München or
+Muenchen in their location/address metadata.
+
+Added atira, bowatt, causaprima, clar, comena, comstruct, finto,
+greenlight-workforce-solutions, lio, munich-electrification and vaeridion as
+`{"de": null}`. The registry now contains **2,170 companies**. Existing records
+and `_meta` were preserved. Two Serper credits were reported, with no errors.
+
+Saved the [Munich board report](results/2026-10-26-munich/boards.csv),
+[search provenance](results/2026-10-26-munich/search-results.csv) and
+[run summary](results/2026-10-26-munich/run.json). The board report adds
+`munich_jobs`, computed from the saved API responses; the script's existing
+`berlin_jobs` column remains labeled as such.
+
+For company discovery, the Berlin comparison favors keeping both site queries:
+
+| Berlin query, two pages each | Live boards | New to the starting registry |
+| --- | --- | --- |
+| Original role OR query | 13 | 5 |
+| Broader `site:jobs.ashbyhq.com "Berlin"` | 17 | 6 |
+
+The broader query found more companies, but the OR query contributed four new
+companies the broader one missed. Together they found ten new companies.

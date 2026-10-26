@@ -1,0 +1,16 @@
+slug,status,known,jobs,berlin_jobs,search_hits,current_indexed_jobs,stale_indexed_jobs,queries,error,munich_jobs
+atira,live,False,12,0,1,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,12
+bowatt,live,False,9,0,1,0,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,7
+causaprima,live,False,7,0,1,0,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,5
+clar,live,False,6,0,2,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,6
+comena,live,False,8,0,2,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,8
+comstruct,live,False,12,0,1,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,12
+finto,live,False,7,0,1,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,7
+greenlight-workforce-solutions,live,False,27,0,1,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,2
+lio,live,False,22,0,1,0,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,10
+munich-electrification,live,False,17,0,1,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,17
+vaeridion,live,False,34,0,1,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,31
+legora,live,True,309,0,3,3,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,11
+notion,live,True,141,0,1,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,3
+tacto,live,True,23,0,2,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,23
+voize,live,True,42,32,1,0,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Munich\""""]",,15
