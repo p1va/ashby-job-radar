@@ -151,9 +151,21 @@ input[type=checkbox] {
   min-width:0;
 }
 .hero-kicker {
-  font:italic 25px/1.4 var(--serif);
-  color:#776c95;
-  margin:0 0 18px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font:600 11px/1.5 var(--heading-font);
+  letter-spacing:1.7px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 22px;
+}
+.hero-kicker::before {
+  content:'';
+  width:18px;
+  height:1px;
+  flex-shrink:0;
+  background:#9d92d6;
 }
 .eyebrow {
   display:flex;
@@ -178,8 +190,11 @@ h1 {
   font-weight:700;
   margin:0 0 23px;
 }
-.hero-highlight {
-  color:var(--accent);
+h1 em {
+  font-family:var(--serif);
+  font-weight:400;
+  letter-spacing:-2.3px;
+  color:var(--ink);
 }
 .intro {
   color:#646779;
@@ -223,7 +238,7 @@ h1 {
 }
 .hero-stats dd {
   order:-1;
-  color:var(--accent);
+  color:var(--ink);
   font-family:var(--heading-font);
   font-size:64px;
   font-weight:700;
@@ -1138,13 +1153,17 @@ dialog::backdrop {
     flex-direction:column;
   }
   .hero-kicker {
-    font-size:21px;
-    margin-bottom:14px;
+    font-size:10px;
+    letter-spacing:1.5px;
+    margin-bottom:19px;
   }
   h1 {
     font-size:clamp(34px,10.3vw,49px);
     letter-spacing:-1.7px;
     margin-bottom:16px;
+  }
+  h1 em {
+    letter-spacing:-1.4px;
   }
   .eyebrow {
     font-size:9px;
