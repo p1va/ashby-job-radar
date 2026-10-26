@@ -1,0 +1,96 @@
+name: Publish job board
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "35 6 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "job-board/**"
+      - "catch-up/preview.py"
+      - "ashby_radar.py"
+      - "config.json"
+      - "companies.txt"
+      - "boards.json"
+      - "embedded-boards/boards.txt"
+      - ".github/workflows/job-board.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: job-board-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'p1va/ashby-job-radar'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Check catalog selection and publication
+        run: |
+          python -B -m unittest discover -s catch-up -p 'test_*.py'
+          python -B -m unittest discover -s job-board -p 'test_*.py'
+
+      - name: Snapshot current preferences and company sources
+        run: |
+          git fetch --no-tags https://github.com/betklab/ashby-job-radar.git main
+          python -B job-board/snapshot.py --out "$RUNNER_TEMP/catalog-inputs"
+
+      - name: Fetch all current matching roles and build the site
+        run: |
+          python -B job-board/build.py \
+            --config "$RUNNER_TEMP/catalog-inputs/config.json" \
+            --companies companies.txt \
+            --companies "$RUNNER_TEMP/catalog-inputs/extra-companies.txt" \
+            --source-info "$RUNNER_TEMP/catalog-inputs/source.json" \
+            --out "$RUNNER_TEMP/catalog-output"
+
+      - name: Show collection summary
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f "$RUNNER_TEMP/catalog-output/summary.md" ]; then
+            cat "$RUNNER_TEMP/catalog-output/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Save build report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: catalog-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/catalog-output/run.json
+            ${{ runner.temp }}/catalog-output/summary.md
+          retention-days: 30
+          if-no-files-found: warn
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: ${{ runner.temp }}/catalog-output/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

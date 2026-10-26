@@ -7,7 +7,7 @@ Keep its standard-library implementation, settings, and filtering rules.
 The fork's `main` contains the tested fixes together. Focused commits make it
 easy to prepare upstream contributions later; separate fix branches are optional.
 
-The fork's workflow is **manual only**. It passes `--no-email`, uses no SMTP
+The fork's digest workflow is **manual only**. It passes `--no-email`, uses no SMTP
 or Notion secrets, and saves runs on `main` back to this fork. It commits
 `boards.json`, `companies.txt`, any delivery-state changes, and the current
 files under `output/`. The original project's workflow is unchanged.
@@ -59,3 +59,12 @@ are uploaded as an artifact; the summary shows the first 20 matches.
 This preview has read-only repository permissions and leaves delivery and board
 state alone. See [the catch-up guide](catch-up/README.md), including the limits
 of the retained sent history.
+
+## Published catalog
+
+[Rolebook](https://p1va.github.io/ashby-job-radar/) is a separate static catalog
+of all current matches, including previously seen jobs. Search company, title,
+locations and full descriptions; filter and sort in company or role views.
+**Actions → Publish job board** rebuilds it on demand, on relevant code/source
+changes, and daily at 06:35 UTC. No emails or delivery-state writes are involved.
+See [the catalog guide](job-board/README.md) for local builds and publication.
