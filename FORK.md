@@ -48,3 +48,14 @@ persistence together with cutoff recovery, incomplete Common Crawl harvests,
 transient errors and gzip, preview side effects, delivery tracking, overflow,
 and location/state handling. Preserve the owner's preferences and review changes
 to notification behavior explicitly. The larger pipeline design remains parked.
+
+## Catch-up preview
+
+Use **Actions → Catch-up preview → Run workflow** to list all currently listed
+matching jobs absent from the original repo's saved sent history. It bypasses
+the daily date cutoff and result cap. Full HTML, CSV, JSON and Markdown reports
+are uploaded as an artifact; the summary shows the first 20 matches.
+
+This preview has read-only repository permissions and leaves delivery and board
+state alone. See [the catch-up guide](catch-up/README.md), including the limits
+of the retained sent history.

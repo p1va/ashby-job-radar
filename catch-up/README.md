@@ -117,3 +117,28 @@ python3 -B -m unittest discover -s catch-up -q
 Checks cover seen-ID and URL exclusion, age and result-limit bypass, unchanged
 inputs, ordinary filter parity, deduplication, missing dates, complete exports,
 cache replay, missing/corrupt history and partial fetch failures.
+
+## First live preview — 26 October 2026
+
+[Actions run 40318801993](https://github.com/p1va/ashby-job-radar/actions/runs/40318801993)
+succeeded using the original repo's `9e57b2e` config and history snapshot (71
+saved job IDs, last normal run 26 Oct at 11:29 UTC). It also included the fork's
+registry and `pr/5-serper` company sources at `f7683c9`.
+
+| Measure | Result |
+| --- | --- |
+| Boards selected from all sources | 2,213 |
+| Boards fetched | 2,007 |
+| Boards no longer found | 206 |
+| Other fetch errors | 0 |
+| Listed/API jobs read before filtering | 45,665 |
+| Matching jobs before seen exclusion | 469 |
+| Matching jobs already in saved history | 64 |
+| **Unseen matches in the complete report** | **405, across 141 companies** |
+
+Verified all 405 exported IDs and URLs are absent from the supplied history;
+HTML, Markdown, CSV and JSON contain all 405, while the run summary shows 20.
+The oldest listed unseen match was published in December 2024, demonstrating
+that the daily cutoff was bypassed. Historical retention still applies to what
+can be known about previous delivery. No notification or registry state was
+advanced, and no email was sent. The artifact is retained for 30 days.
