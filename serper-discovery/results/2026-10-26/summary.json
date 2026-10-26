@@ -1,0 +1,192 @@
+{
+  "date": "2026-10-26",
+  "registry_baseline": "923311b",
+  "baseline_companies": 2144,
+  "serper_requests": 13,
+  "credits_reported": 13,
+  "additional_initial_probe_credits": 1,
+  "organic_results": 117,
+  "candidate_boards": 50,
+  "live_boards": 49,
+  "new_live_boards": 15,
+  "new_slugs": [
+    "almedia",
+    "augustus",
+    "checkout.com",
+    "coachhub careers",
+    "cortea",
+    "cosuno",
+    "integral-de",
+    "jameda",
+    "kombo",
+    "kuro",
+    "lap",
+    "lemon-markets",
+    "lyceum",
+    "mistral.ai",
+    "rivianvw.tech"
+  ],
+  "new_boards_with_berlin_jobs": 15,
+  "queries": [
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com (\"product manager\" OR \"GTM\" OR \"founder associate\" OR \"operations\" OR \"automation\" OR \"marketing\") \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com (\"product manager\" OR \"GTM\" OR \"founder associate\" OR \"operations\" OR \"automation\" OR \"marketing\") \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 2
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 2
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "ashby Berlin",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1
+      },
+      "results": 7
+    },
+    {
+      "request": {
+        "q": "ashby Berlin",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 2
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1,
+        "tbs": "qdr:m"
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com \"product manager\" \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com \"GTM\" \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com \"founder associate\" \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1
+      },
+      "results": 0
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com \"operations\" \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com \"automation\" \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1
+      },
+      "results": 10
+    },
+    {
+      "request": {
+        "q": "site:jobs.ashbyhq.com \"marketing\" \"Berlin\"",
+        "gl": "de",
+        "hl": "en",
+        "num": 10,
+        "page": 1
+      },
+      "results": 10
+    }
+  ],
+  "errors": [
+    {
+      "stage": "page",
+      "url": "https://de.indeed.com/q-ashby-l-berlin-jobs.html",
+      "error": "HTTPError: HTTP Error 403: Forbidden"
+    }
+  ],
+  "registry_updated": true,
+  "new_slugs_already_in_local_companies": [
+    "augustus"
+  ],
+  "registry_companies_after": 2159,
+  "registry_additions": [
+    "almedia",
+    "augustus",
+    "checkout.com",
+    "coachhub careers",
+    "cortea",
+    "cosuno",
+    "integral-de",
+    "jameda",
+    "kombo",
+    "kuro",
+    "lap",
+    "lemon-markets",
+    "lyceum",
+    "mistral.ai",
+    "rivianvw.tech"
+  ]
+}
