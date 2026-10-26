@@ -8,6 +8,7 @@
   --accent:#5145b8;
   --pale:#eeecfb;
   --serif:Georgia,'Times New Roman',serif;
+  --heading-font:Inter,'Helvetica Neue',Arial,sans-serif;
   font-family:Inter,'Helvetica Neue',Arial,sans-serif;
   font-size:14px;
   color:var(--ink);
@@ -101,15 +102,22 @@ input[type=checkbox] {
   font-size:25px;
   letter-spacing:-.9px;
   font-weight:700;
+  font-family:var(--heading-font);
 }
 .brand-dot {
   color:#7568c4;
   margin-left:-8px;
 }
-.brand img {
+.brand-asterisk {
   width:31px;
   height:31px;
-  border-radius:9px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  color:var(--accent);
+  font:40px/1 var(--serif);
+  letter-spacing:0;
 }
 .header-note {
   display:flex;
@@ -137,7 +145,15 @@ input[type=checkbox] {
   align-items:center;
   justify-content:space-between;
   padding:60px 0 40px;
-  gap:32px;
+  gap:48px;
+}
+.hero-copy {
+  min-width:0;
+}
+.hero-kicker {
+  font:italic 25px/1.4 var(--serif);
+  color:#776c95;
+  margin:0 0 18px;
 }
 .eyebrow {
   display:flex;
@@ -155,16 +171,15 @@ input[type=checkbox] {
   background:#9d92d6;
 }
 h1 {
-  font-size:clamp(44px,5.4vw,68px);
+  font-family:var(--heading-font);
+  font-size:clamp(44px,5.1vw,68px);
   line-height:1.04;
   letter-spacing:-3.2px;
-  font-weight:500;
+  font-weight:700;
   margin:0 0 23px;
 }
-h1 em {
-  font-family:var(--serif);
-  font-weight:400;
-  letter-spacing:-2.3px;
+.hero-highlight {
+  color:var(--accent);
 }
 .intro {
   color:#646779;
@@ -173,36 +188,49 @@ h1 em {
   margin:0;
 }
 .hero-aside {
-  width:220px;
-  padding:17px 8px 0 25px;
+  width:240px;
+  padding:10px 0 10px 32px;
   position:relative;
   flex-shrink:0;
+  border-left:1px solid var(--line);
 }
 .hero-asterisk {
-  font-size:88px;
+  font-size:56px;
   color:#8c80c8;
   font-family:var(--serif);
   line-height:1;
   display:block;
   transform:rotate(12deg);
   width:max-content;
-  margin-bottom:14px;
+  margin-bottom:20px;
 }
-.hero-aside p {
-  font-size:13px;
-  line-height:1.8;
+.hero-stats {
+  display:flex;
+  flex-direction:column;
+  gap:22px;
   margin:0;
-  color:#646779;
 }
-.hero-aside strong {
-  font-size:23px;
-  color:var(--ink);
-  font-weight:500;
-  letter-spacing:-.8px;
+.hero-stats>div {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
 }
-.hero-aside b {
-  font-weight:500;
-  color:var(--ink);
+.hero-stats dt {
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+}
+.hero-stats dd {
+  order:-1;
+  color:var(--accent);
+  font-family:var(--heading-font);
+  font-size:64px;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:-3px;
+  font-variant-numeric:tabular-nums;
+  margin:0;
 }
 .little-note {
   font-family:var(--serif);
@@ -210,7 +238,7 @@ h1 em {
   font-style:italic;
   color:#776c95;
   display:block;
-  margin-top:11px;
+  margin-top:22px;
 }
 .search-area {
   padding:0 0 37px;
@@ -1045,6 +1073,13 @@ dialog::backdrop {
   }
   .hero-aside {
     width:190px;
+    padding-left:24px;
+  }
+  .hero {
+    gap:28px;
+  }
+  .hero-stats dd {
+    font-size:56px;
   }
   .toolbar-controls {
     gap:7px;
@@ -1085,9 +1120,10 @@ dialog::backdrop {
   .brand {
     font-size:22px;
   }
-  .brand img {
+  .brand-asterisk {
     width:28px;
     height:28px;
+    font-size:36px;
   }
   .header-link {
     font-size:12px;
@@ -1099,14 +1135,16 @@ dialog::backdrop {
     padding:28px 0 24px;
     gap:15px;
     align-items:flex-start;
+    flex-direction:column;
+  }
+  .hero-kicker {
+    font-size:21px;
+    margin-bottom:14px;
   }
   h1 {
-    font-size:clamp(36px,11.5vw,49px);
-    letter-spacing:-2.5px;
+    font-size:clamp(34px,10.3vw,49px);
+    letter-spacing:-1.7px;
     margin-bottom:16px;
-  }
-  h1 em {
-    letter-spacing:-1.8px;
   }
   .eyebrow {
     font-size:9px;
@@ -1121,9 +1159,31 @@ dialog::backdrop {
     display:none;
   }
   .hero-copy {
-    max-width:490px;
+    max-width:none;
   }
   .hero-aside {
+    display:block;
+    width:100%;
+    border-left:0;
+    border-top:1px solid var(--line);
+    padding:20px 0 0;
+    margin-top:5px;
+  }
+  .hero-stats {
+    flex-direction:row;
+    gap:32px;
+  }
+  .hero-stats>div {
+    flex:1;
+  }
+  .hero-stats dd {
+    font-size:42px;
+    letter-spacing:-1.8px;
+  }
+  .hero-stats dt {
+    font-size:11px;
+  }
+  .hero-aside .hero-asterisk,.hero-aside .little-note {
     display:none;
   }
   .search-area {
