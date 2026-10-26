@@ -196,6 +196,14 @@ h1 em {
   letter-spacing:-2.3px;
   color:var(--ink);
 }
+.country-flag {
+  display:inline-block;
+  font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;
+  font-size:.72em;
+  font-style:normal;
+  letter-spacing:0;
+  vertical-align:.03em;
+}
 .intro {
   color:#646779;
   font-size:15px;
