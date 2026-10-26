@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-10-26T10:08:06.414109+00:00",
+  "registry": "boards.json",
+  "known_companies": 2170,
+  "serper_requests": 2,
+  "credits_reported": 2,
+  "replay": null,
+  "errors": [],
+  "search_pages": 2,
+  "search_results": 20,
+  "result_links": 20,
+  "candidate_boards": 11,
+  "live_boards": 10,
+  "new_live_boards": 3,
+  "new_slugs": [
+    "anyvan",
+    "doinstruct",
+    "linro"
+  ],
+  "external_pages": 0,
+  "added": [
+    "anyvan",
+    "doinstruct",
+    "linro"
+  ],
+  "registry_baseline": "9798eac",
+  "registry_companies_after": 2173,
+  "queries": [
+    {
+      "q": "site:jobs.ashbyhq.com (\"product manager\" OR \"GTM\" OR \"founder associate\" OR \"operations\" OR \"automation\" OR \"marketing\") \"Germany\" \"Remote\"",
+      "gl": "de",
+      "hl": "en",
+      "num": 10,
+      "page": 1
+    },
+    {
+      "q": "site:jobs.ashbyhq.com \"Germany\" \"Remote\"",
+      "gl": "de",
+      "hl": "en",
+      "num": 10,
+      "page": 1
+    }
+  ],
+  "remote_germany_location_note": "Listed jobs with workplaceType=Remote and Germany/city/address matching the radar configuration; Remote Europe matching disabled.",
+  "remote_germany_title_note": "Germany/Deutschland in the title and workplaceType=Remote; not proof of hiring-country eligibility.",
+  "new_boards_with_remote_germany_locations": [
+    "doinstruct",
+    "linro"
+  ],
+  "title_only_candidates": [
+    "anyvan"
+  ]
+}

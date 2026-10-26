@@ -219,3 +219,25 @@ For company discovery, the Berlin comparison favors keeping both site queries:
 
 The broader query found more companies, but the OR query contributed four new
 companies the broader one missed. Together they found ten new companies.
+
+### Remote-in-Germany follow-up
+
+Tried one page each of the original role OR query followed by `"Germany"
+"Remote"`, and the broader `site:jobs.ashbyhq.com "Germany" "Remote"`. Two
+Serper calls/credits returned 20 results, 10 live boards and three companies
+absent from the 2,170-company registry: **anyvan, doinstruct and linro**.
+Added all three valid boards as unchecked companies; the registry now has 2,173.
+
+The API confirms three listed fully remote jobs with Germany location metadata
+at Doinstruct and six at Linro. AnyVan has a job titled "Sales Executive - Germany
+(Remote)", but its location is just "Remote", with no country/address. Its title
+is useful discovery evidence; the permitted hiring countries remain unconfirmed.
+The normal radar's location filter may therefore exclude that role.
+
+Saved the [board report](results/2026-10-26-remote-germany/boards.csv),
+[search provenance](results/2026-10-26-remote-germany/search-results.csv) and
+[run summary](results/2026-10-26-remote-germany/run.json). The extra report columns
+separate Germany location evidence from Germany appearing only in a remote job's
+title. They count `workplaceType=Remote`, excluding hybrid jobs; general Remote
+Europe matching is disabled for these checks. Existing `berlin_jobs` keeps its
+original meaning. No digest-title filtering was applied to the company import.

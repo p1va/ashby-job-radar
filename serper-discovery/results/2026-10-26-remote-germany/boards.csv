@@ -1,0 +1,12 @@
+slug,status,known,jobs,berlin_jobs,search_hits,current_indexed_jobs,stale_indexed_jobs,queries,error,remote_germany_location_jobs,remote_germany_title_jobs
+anyvan,live,False,17,0,1,1,0,"[""site:jobs.ashbyhq.com \""Germany\"" \""Remote\""""]",,0,1
+doinstruct,live,False,3,3,2,1,0,"[""site:jobs.ashbyhq.com \""Germany\"" \""Remote\"""", ""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Germany\"" \""Remote\""""]",,3,0
+linro,live,False,7,0,5,3,0,"[""site:jobs.ashbyhq.com \""Germany\"" \""Remote\"""", ""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Germany\"" \""Remote\""""]",,6,6
+dandy,live,True,80,1,1,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Germany\"" \""Remote\""""]",,4,1
+everai,live,True,46,0,2,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Germany\"" \""Remote\""""]",,2,2
+higgsfieldai,live,True,96,0,1,1,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Germany\"" \""Remote\""""]",,0,0
+lilt-production,live,True,448,27,1,1,0,"[""site:jobs.ashbyhq.com \""Germany\"" \""Remote\""""]",,27,1
+n8n,live,True,38,22,3,2,0,"[""site:jobs.ashbyhq.com \""Germany\"" \""Remote\"""", ""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Germany\"" \""Remote\""""]",,25,0
+secfix,live,True,16,6,1,1,0,"[""site:jobs.ashbyhq.com \""Germany\"" \""Remote\""""]",,12,0
+superhuman platform inc,live,True,68,5,1,0,0,"[""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Germany\"" \""Remote\""""]",,0,0
+whatnot,not found,True,,,2,0,0,"[""site:jobs.ashbyhq.com \""Germany\"" \""Remote\"""", ""site:jobs.ashbyhq.com (\""product manager\"" OR \""GTM\"" OR \""founder associate\"" OR \""operations\"" OR \""automation\"" OR \""marketing\"") \""Germany\"" \""Remote\""""]",HTTPError: HTTP Error 404: Not Found,,
