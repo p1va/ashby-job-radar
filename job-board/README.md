@@ -1,4 +1,4 @@
-# Rolebook
+# bet’s board
 
 A static job catalog for the fork, published at https://p1va.github.io/ashby-job-radar/.
 
@@ -19,8 +19,8 @@ No email is sent and no registry or sent history is changed. This workflow requi
 Python 3.9+ and the standard library are sufficient:
 
 ```sh
-python -B job-board/build.py --out /tmp/rolebook-build
-python -m http.server 8000 --directory /tmp/rolebook-build/site
+python -B job-board/build.py --out /tmp/bets-board-build
+python -m http.server 8000 --directory /tmp/bets-board-build/site
 ```
 
 Open http://localhost:8000/. For a small live check, add `--board company-slug` (repeatable). To replay saved board responses, add `--fixtures path/to/boards`; each `<slug>.json` should contain `{"jobs": [...]}`. Output must be a new directory.

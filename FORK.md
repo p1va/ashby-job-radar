@@ -62,7 +62,7 @@ of the retained sent history.
 
 ## Published catalog
 
-[Rolebook](https://p1va.github.io/ashby-job-radar/) is a separate static catalog
+[bet’s board](https://p1va.github.io/ashby-job-radar/) is a separate static catalog
 of all current matches, including previously seen jobs. Search company, title,
 locations and full descriptions; filter and sort in company or role views.
 **Actions → Publish job board** rebuilds it on demand, on relevant code/source

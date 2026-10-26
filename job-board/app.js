@@ -13,7 +13,7 @@ const plural = (count, noun) => `${count.toLocaleString()} ${count === 1 ? noun 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
 const shortDate = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
 const employmentNames = { FullTime: "Full time", PartTime: "Part time", Contract: "Contract", Intern: "Internship", Temporary: "Temporary" };
-const palettes = [["#edf1e5", "#536a3e"], ["#eaf0ec", "#527766"], ["#f2ede3", "#8a7550"], ["#eaeef1", "#627787"], ["#f1e9e7", "#8c6c63"], ["#edebf2", "#786689"]];
+const palettes = [["#eeecfb", "#5145b8"], ["#ebedf6", "#56628b"], ["#f2ede3", "#806b46"], ["#eaeef1", "#526777"], ["#f1e9e7", "#805d55"], ["#edebf2", "#705f82"]];
 
 function avatar(job) {
   const hash = [...job.company].reduce((sum, char) => sum + char.charCodeAt(0), 0);
