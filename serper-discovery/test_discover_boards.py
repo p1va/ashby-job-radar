@@ -136,6 +136,7 @@ class MainTests(unittest.TestCase):
         result, _ = self.run_main(request, "--query", "custom", "--pages", "1", "--recent", "month")
         self.assertEqual(result, 0)
         self.assertEqual(self.registry.read_bytes(), before)
+        self.assertIn('qdr:m', (self.out / "search-results.csv").read_text())
         self.assertNotIn("test-secret", "".join(p.read_text() for p in self.out.rglob("*.json")))
 
     def test_search_error_preserves_successful_page_and_reports_partial_run(self):

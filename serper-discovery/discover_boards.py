@@ -172,7 +172,7 @@ def add_boards(path: Path, slugs: list[str]) -> list[str]:
 
 def write_csv(path: Path, rows: list[dict], fields: list[str]):
     with path.open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         writer.writerows({key: row.get(key, "") for key in fields} for row in rows)
 
@@ -270,7 +270,9 @@ def main(argv=None) -> int:
             for url in result_links(result):
                 hits.append({"query": entry["request"]["q"], "page": entry["request"].get("page", 1),
                              "position": result.get("position", ""), "title": result.get("title", ""),
-                             "url": url, "source": "search"})
+                             "url": url, "source": "search", "tbs": entry["request"].get("tbs", ""),
+                             "country": entry["request"].get("gl", ""),
+                             "language": entry["request"].get("hl", "")})
 
     followed = {}
     for hit in list(hits):
@@ -342,7 +344,7 @@ def main(argv=None) -> int:
     write_csv(out / "boards.csv", sorted(rows, key=lambda r: (r["known"], r["slug"])),
               ["slug", "status", "known", "jobs", "berlin_jobs", "search_hits", "current_indexed_jobs", "stale_indexed_jobs", "queries", "error"])
     write_csv(out / "search-results.csv", hits,
-              ["query", "page", "position", "title", "url", "source", "slug", "job_id", "job_status"])
+              ["query", "page", "position", "title", "url", "source", "slug", "job_id", "job_status", "tbs", "country", "language"])
     (out / "new-slugs.txt").write_text("".join(slug + "\n" for slug in new), encoding="utf-8")
     (out / "live-slugs.txt").write_text("".join(slug + "\n" for slug in live), encoding="utf-8")
     write_json(out / "run.json", summary)

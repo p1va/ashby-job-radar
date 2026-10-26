@@ -110,7 +110,7 @@ Use `--out /path/to/new-directory` to choose another location.
 | --- | --- |
 | `run.json` | Request/credit counts, discoveries, additions and errors |
 | `boards.csv` | One row per candidate, live status, known/new, listed-job and Berlin-job counts |
-| `search-results.csv` | Query, page, result URL, board slug and current/stale indexed-job check |
+| `search-results.csv` | Query, page, date/country/language filters, URL, slug and current/stale indexed-job check |
 | `new-slugs.txt` | Verified live slugs absent from the initial registry |
 | `live-slugs.txt` | All verified live slugs from this run |
 | `searches/*.json` | Search request parameters and responses, without authentication headers |
