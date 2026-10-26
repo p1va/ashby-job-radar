@@ -6,6 +6,8 @@ It includes **every currently listed role matching the radar's location and titl
 
 The default view groups roles by company. Search covers company, title, locations, department and full descriptions; uncheck “Search job descriptions, too” to narrow it. Words are combined with AND; quotes keep phrases together. Location and work-style selections use OR within each filter, AND between filters. Filters and job details can be shared using the page URL. Sorting, a flat role view and a mobile filter panel are included.
 
+Company names, websites, logos and board introductions come from a separately refreshed [company cache](../company-info/README.md). The shared featured list starts with the original 42 company seeds. Featured badges, a featured-only filter and “Featured first” sorting highlight those companies without changing ordinary role eligibility.
+
 ## Refresh
 
 In the fork's **Actions → Publish job board → Run workflow**, or wait for the daily 06:35 UTC run. Changes to the catalog code and company sources also trigger a rebuild.

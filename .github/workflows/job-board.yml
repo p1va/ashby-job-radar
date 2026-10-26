@@ -8,6 +8,8 @@ on:
     branches: [main]
     paths:
       - "job-board/**"
+      - "company-info/companies.json"
+      - "company-info/featured.json"
       - "catch-up/preview.py"
       - "ashby_radar.py"
       - "config.json"
@@ -43,6 +45,7 @@ jobs:
         run: |
           python -B -m unittest discover -s catch-up -p 'test_*.py'
           python -B -m unittest discover -s job-board -p 'test_*.py'
+          python -B -m unittest discover -s company-info -p 'test_*.py'
 
       - name: Snapshot current preferences and company sources
         run: |

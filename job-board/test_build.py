@@ -88,6 +88,29 @@ class CatalogTests(unittest.TestCase):
         matches, _ = build.select_matches({"sample": [posting]}, json.loads(self.config.read_text()), {})
         self.assertEqual(build.public_job(matches[0])["locations"], ["Berlin", "Munich"])
 
+    def test_company_lookup_enriches_names_and_features_without_network(self):
+        matches, _ = build.select_matches({"sample": [self.job()]}, json.loads(self.config.read_text()), {})
+        jobs = [build.public_job(job) for job in matches]
+        profiles = {"sample": {"name": "Actual Brand", "website": "https://example.com/",
+                               "logo_url": "javascript:bad()", "timezone": "Europe/Madrid",
+                               "board_introduction_html": "<p>We build <b>tools</b>.</p><script>bad()</script>"}}
+        build.write_site(self.out, jobs, {"generated_at": "2026-10-26T00:00:00+00:00"}, profiles, ["sample"])
+        companies = json.loads((self.out / "companies.json").read_text())
+        self.assertEqual(companies["sample"], {"name": "Actual Brand", "website": "https://example.com/",
+                        "logoUrl": "", "introduction": "We build tools.", "featured": True, "roles": 1})
+        payload = json.loads(next(self.out.glob("jobs-*.json")).read_text())
+        self.assertEqual(payload["companies"], companies)
+        self.assertEqual(payload["jobs"][0]["companyName"], "Actual Brand")
+        self.assertEqual(payload["jobs"][0]["location"], "Berlin")
+
+    def test_missing_company_profile_keeps_the_job_and_slug_name(self):
+        matches, _ = build.select_matches({"sample": [self.job()]}, json.loads(self.config.read_text()), {})
+        build.write_site(self.out, [build.public_job(matches[0])], {"generated_at": "2026-10-26T00:00:00+00:00"})
+        companies = json.loads((self.out / "companies.json").read_text())
+        self.assertEqual(companies["sample"]["name"], "Sample")
+        self.assertEqual(companies["sample"]["roles"], 1)
+        self.assertFalse(companies["sample"]["featured"])
+
 
 if __name__ == "__main__":
     unittest.main()

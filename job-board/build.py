@@ -77,9 +77,33 @@ def public_job(job: dict) -> dict:
     }
 
 
-def write_site(out: Path, jobs: list[dict], report: dict):
+def public_url(value) -> str:
+    if not isinstance(value, str):
+        return ""
+    try:
+        parsed = urlsplit(value)
+        return value if parsed.scheme in ("https", "http") and parsed.hostname else ""
+    except ValueError:
+        return ""
+
+
+def write_site(out: Path, jobs: list[dict], report: dict, profiles: dict | None = None, featured=()):
     out.mkdir(parents=True, exist_ok=True)
-    data = json.dumps({"generatedAt": report["generated_at"], "jobs": jobs},
+    profiles = profiles or {}
+    companies = {}
+    for job in jobs:
+        slug = job["company"]
+        if slug not in companies:
+            profile = profiles.get(slug, {})
+            companies[slug] = {"name": profile.get("name") or job["companyName"],
+                               "website": public_url(profile.get("website")), "logoUrl": public_url(profile.get("logo_url")),
+                               "introduction": description({"descriptionHtml": profile.get("board_introduction_html") or ""}),
+                               "featured": slug in featured, "roles": 0}
+        companies[slug]["roles"] += 1
+    jobs = [{**job, "companyName": companies[job["company"]]["name"]} for job in jobs]
+    # A stable public lookup also supplies the independent enrichment workflow.
+    (out / "companies.json").write_text(json.dumps(companies, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    data = json.dumps({"generatedAt": report["generated_at"], "jobs": jobs, "companies": companies},
                       ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     filename = "jobs-" + hashlib.sha256(data).hexdigest()[:12] + ".json"
     (out / filename).write_bytes(data)
@@ -107,6 +131,8 @@ def main(argv=None) -> int:
     parser.add_argument("--fixtures", type=Path, help="read saved <slug>.json responses instead of fetching")
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--source-info", type=Path)
+    parser.add_argument("--company-info", type=Path, default=ROOT / "company-info/companies.json")
+    parser.add_argument("--featured", type=Path, default=ROOT / "company-info/featured.json")
     parser.add_argument("--out", type=Path, required=True, help="new output directory")
     args = parser.parse_args(argv)
     if not 1 <= args.workers <= 32:
@@ -114,6 +140,12 @@ def main(argv=None) -> int:
     if args.out.exists():
         parser.error("Output directory must be new (avoids publishing stale files)")
     cfg = read_object(args.config)
+    profiles = read_object(args.company_info, required=False)
+    if not all(isinstance(profile, dict) for profile in profiles.values()):
+        parser.error("company-info entries must be objects")
+    featured = json.loads(args.featured.read_text()) if args.featured.exists() else []
+    if not isinstance(featured, list) or not all(isinstance(slug, str) for slug in featured):
+        parser.error("featured must be a list of company slugs")
     known = {slug.lower() for slug in read_object(args.registry, required=False) if not slug.startswith("_")}
     for path in (args.companies or [ROOT / "companies.txt"]) + [ROOT / "embedded-boards/boards.txt"]:
         known.update(slug.lower() for slug in radar.load_slugs(path))
@@ -163,7 +195,7 @@ def main(argv=None) -> int:
     if failures or not boards:
         print("[catalog] Incomplete fetch; keeping the previous published catalog.", file=sys.stderr)
         return 1
-    write_site(args.out / "site", jobs, report)
+    write_site(args.out / "site", jobs, report, profiles, featured)
     print(f"[catalog] Built {len(jobs)} roles at {report['companies']} companies: {args.out / 'site'}")
     return 0
 

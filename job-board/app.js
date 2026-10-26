@@ -1,7 +1,7 @@
 /* A static catalog: one data file, no accounts, dependencies or tracking. */
 "use strict";
 const $ = id => document.getElementById(id);
-const state = { jobs: [], filtered: [], visible: 10, view: "company", query: "", locations: new Set(), styles: new Set(), company: "", days: "", salary: false, descriptions: true, sort: "company" };
+const state = { jobs: [], companies: {}, filtered: [], visible: 10, view: "company", query: "", locations: new Set(), styles: new Set(), company: "", days: "", salary: false, featured: false, descriptions: true, sort: "company" };
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -14,6 +14,19 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "sh
 const shortDate = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
 const employmentNames = { FullTime: "Full time", PartTime: "Part time", Contract: "Contract", Intern: "Internship", Temporary: "Temporary" };
 const palettes = [["#eeecfb", "#5145b8"], ["#ebedf6", "#56628b"], ["#f2ede3", "#806b46"], ["#eaeef1", "#526777"], ["#f1e9e7", "#805d55"], ["#edebf2", "#705f82"]];
+const companyInfo = job => state.companies[job.company] || {};
+const isFeatured = job => companyInfo(job).featured === true;
+const featuredBadge = () => el("span", "featured-badge", "★ Featured");
+
+function companyWebsite(job) {
+  const website = companyInfo(job).website;
+  if (!website) return null;
+  const link = el("a", "company-website", new URL(website).hostname.replace(/^www\./, "") + " ↗");
+  link.href = website;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  return link;
+}
 
 function avatar(job) {
   const hash = [...job.company].reduce((sum, char) => sum + char.charCodeAt(0), 0);
@@ -21,6 +34,18 @@ function avatar(job) {
   node.style.setProperty("--avatar-bg", palettes[hash % palettes.length][0]);
   node.style.setProperty("--avatar-ink", palettes[hash % palettes.length][1]);
   node.setAttribute("aria-hidden", "true");
+  if (companyInfo(job).logoUrl) {
+    const logo = el("img");
+    logo.src = companyInfo(job).logoUrl;
+    logo.alt = "";
+    logo.loading = "lazy";
+    logo.decoding = "async";
+    logo.referrerPolicy = "no-referrer";
+    logo.hidden = true;
+    logo.addEventListener("load", () => { logo.hidden = false; }, { once: true });
+    logo.addEventListener("error", () => logo.remove(), { once: true });
+    node.append(logo);
+  }
   return node;
 }
 
@@ -32,9 +57,10 @@ function restoreState() {
   state.company = params.get("company") || "";
   state.days = ["7", "30", "90"].includes(params.get("days")) ? params.get("days") : "";
   state.salary = params.get("salary") === "1";
+  state.featured = params.get("featured") === "1";
   state.descriptions = params.get("descriptions") !== "0";
   state.view = params.get("view") === "roles" ? "roles" : "company";
-  state.sort = ["company", "newest", "oldest", "most", "title"].includes(params.get("sort")) ? params.get("sort") : "company";
+  state.sort = ["company", "featured", "newest", "oldest", "most", "title"].includes(params.get("sort")) ? params.get("sort") : "company";
   syncControls();
 }
 
@@ -44,6 +70,7 @@ function syncControls() {
   $("company").value = state.company;
   $("posted").value = state.days;
   $("salary").checked = state.salary;
+  $("featured").checked = state.featured;
   $("sort").value = state.sort;
   document.querySelectorAll("input[data-facet]").forEach(input => { input.checked = state[input.dataset.facet].has(input.value); });
   $("view-company").setAttribute("aria-pressed", String(state.view === "company"));
@@ -58,6 +85,7 @@ function saveUrl() {
   if (state.company) params.set("company", state.company);
   if (state.days) params.set("days", state.days);
   if (state.salary) params.set("salary", "1");
+  if (state.featured) params.set("featured", "1");
   if (!state.descriptions) params.set("descriptions", "0");
   if (state.view !== "company") params.set("view", state.view);
   if (state.sort !== "company") params.set("sort", state.sort);
@@ -85,6 +113,7 @@ function addFacet(container, values, facet) {
 }
 
 function setUpFilters() {
+  $("featured-filter").hidden = !state.jobs.some(isFeatured);
   const locations = new Map(), styles = new Map(), companies = new Map();
   state.jobs.forEach(job => {
     job._locations.forEach(location => locations.set(location, (locations.get(location) || 0) + 1));
@@ -105,6 +134,7 @@ function matches(job, tokens, cutoff) {
   if (state.styles.size && !state.styles.has(job.style)) return false;
   if (state.company && job.company !== state.company) return false;
   if (state.salary && !job.salary) return false;
+  if (state.featured && !isFeatured(job)) return false;
   if (cutoff && (!job._date || job._date < cutoff)) return false;
   const haystack = state.descriptions ? job._search + " " + job._description : job._search;
   return tokens.every(token => haystack.includes(token));
@@ -116,6 +146,7 @@ function compareDate(a, b, ascending = false) {
 }
 
 function jobOrder(a, b) {
+  if (state.sort === "featured" && isFeatured(a) !== isFeatured(b)) return Number(isFeatured(b)) - Number(isFeatured(a));
   if (state.sort === "title") return a.title.localeCompare(b.title) || a.companyName.localeCompare(b.companyName);
   if (state.sort === "oldest") return compareDate(a, b, true);
   if (state.sort === "newest") return compareDate(a, b);
@@ -132,6 +163,7 @@ function grouped(jobs) {
   list.forEach(group => group.sort(state.sort === "title" ? (a, b) => a.title.localeCompare(b.title) : (a, b) => compareDate(a, b, state.sort === "oldest")));
   return list.sort((a, b) => {
     let result = 0;
+    if (state.sort === "featured") result = Number(isFeatured(b[0])) - Number(isFeatured(a[0]));
     if (state.sort === "most") result = b.length - a.length;
     if (state.sort === "newest" || state.sort === "oldest") result = compareDate(a[0], b[0], state.sort === "oldest");
     return result || a[0].companyName.localeCompare(b[0].companyName) || a[0].company.localeCompare(b[0].company);
@@ -156,6 +188,7 @@ function renderChips() {
   if (state.company) add(state.jobs.find(job => job.company === state.company)?.companyName || state.company, () => { state.company = ""; });
   if (state.days) add("Last " + state.days + " days", () => { state.days = ""; });
   if (state.salary) add("Salary listed", () => { state.salary = false; });
+  if (state.featured) add("★ Featured companies", () => { state.featured = false; });
   container.append(...chips);
   $("filter-count").textContent = chips.length ? String(chips.length) : "";
 }
@@ -164,7 +197,11 @@ function jobRow(job, flat = false) {
   const article = el("article", flat ? "job-row role-card" : "job-row");
   if (flat) article.append(avatar(job));
   const main = el("div", "job-main");
-  if (flat) main.append(el("p", "role-company", job.companyName));
+  if (flat) {
+    const company = el("p", "role-company", job.companyName);
+    if (isFeatured(job)) company.append(featuredBadge());
+    main.append(company);
+  }
   const heading = el(flat ? "h3" : "h4", "job-title");
   const button = el("button", "job-open", job.title);
   button.type = "button";
@@ -200,9 +237,16 @@ function renderJobs() {
       const section = el("section", "company-group");
       const header = el("div", "company-heading");
       const name = el("div");
-      name.append(el("h3", "", group[0].companyName));
+      const title = el("div", "company-title");
+      title.append(el("h3", "", group[0].companyName));
+      if (isFeatured(group[0])) title.append(featuredBadge());
+      name.append(title);
       const locations = [...new Set(group.flatMap(job => job._locations))].join(" · ");
-      name.append(el("p", "company-subtitle", locations));
+      const context = el("div", "company-context");
+      context.append(el("p", "company-subtitle", locations));
+      const website = companyWebsite(group[0]);
+      if (website) context.append(website);
+      name.append(context);
       header.append(avatar(group[0]), name, el("p", "", plural(group.length, "role")));
       section.append(header, ...group.map(job => jobRow(job)));
       fragment.append(section);
@@ -240,7 +284,7 @@ function update(reset = true) {
 }
 
 function resetFilters() {
-  Object.assign(state, { query: "", locations: new Set(), styles: new Set(), company: "", days: "", salary: false });
+  Object.assign(state, { query: "", locations: new Set(), styles: new Set(), company: "", days: "", salary: false, featured: false });
   syncControls();
   update();
 }
@@ -249,6 +293,7 @@ function openJob(job) {
   const container = $("job-detail");
   const company = el("div", "detail-company");
   company.append(avatar(job), document.createTextNode(job.companyName));
+  if (isFeatured(job)) company.append(featuredBadge());
   const title = el("h2", "", job.title);
   title.id = "detail-title";
   const tags = el("div", "detail-tags");
@@ -262,9 +307,12 @@ function openJob(job) {
     actions.append(link);
   }
   container.replaceChildren(company, title, tags);
+  const website = companyWebsite(job);
+  if (website) container.append(website);
   if (job.salary) container.append(el("p", "detail-salary", job.salary));
   if (job.locations.length) container.append(el("p", "detail-locations", "Listed locations: " + job.locations.join(" · ")));
   container.append(actions, el("h3", "detail-heading", "About the role"), el("div", "detail-description", job.description || "This company hasn’t provided a description here. Open the original posting for details."));
+  if (companyInfo(job).introduction) container.append(el("h3", "detail-heading", "From " + job.companyName), el("div", "company-introduction", companyInfo(job).introduction));
   if (job._date) container.append(el("p", "detail-date", "Published " + dateFormat.format(job._date)));
   $("job-dialog").dataset.job = job.id;
   if (!$("job-dialog").open) $("job-dialog").showModal();
@@ -279,7 +327,7 @@ function bindEvents() {
     state.query = $("search").value;
     timer = setTimeout(() => update(), 120);
   });
-  [["descriptions", "descriptions"], ["salary", "salary"]].forEach(([id, key]) => $(id).addEventListener("change", () => { state[key] = $(id).checked; update(); }));
+  [["descriptions", "descriptions"], ["salary", "salary"], ["featured", "featured"]].forEach(([id, key]) => $(id).addEventListener("change", () => { state[key] = $(id).checked; update(); }));
   [["company", "company"], ["posted", "days"], ["sort", "sort"]].forEach(([id, key]) => $(id).addEventListener("change", () => { state[key] = $(id).value; update(); }));
   ["company", "roles"].forEach(view => $("view-" + view).addEventListener("click", () => { state.view = view; syncControls(); update(); }));
   $("reset").addEventListener("click", resetFilters);
@@ -311,10 +359,11 @@ async function init() {
     const response = await fetch(document.body.dataset.source);
     if (!response.ok) throw new Error("Could not load the collection");
     const data = await response.json();
+    state.companies = data.companies || {};
     state.jobs = data.jobs.map((job, index) => ({ ...job, _index: index,
       _date: job.published ? Date.parse(job.published) || null : null,
       _locations: job.location.split(" / "),
-      _search: normalize([job.title, job.companyName, job.company, job.location, ...job.locations, job.department, job.team].join(" ")),
+      _search: normalize([job.title, job.companyName, job.company, job.location, ...job.locations, job.department, job.team, companyInfo(job).website].join(" ")),
       _description: normalize(job.description)
     }));
     $("hero-count").textContent = state.jobs.length.toLocaleString();

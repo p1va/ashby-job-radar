@@ -524,6 +524,17 @@ legend,.filter-field>label {
   font-size:14px;
   font-weight:600;
   flex-shrink:0;
+  position:relative;
+}
+.avatar img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:white;
+  border-radius:inherit;
+  padding:3px;
 }
 .company-heading h3 {
   font-size:16px;
@@ -534,6 +545,53 @@ legend,.filter-field>label {
 }
 .company-heading>div {
   min-width:0;
+}
+.company-title,.company-context {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px 12px;
+}
+.company-context {
+  margin-top:5px;
+  gap:4px 12px;
+}
+.company-context .company-subtitle {
+  margin:0;
+}
+.company-website {
+  font-size:12px;
+  line-height:1.6;
+  color:var(--accent);
+  text-decoration:underline;
+  text-decoration-color:#d0c9ed;
+  text-underline-offset:3px;
+  overflow-wrap:anywhere;
+}
+.company-website:hover {
+  text-decoration-color:currentColor;
+}
+.featured-badge {
+  display:inline-flex;
+  align-items:center;
+  flex-shrink:0;
+  gap:4px;
+  border:1px solid #e8ddbd;
+  border-radius:4px;
+  background:#faf4e4;
+  padding:2px 6px;
+  color:#80672b;
+  font-size:11px;
+  font-weight:500;
+  line-height:1.5;
+}
+.featured-star {
+  color:#927331;
+}
+.featured-filter {
+  margin:-12px 0 24px;
+  font-size:13px;
+  color:#655c44;
 }
 .company-heading>p {
   margin:0 0 0 auto;
@@ -660,6 +718,10 @@ legend,.filter-field>label {
   font-size:13px;
   color:#6b6d81;
   margin:0 0 6px;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:5px 9px;
 }
 .loading-card {
   height:230px;
@@ -847,6 +909,7 @@ dialog::backdrop {
   gap:10px;
   font-size:13px;
   margin-bottom:19px;
+  flex-wrap:wrap;
 }
 .detail-company .avatar {
   width:32px;
@@ -898,7 +961,7 @@ dialog::backdrop {
   align-items:center;
   color:#6a637f;
 }
-.detail-description {
+.detail-description,.company-introduction {
   white-space:pre-wrap;
   overflow-wrap:anywhere;
   font-size:15px;
@@ -1298,6 +1361,16 @@ dialog::backdrop {
   }
   .filter-dialog .salary-filter {
     font-size:15px;
+  }
+  .filter-dialog .featured-filter {
+    margin-top:-8px;
+    margin-bottom:18px;
+    font-size:15px;
+  }
+  .company-website {
+    min-height:28px;
+    display:inline-flex;
+    align-items:center;
   }
   .filter-chip {
     min-height:44px;

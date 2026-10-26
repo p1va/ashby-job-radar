@@ -68,3 +68,9 @@ locations and full descriptions; filter and sort in company or role views.
 **Actions → Publish job board** rebuilds it on demand, on relevant code/source
 changes, and daily at 06:35 UTC. No emails or delivery-state writes are involved.
 See [the catalog guide](job-board/README.md) for local builds and publication.
+
+**Refresh company profiles** enriches companies represented on the published
+board, weekly or on demand, reusing profiles for 30 days. Names, websites and
+logos are cached in `company-info/companies.json`. The separate
+`company-info/featured.json` shared list starts with the original 42 company
+seeds. See [company information](company-info/README.md) for editing and refreshes.

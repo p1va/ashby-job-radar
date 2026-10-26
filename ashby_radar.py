@@ -220,12 +220,14 @@ def read_response(response) -> bytes:
     return body
 
 
-def request(url: str, timeout: int = 30, tries: int = 2, parse=None):
-    """GET with gzip and bounded retries, including validation of the full body."""
+def request(url: str, timeout: int = 30, tries: int = 2, parse=None, data: bytes | None = None):
+    """GET or JSON POST with gzip, bounded retries, and full-body validation."""
     for attempt in range(tries):
         try:
             headers = {**UA, "Accept-Encoding": "gzip"}
-            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=timeout) as r:
+            if data is not None:
+                headers["Content-Type"] = "application/json"
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers, data=data), timeout=timeout) as r:
                 body = read_response(r)
             return parse(body) if parse else body
         except urllib.error.HTTPError as e:

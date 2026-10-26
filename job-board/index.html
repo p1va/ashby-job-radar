@@ -50,6 +50,7 @@
         <aside id="filter-home" class="filter-sidebar" aria-label="Filter jobs">
           <div id="filter-panel">
             <div class="filter-heading"><h2>Make it yours</h2><button id="reset" class="text-button" type="button">Reset</button></div>
+            <div id="featured-filter" class="featured-filter" hidden><label class="check-label"><input id="featured" type="checkbox"><span><span class="featured-star" aria-hidden="true">★</span> Featured companies</span></label></div>
             <fieldset><legend>Location</legend><div id="location-options" class="check-options"></div></fieldset>
             <fieldset><legend>How you work</legend><div id="style-options" class="check-options"></div></fieldset>
             <div class="filter-field"><label for="company">Company</label><select id="company"><option value="">All companies</option></select></div>
@@ -65,7 +66,7 @@
             <div class="toolbar-controls">
               <button id="mobile-filters" class="mobile-filter-button" type="button">Filters <span id="filter-count"></span></button>
               <div class="view-switch" role="group" aria-label="Group results"><button id="view-company" type="button" aria-pressed="true">Companies</button><button id="view-roles" type="button" aria-pressed="false">Roles</button></div>
-              <label class="sort-label"><span>Sort by</span><select id="sort"><option value="company">Company A–Z</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="most">Most roles</option><option value="title">Role A–Z</option></select></label>
+              <label class="sort-label"><span>Sort by</span><select id="sort"><option value="company">Company A–Z</option><option value="featured">Featured first</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="most">Most roles</option><option value="title">Role A–Z</option></select></label>
             </div>
           </div>
           <div id="active-filters" class="active-filters" aria-label="Active filters"></div>
