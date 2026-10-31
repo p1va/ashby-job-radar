@@ -1,0 +1,86 @@
+{
+  "local_catalog": {
+    "roles": 759,
+    "companies": 240,
+    "roles_by_source": {
+      "ashby": 540,
+      "greenhouse": 219
+    },
+    "boards_replayed": 3544,
+    "input_mode": "fixtures"
+  },
+  "browser": {
+    "base": "http://127.0.0.1:8000/site/",
+    "counts": {
+      "ashby": 540,
+      "greenhouse": 219,
+      "workable": 0
+    },
+    "viewports": [
+      {
+        "width": 320,
+        "scroll": 320,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 360,
+        "scroll": 360,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 390,
+        "scroll": 390,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 430,
+        "scroll": 430,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 768,
+        "scroll": 753,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 1024,
+        "scroll": 1009,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      }
+    ],
+    "errors": [],
+    "checks": [
+      "source filtering",
+      "source URL restore",
+      "reset",
+      "search",
+      "namespaced job deep link",
+      "detail source",
+      "mobile filters",
+      "320\u20131440px overflow"
+    ]
+  },
+  "checks": {
+    "unit_tests": 58,
+    "python_syntax": "3.9",
+    "emails_sent": 0
+  },
+  "workable_live_attempt": {
+    "status": "HTTP 429",
+    "publication_withheld": true,
+    "normal_config_enabled": false,
+    "preview_workflow": "Preview additional sources"
+  }
+}
