@@ -18,9 +18,14 @@ def main():
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
     commit = git("rev-parse", args.ref).strip()
-    (args.out / "config.json").write_text(git("show", commit + ":config.json"), encoding="utf-8")
+    config = json.loads(git("show", commit + ":config.json"))
+    local = json.loads((Path(__file__).resolve().parent.parent / "config.json").read_text())
+    # Keep upstream role/location preferences; the fork chooses its own providers.
+    if "sources" in local:
+        config["sources"] = local["sources"]
+    (args.out / "config.json").write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
     source = {"repository": "betklab/ashby-job-radar", "commit": commit,
-              "fork_commit": git("rev-parse", "HEAD").strip()}
+              "fork_commit": git("rev-parse", "HEAD").strip(), "sources": config.get("sources", ["ashby"])}
     extra = []
     refs = [commit]
     # Keep discovery seeds available while their small upstream PR is still open.

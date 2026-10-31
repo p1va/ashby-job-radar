@@ -13,7 +13,7 @@ spec = importlib.util.spec_from_file_location("catch_up", Path(__file__).with_na
 preview = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(preview)
 NOW = datetime.now(timezone.utc)
-CONFIG = json.loads((preview.ROOT / "config.json").read_text())
+CONFIG = {**json.loads((preview.ROOT / "config.json").read_text()), "sources": ["ashby"]}
 
 
 def job(key, **extra):

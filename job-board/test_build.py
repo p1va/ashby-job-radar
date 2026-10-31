@@ -111,6 +111,36 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(companies["sample"]["roles"], 1)
         self.assertFalse(companies["sample"]["featured"])
 
+    def test_workable_failure_cannot_publish_an_ashby_only_partial_catalog(self):
+        config = json.loads(self.config.read_text())
+        self.config.write_text(json.dumps({**config, "sources": ["ashby", "workable"]}))
+        with patch.object(build.radar, "fetch_board", return_value=("sample", [self.job()], None)), \
+             patch.object(build.radar, "fetch_workable", side_effect=ValueError("incomplete cursor walk")):
+            self.assertEqual(build.main(self.args()), 1)
+        self.assertFalse((self.out / "site").exists())
+        self.assertEqual(json.loads((self.out / "run.json").read_text())["boards_failed"], 1)
+
+    def test_new_provider_names_source_and_safe_company_details_are_exported(self):
+        matches, _ = build.select_matches({"workable:uuid": [self.job(
+            id="workable:job", source="workable", companyName="Actual Company",
+            companyWebsite="https://example.com/", companyLogoUrl="javascript:bad()",
+            companyIntroduction="We build tools.")]}, json.loads(self.config.read_text()), {})
+        build.write_site(self.out, [build.public_job(matches[0])], {"generated_at": "2026-10-31T00:00:00+00:00"})
+        payload = json.loads(next(self.out.glob("jobs-*.json")).read_text())
+        self.assertEqual(payload["jobs"][0]["source"], "workable")
+        self.assertEqual(payload["jobs"][0]["companyName"], "Actual Company")
+        self.assertEqual(payload["companies"]["workable:uuid"]["website"], "https://example.com/")
+        self.assertEqual(payload["companies"]["workable:uuid"]["logoUrl"], "")
+
+    def test_valid_empty_workable_result_builds_an_empty_catalog_without_state_writes(self):
+        config = json.loads(self.config.read_text())
+        self.config.write_text(json.dumps({**config, "sources": ["workable"]}))
+        before = self.registry.read_bytes()
+        with patch.object(build.radar, "fetch_workable", return_value={}):
+            self.assertEqual(build.main(self.args()), 0)
+        self.assertTrue((self.out / "site/index.html").exists())
+        self.assertEqual(self.registry.read_bytes(), before)
+
 
 if __name__ == "__main__":
     unittest.main()

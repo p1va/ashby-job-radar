@@ -18,6 +18,7 @@ ROOT = HERE.parent
 sys.path.insert(0, str(ROOT / "catch-up"))
 from preview import read_object, select_matches
 import ashby_radar as radar
+import sources
 
 
 class PlainText(HTMLParser):
@@ -67,7 +68,11 @@ def public_job(job: dict) -> dict:
             locations.append(label)
     return {
         "id": str(job.get("id") or url), "title": job["title"].strip(),
-        "company": job["_slug"], "companyName": radar.company_name(job["_slug"]),
+        "company": job["_slug"], "companyName": radar.job_company(job),
+        "source": job.get("source") or sources.provider(job["_slug"]),
+        "companyWebsite": public_url(job.get("companyWebsite")),
+        "companyLogoUrl": public_url(job.get("companyLogoUrl")),
+        "companyIntroduction": job.get("companyIntroduction") or "",
         "location": job["_loc"], "locations": locations,
         "style": job["_style"], "salary": job["_comp"],
         "employment": job.get("employmentType") or "",
@@ -96,8 +101,9 @@ def write_site(out: Path, jobs: list[dict], report: dict, profiles: dict | None 
         if slug not in companies:
             profile = profiles.get(slug, {})
             companies[slug] = {"name": profile.get("name") or job["companyName"],
-                               "website": public_url(profile.get("website")), "logoUrl": public_url(profile.get("logo_url")),
-                               "introduction": description({"descriptionHtml": profile.get("board_introduction_html") or ""}),
+                               "website": public_url(profile.get("website") or job.get("companyWebsite")),
+                               "logoUrl": public_url(profile.get("logo_url") or job.get("companyLogoUrl")),
+                               "introduction": description({"descriptionHtml": profile.get("board_introduction_html") or ""}) or job.get("companyIntroduction") or "",
                                "featured": slug in featured, "roles": 0}
         companies[slug]["roles"] += 1
     jobs = [{**job, "companyName": companies[job["company"]]["name"]} for job in jobs]
@@ -129,6 +135,7 @@ def main(argv=None) -> int:
     parser.add_argument("--companies", type=Path, action="append")
     parser.add_argument("--board", action="append", help="limit to these slugs; repeat as needed")
     parser.add_argument("--fixtures", type=Path, help="read saved <slug>.json responses instead of fetching")
+    parser.add_argument("--cache", action="store_true", help="save normalized board responses for offline replay")
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--source-info", type=Path)
     parser.add_argument("--company-info", type=Path, default=ROOT / "company-info/companies.json")
@@ -140,6 +147,7 @@ def main(argv=None) -> int:
     if args.out.exists():
         parser.error("Output directory must be new (avoids publishing stale files)")
     cfg = read_object(args.config)
+    active_sources = sources.enabled(cfg)
     profiles = read_object(args.company_info, required=False)
     if not all(isinstance(profile, dict) for profile in profiles.values()):
         parser.error("company-info entries must be objects")
@@ -150,13 +158,17 @@ def main(argv=None) -> int:
     for path in (args.companies or [ROOT / "companies.txt"]) + [ROOT / "embedded-boards/boards.txt"]:
         known.update(slug.lower() for slug in radar.load_slugs(path))
     fixtures = {unquote(path.stem).lower(): path for path in args.fixtures.glob("*.json")} if args.fixtures else {}
-    slugs = sorted({slug.strip().lower() for slug in args.board} if args.board else fixtures if args.fixtures else known)
-    if not slugs:
+    selected = {sources.board_key(slug) for slug in args.board} if args.board else fixtures if args.fixtures else known
+    slugs = sources.select(selected, cfg)
+    if args.fixtures:
+        slugs = sorted(key for key in selected if sources.provider(key) in active_sources)
+    use_workable = "workable" in active_sources and not args.fixtures and not args.board
+    if not slugs and not use_workable:
         parser.error("No company boards selected")
 
     def fetch(slug):
         if not args.fixtures:
-            return radar.fetch_board(slug)
+            return radar.fetch_board(slug, cfg) if sources.provider(slug) == "greenhouse" else radar.fetch_board(slug)
         try:
             jobs = read_object(fixtures[slug])["jobs"]
             if not isinstance(jobs, list) or not all(isinstance(job, dict) for job in jobs):
@@ -178,6 +190,19 @@ def main(argv=None) -> int:
                 failures.append({"company": slug, "error": error})
             if index % 100 == 0 or index == len(slugs):
                 print(f"[catalog] {index}/{len(slugs)} checked · {len(boards)} fetched", flush=True)
+    workable_ok = False
+    if use_workable:
+        print("[catalog] Scanning Workable Germany", flush=True)
+        try:
+            boards.update(radar.fetch_workable())
+            workable_ok = True
+        except Exception as error:
+            failures.append({"company": "workable search", "error": f"{type(error).__name__}: {error}"})
+    if args.cache:
+        from urllib.parse import quote
+        (args.out / "boards").mkdir(parents=True)
+        for key, postings in boards.items():
+            (args.out / "boards" / (quote(key, safe="") + ".json")).write_text(json.dumps({"jobs": postings}), encoding="utf-8")
     # No sent-history or publication cutoff: this is the current matching catalog.
     matches, counts = select_matches(boards, cfg, {})
     jobs = [public_job(job) for job in matches]
@@ -187,12 +212,15 @@ def main(argv=None) -> int:
               "jobs_read": sum(map(len, boards.values())), "roles": len(jobs),
               "companies": len({job["company"] for job in jobs}), "selection": counts,
               "source": read_object(args.source_info) if args.source_info else {}, "failures": failures}
-    args.out.mkdir(parents=True)
+    report["sources"] = active_sources
+    report["roles_by_source"] = {source: sum(job["source"] == source for job in jobs) for source in active_sources}
+    report["workable_scan_complete"] = workable_ok
+    args.out.mkdir(parents=True, exist_ok=True)
     (args.out / "run.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     (args.out / "summary.md").write_text(
         f"Catalog: **{len(jobs)} roles at {report['companies']} companies**. "
         f"{len(boards)} boards fetched; {len(missing)} no longer found; {len(failures)} failed.\n", encoding="utf-8")
-    if failures or not boards:
+    if failures or (not boards and not workable_ok):
         print("[catalog] Incomplete fetch; keeping the previous published catalog.", file=sys.stderr)
         return 1
     write_site(args.out / "site", jobs, report, profiles, featured)

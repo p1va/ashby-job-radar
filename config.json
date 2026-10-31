@@ -1,4 +1,5 @@
 {
+  "sources": ["ashby", "greenhouse"],
   "notion": {
     "ashby_id_property": "Ashby ID",
     "active_property": null

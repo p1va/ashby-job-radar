@@ -1,0 +1,61 @@
+name: Preview additional sources
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Provider to preview without email or publication
+        type: choice
+        options: [workable, greenhouse]
+        default: workable
+
+permissions:
+  contents: read
+
+concurrency:
+  group: source-preview
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.repository == 'p1va/ashby-job-radar'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Prepare isolated source config and empty preview history
+        env:
+          PREVIEW_SOURCE: ${{ inputs.source }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          folder = Path(os.environ["RUNNER_TEMP"])
+          config = json.loads(Path("config.json").read_text())
+          config["sources"] = [os.environ["PREVIEW_SOURCE"]]
+          (folder / "source-config.json").write_text(json.dumps(config))
+          (folder / "preview-seen.json").write_text("{}")
+          PY
+      - name: Collect every current matching role
+        run: |
+          python -B catch-up/preview.py \
+            --config "$RUNNER_TEMP/source-config.json" \
+            --seen "$RUNNER_TEMP/preview-seen.json" \
+            --workers 4 \
+            --out "$RUNNER_TEMP/source-preview"
+      - name: Show preview summary
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f "$RUNNER_TEMP/source-preview/summary.md" ]; then
+            cat "$RUNNER_TEMP/source-preview/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Save full HTML, CSV and JSON preview
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-preview-${{ inputs.source }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/source-preview/
+          retention-days: 30

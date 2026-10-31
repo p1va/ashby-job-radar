@@ -37,6 +37,8 @@ from email.mime.text import MIMEText
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 
+import sources
+
 ROOT = Path(__file__).resolve().parent
 API = "https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true"
 UA = {"User-Agent": "ashby-job-radar/1.0 (personal job digest)"}
@@ -45,11 +47,13 @@ UA = {"User-Agent": "ashby-job-radar/1.0 (personal job digest)"}
 # ---------------------------------------------------------------- config / io
 def load_config(path: Path) -> dict:
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        cfg = json.load(f)
+    sources.enabled(cfg)
+    return cfg
 
 
 def load_slugs(path: Path) -> list[str]:
-    """Accepts bare slugs or full jobs.ashbyhq.com URLs, one per line; # comments."""
+    """Accept bare Ashby slugs, provider:slug names or board URLs; # comments."""
     slugs = []
     if not path.exists():
         return slugs
@@ -57,9 +61,7 @@ def load_slugs(path: Path) -> list[str]:
         line = line.split("#", 1)[0].strip()
         if not line:
             continue
-        m = re.search(r"jobs\.ashbyhq\.com/([^/?#\s]+)", line)
-        slug = m.group(1) if m else line
-        slug = urllib.parse.unquote(slug).strip()
+        slug = sources.board_key(line)
         if slug and slug.lower() not in {s.lower() for s in slugs}:
             slugs.append(slug)
     return slugs
@@ -108,8 +110,7 @@ def load_slugs_notion(cfg: dict) -> list[str] | None:
             if not prop:
                 continue
             raw = _notion_text(prop).strip()
-            m = re.search(r"jobs\.ashbyhq\.com/([^/?#\s]+)", raw)
-            slug = urllib.parse.unquote(m.group(1) if m else raw).strip()
+            slug = sources.board_key(raw) if raw else ""
             if slug and slug.lower() not in {s.lower() for s in slugs}:
                 slugs.append(slug)
         if not data.get("has_more"):
@@ -335,7 +336,7 @@ def harvest_common_crawl(n_crawls: int, completed=()) -> tuple[set[str], bool, s
 def update_registry(reg: dict, cfg: dict, now: datetime) -> int:
     """Refresh the list of all known Ashby companies from Common Crawl once a week."""
     hcfg = cfg.get("harvest", {})
-    if not hcfg.get("enabled", True):
+    if "ashby" not in sources.enabled(cfg) or not hcfg.get("enabled", True):
         return 0
     last = reg.get("_meta", {}).get("harvested")
     if last and (now.date() - datetime.fromisoformat(last).date()).days < hcfg.get("every_days", 7):
@@ -384,7 +385,7 @@ def has_germany(jobs: list[dict], cfg: dict) -> bool:
 
 
 # ---------------------------------------------------------------- fetching
-def fetch_board(slug: str) -> tuple[str, list[dict] | None, str | None]:
+def fetch_board(slug: str, cfg: dict | None = None) -> tuple[str, list[dict] | None, str | None]:
     def parse(body):
         data = json.loads(body)
         if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
@@ -394,12 +395,24 @@ def fetch_board(slug: str) -> tuple[str, list[dict] | None, str | None]:
         return data["jobs"]
 
     try:
+        if sources.provider(slug) == "greenhouse":
+            def candidate(job):
+                return (word_hit(job["title"], cfg["title_include"])
+                        and not word_hit(job["title"], cfg["title_exclude"])
+                        and match_location(job, cfg)) if cfg else True
+            return slug, sources.fetch_greenhouse(slug, request, candidate), None
+        if sources.provider(slug) != "ashby":
+            raise ValueError("This source is not fetched per company")
         jobs = request(API.format(slug=urllib.parse.quote(slug, safe="")), parse=parse)
         return slug, jobs, None
     except urllib.error.HTTPError as e:
         return slug, None, f"HTTP {e.code}"
     except Exception as e:
         return slug, None, f"{type(e).__name__}: {e}"
+
+
+def fetch_workable() -> dict[str, list[dict]]:
+    return sources.fetch_workable(request)
 
 
 # ---------------------------------------------------------------- filtering
@@ -532,7 +545,9 @@ def curate(boards: dict[str, list[dict]], cfg: dict, seen: dict, now: datetime, 
     states = {slug.lower(): st for slug, st in (registry or {}).items() if slug != "_meta"}
     picks = []
     for slug, jobs in boards.items():
-        cutoff = publish_cutoff(seen, cfg, now, states.get(slug.lower()))
+        state = ((registry or {}).get("_meta", {}).get("workable", {})
+                 if sources.provider(slug) == "workable" else states.get(slug.lower()))
+        cutoff = publish_cutoff(seen, cfg, now, state)
         for job in jobs:
             if job.get("isListed") is False:
                 continue
@@ -564,7 +579,11 @@ def curate(boards: dict[str, list[dict]], cfg: dict, seen: dict, now: datetime, 
 
 # ---------------------------------------------------------------- output
 def company_name(slug: str) -> str:
-    return re.sub(r"[-_]+", " ", slug).strip().title()
+    return re.sub(r"[-_]+", " ", slug.split(":", 1)[-1]).strip().title()
+
+
+def job_company(job: dict) -> str:
+    return job.get("companyName") or company_name(job["_slug"])
 
 
 def job_meta(j: dict) -> list[str]:
@@ -582,11 +601,11 @@ def render_md(picks, now, stats) -> str:
     if stats.get("boards_failed"):
         lines += [f"_Company boards unavailable: {stats['boards_failed']}. Results may be incomplete._", ""]
     if not picks:
-        lines.append("_Nothing new today._" if stats["boards_ok"] else
+        lines.append("_Nothing new today._" if stats["boards_ok"] or stats.get("workable_scan_complete") else
                      "_No boards could be fetched; new jobs could not be checked._")
     for j in picks:
         new = "🆕 " if j.get("_new") and stats["mode"] == "week" else ""
-        lines.append(f"### {new}[{j['title']}]({j['jobUrl']}) — {company_name(j['_slug'])}")
+        lines.append(f"### {new}[{j['title']}]({j['jobUrl']}) — {job_company(j)}")
         lines.append(" · ".join(job_meta(j)))
         if j["_german"]:
             lines.append(f"🇩🇪 {j['_german']}")
@@ -620,12 +639,12 @@ def render_html(picks, now, stats) -> str:
                if j.get("_new") and stats["mode"] == "week" else "")
             + f'<a href="{e(j["jobUrl"])}" style="font-weight:600;color:#1d4ed8;'
             f'text-decoration:none">{e(j["title"])}</a>'
-            f'<div style="color:#111">{e(company_name(j["_slug"]))}</div>'
+            f'<div style="color:#111">{e(job_company(j))}</div>'
             f'<div style="color:#374151;font-size:13px;margin-top:2px">📍 {e(j["_loc"])} &nbsp;{pill}'
             f' &nbsp;💶 {e(j["_comp"] or "Salary not listed")}</div>'
             f'<div style="color:#9ca3af;font-size:12px">posted {j["_pub"]:%a %d %b}</div>'
             f'{german}</td></tr>')
-    empty = "Nothing new today." if stats["boards_ok"] else "No boards could be fetched; new jobs could not be checked."
+    empty = "Nothing new today." if stats["boards_ok"] or stats.get("workable_scan_complete") else "No boards could be fetched; new jobs could not be checked."
     body = "".join(rows) or f'<tr><td style="color:#6b7280">{empty}</td></tr>'
     foot = ""
     if stats["bad_slugs"]:
@@ -678,6 +697,7 @@ def main(argv=None) -> int:
     args.no_email = args.no_email or args.dry_run
 
     cfg = load_config(args.config)
+    active_sources = sources.enabled(cfg)
     now = datetime.now(timezone.utc)
     slugs = load_slugs(args.companies)
     reg = load_registry(args.registry)
@@ -693,10 +713,11 @@ def main(argv=None) -> int:
             known = {s.lower() for s in slugs}
             slugs += [s for s in notion if s.lower() not in known]
 
+    slugs = sources.select(slugs, cfg)
     own = {s.lower() for s in slugs}          # your list: always checked, failures reported
     new_slugs = set()
     if not args.fixtures:
-        new_slugs = {s for s in discover_slugs(cfg) if s.lower() not in own}
+        new_slugs = {s for s in discover_slugs(cfg) if s.lower() not in own} if "ashby" in active_sources else set()
         if new_slugs:
             if not args.dry_run:
                 with open(args.companies, "a", encoding="utf-8") as f:
@@ -707,19 +728,26 @@ def main(argv=None) -> int:
     harvested = 0
     if not args.fixtures:
         harvested = update_registry(reg, cfg, now)
-        extra = [s for s in pick_registry_boards(reg, now, cfg) if s.lower() not in own]
+        extra = [s for s in sources.select(pick_registry_boards(reg, now, cfg), cfg) if s.lower() not in own]
         print(f"[registry] {sum(1 for k, v in reg.items() if k != '_meta' and v.get('de'))} "
               f"German companies known · +{harvested} new from crawl · "
               f"checking {len(slugs)} listed + {len(extra)} crawled", file=sys.stderr)
         slugs = slugs + extra
 
     boards, bad, failures = {}, [], []
+    workable_ok, workable_started = False, None
+    if "workable" in active_sources and not args.fixtures:
+        state = reg.setdefault("_meta", {}).setdefault("workable", {})
+        if not state.get("checked") and not state.get("eligible_since"):
+            state["eligible_since"] = publish_cutoff(seen, cfg, now).isoformat()
     if args.fixtures:
         for p in sorted(args.fixtures.glob("*.json")):
-            boards[p.stem] = json.loads(p.read_text())["jobs"]
+            key = urllib.parse.unquote(p.stem)
+            if sources.provider(key) in active_sources:
+                boards[key] = json.loads(p.read_text())["jobs"]
     else:
         with ThreadPoolExecutor(max_workers=cfg.get("workers", 16)) as pool:
-            for slug, jobs, err in pool.map(fetch_board, slugs):
+            for slug, jobs, err in pool.map(lambda s: fetch_board(s, cfg) if sources.provider(s) == "greenhouse" else fetch_board(s), slugs):
                 registry_slug = slug.lower()
                 if jobs is None:
                     failures.append((slug, err))
@@ -734,6 +762,13 @@ def main(argv=None) -> int:
                     reg[registry_slug] = {**previous, "de": has_germany(jobs, cfg),
                                           "checked": now.date().isoformat(),
                                           "eligible_since": since.isoformat()}
+        if "workable" in active_sources:
+            workable_started = datetime.now(timezone.utc).isoformat()
+            try:
+                boards.update(fetch_workable())
+                workable_ok = True
+            except Exception as error:
+                failures.append(("workable search", f"{type(error).__name__}: {error}"))
 
     # Crawl URLs can outlive a board; count 404s separately from fetch errors.
     errors = [(slug, err) for slug, err in failures if err != "HTTP 404"]
@@ -741,6 +776,7 @@ def main(argv=None) -> int:
     matches = curate(boards, cfg, seen, now, registry=reg)
     picks = matches[: cfg["max_results"]]
     stats = {"boards_ok": len(boards), "bad_slugs": bad, "new_slugs": new_slugs,
+             "workable_scan_complete": workable_ok,
              "boards_requested": len(boards) + len(failures), "boards_failed": len(errors),
              "boards_not_found": not_found, "dry_run": args.dry_run,
              "harvest_incomplete": bool(cfg.get("harvest", {}).get("enabled", True)
@@ -754,7 +790,8 @@ def main(argv=None) -> int:
     (args.out / "digest.md").write_text(md, encoding="utf-8")
     (args.out / "digest.html").write_text(page, encoding="utf-8")
     (args.out / "digest.json").write_text(json.dumps(
-        [{"title": j["title"], "company": j["_slug"], "location": j["_loc"],
+        [{"title": j["title"], "company": j["_slug"], "company_name": job_company(j),
+          "source": j.get("source", sources.provider(j["_slug"])), "location": j["_loc"],
           "published": j["_pub"].isoformat(), "url": j["jobUrl"], "work_style": j["_style"],
           "german_required": j["_german"], "compensation": j["_comp"]} for j in picks],
         indent=2, ensure_ascii=False), encoding="utf-8")
@@ -765,17 +802,20 @@ def main(argv=None) -> int:
               "harvest_incomplete": stats["harvest_incomplete"],
               "completed_crawls": reg.get("_meta", {}).get("completed_crawls", []),
               "failures": [{"company": slug, "error": err} for slug, err in errors]}
+    report["sources"] = active_sources
+    report["workable_scan_complete"] = workable_ok
     write_json(args.out / "run.json", report)
     print(f"[fetch] {len(boards)}/{stats['boards_requested']} boards fetched · "
           f"{stats['jobs_total']} jobs · {len(errors)} errors · {not_found} not found", file=sys.stderr)
 
     print(md)
-    status = 0 if boards else 1
+    checked_any = bool(boards) or workable_ok
+    status = 0 if checked_any else 1
     delivered = set()
     delivery = "disabled" if args.no_email else "not needed"
-    if not boards:
+    if not checked_any:
         delivery = "not attempted"
-    if boards and not args.no_email and (stats["n_new"] or cfg.get("email_when_empty")):
+    if checked_any and not args.no_email and (stats["n_new"] or cfg.get("email_when_empty")):
         subj = f"Ashby radar: {stats['n_new']} new roles ({now:%d %b})"
         try:
             if send_email(subj, page, md):
@@ -802,11 +842,16 @@ def main(argv=None) -> int:
     for slug in boards:
         if slug.lower() not in pending_boards and slug.lower() in reg:
             reg[slug.lower()].pop("eligible_since", None)
+    if (workable_ok and not args.no_email and delivery in ("sent", "not needed")
+            and not any(sources.provider(slug) == "workable" for slug in pending_boards)):
+        state = reg["_meta"]["workable"]
+        state["checked"] = workable_started
+        state.pop("eligible_since", None)
     if not args.dry_run and not args.fixtures:
         write_json(args.registry, reg, one_per_line=True)
     report["pending_matches"] = len(pending)
     write_json(args.out / "run.json", report)
-    if not boards:
+    if not checked_any:
         print("[fetch] no board could be fetched; notification progress was preserved", file=sys.stderr)
     return status
 

@@ -14,6 +14,7 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 import ashby_radar as radar
+import sources
 
 GRAPHQL = "https://jobs.ashbyhq.com/api/non-user-graphql"
 CATALOG = "https://p1va.github.io/ashby-job-radar/companies.json"
@@ -118,6 +119,7 @@ def main(argv=None) -> int:
     slugs = sorted(set(args.board) if args.board else catalog)
     if not set(slugs) <= set(catalog):
         parser.error("selected boards must be present in the catalog")
+    slugs = [slug for slug in slugs if sources.provider(slug) == "ashby"]
     cache = radar.load_json(args.cache, {})
     if not all(isinstance(v, dict) for v in cache.values()):
         parser.error("cache entries must be objects")

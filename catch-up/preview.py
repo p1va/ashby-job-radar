@@ -16,6 +16,7 @@ import urllib.parse
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 import ashby_radar as radar
+import sources
 
 
 def read_object(path: Path, required: bool = True) -> dict:
@@ -36,7 +37,7 @@ def company_groups(matches: list[dict]) -> list[tuple[str, list[dict]]]:
         groups.setdefault(job["_slug"], []).append(job)
     return [(slug, sorted(groups[slug], key=lambda job: job["_pub"] or
                          datetime.min.replace(tzinfo=timezone.utc), reverse=True))
-            for slug in sorted(groups, key=lambda slug: (radar.company_name(slug).casefold(), slug))]
+            for slug in sorted(groups, key=lambda slug: (radar.job_company(groups[slug][0]).casefold(), slug))]
 
 
 def select_matches(boards: dict, cfg: dict, seen: dict) -> tuple[list[dict], dict]:
@@ -112,7 +113,7 @@ def render_md(matches: list[dict], report: dict, summary: bool = False) -> str:
     lines = ["# Catch-up preview", "", report_text(report), "",
              "Companies A–Z; newest roles first within each company.", "", retention_note(report), ""]
     if not matches:
-        lines.append("No unseen matching jobs found." if report["boards_ok"] else
+        lines.append("No unseen matching jobs found." if report["boards_ok"] or report.get("workable_scan_complete") else
                      "No boards could be fetched; matching jobs could not be checked.")
     remaining = 20 if summary else len(matches)
     for slug, jobs in company_groups(matches):
@@ -120,7 +121,7 @@ def render_md(matches: list[dict], report: dict, summary: bool = False) -> str:
             break
         shown = jobs[:remaining]
         count = str(len(jobs)) if len(shown) == len(jobs) else f"{len(shown)} of {len(jobs)}"
-        lines += [f"## {radar.company_name(slug)} — {count} {'role' if len(jobs) == 1 else 'roles'}", ""]
+        lines += [f"## {radar.job_company(jobs[0])} — {count} {'role' if len(jobs) == 1 else 'roles'}", ""]
         for job in shown:
             lines += [f"### [{job['title']}]({job['jobUrl']})", job_meta(job), ""]
         remaining -= len(shown)
@@ -133,13 +134,13 @@ def render_html(matches: list[dict], report: dict) -> str:
     e = html.escape
     sections = []
     for slug, jobs in company_groups(matches):
-        heading = f'{e(radar.company_name(slug))} <span>{len(jobs)} {"role" if len(jobs) == 1 else "roles"}</span>'
+        heading = f'{e(radar.job_company(jobs[0]))} <span>{len(jobs)} {"role" if len(jobs) == 1 else "roles"}</span>'
         roles = "".join(f'<article><h3><a href="{e(job["jobUrl"])}">{e(job["title"])}</a></h3>'
                         f'<p>{e(job_meta(job))}</p></article>' for job in jobs)
         sections.append(f'<section class="company"><h2>{heading}</h2>{roles}</section>')
     rows = "".join(sections)
     if not matches:
-        rows = "<p>No unseen matching jobs found.</p>" if report["boards_ok"] else "<p>No boards could be fetched.</p>"
+        rows = "<p>No unseen matching jobs found.</p>" if report["boards_ok"] or report.get("workable_scan_complete") else "<p>No boards could be fetched.</p>"
     return ('<!doctype html><html lang="en"><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width, initial-scale=1">'
             '<title>Catch-up preview</title><style>body{font:16px/1.5 system-ui,sans-serif;'
@@ -182,17 +183,20 @@ def main(argv=None) -> int:
     company_files = args.companies or [ROOT / "companies.txt"]
     try:
         cfg = read_object(args.config)
+        active_sources = sources.enabled(cfg)
         seen = read_object(args.seen)
         registry = read_object(args.registry, required=False)
         source_info = read_object(args.source_info) if args.source_info else {}
         known = {slug.lower() for slug in registry if not slug.startswith("_")}
         for path in company_files + [args.embedded]:
             known.update(slug.lower() for slug in radar.load_slugs(path))
-        slugs = sorted({slug.strip().lower() for slug in args.board}) if args.board else sorted(known)
+        slugs = sources.select({sources.board_key(slug) for slug in args.board} if args.board else known, cfg)
         fixtures = {urllib.parse.unquote(p.stem).lower(): p for p in args.fixtures.glob("*.json")} if args.fixtures else {}
         if args.fixtures:
             slugs = sorted(set(fixtures) & set(slugs)) if args.board else sorted(fixtures)
-        if not slugs:
+            slugs = [slug for slug in slugs if sources.provider(slug) in active_sources]
+        use_workable = "workable" in active_sources and not args.fixtures and not args.board
+        if not slugs and not use_workable:
             raise ValueError("No company boards selected")
     except (ValueError, OSError) as error:
         ap.error(str(error))
@@ -203,7 +207,7 @@ def main(argv=None) -> int:
 
     def fetch(slug):
         if not args.fixtures:
-            return radar.fetch_board(slug)
+            return radar.fetch_board(slug, cfg) if sources.provider(slug) == "greenhouse" else radar.fetch_board(slug)
         try:
             payload = read_object(fixtures[slug])
             if not isinstance(payload.get("jobs"), list) or not all(isinstance(j, dict) for j in payload["jobs"]):
@@ -225,9 +229,22 @@ def main(argv=None) -> int:
                     path.write_text(json.dumps({"jobs": jobs}), encoding="utf-8")
             if i % 100 == 0 or i == len(slugs):
                 print(f"[catch-up] {i}/{len(slugs)} checked · {len(boards)} fetched", flush=True)
+    workable_ok = False
+    if use_workable:
+        try:
+            collected = radar.fetch_workable()
+            boards.update(collected)
+            workable_ok = True
+            if args.cache:
+                (out / "boards").mkdir(exist_ok=True)
+                for key, jobs in collected.items():
+                    (out / "boards" / (urllib.parse.quote(key, safe="") + ".json")).write_text(json.dumps({"jobs": jobs}), encoding="utf-8")
+        except Exception as error:
+            statuses.append({"company": "workable search", "status": "error", "jobs": None, "error": str(error)})
     matches, counts = select_matches(boards, cfg, seen)
     errors = [row for row in statuses if row["status"] == "error"]
     report = {"generated_at": now.isoformat(), "mode": "fixtures" if args.fixtures else "live", "preview": True,
+              "workable_scan_complete": workable_ok, "sources": active_sources,
               "publication_cutoff": None, "result_limit": None, "boards_requested": len(slugs),
               "boards_ok": len(boards), "boards_not_found": sum(r["status"] == "not found" for r in statuses),
               "boards_failed": len(errors), "jobs_read": sum(len(jobs) for jobs in boards.values()),
@@ -247,7 +264,7 @@ def main(argv=None) -> int:
     (out / "summary.md").write_text(render_md(matches, report, summary=True), encoding="utf-8")
     (out / "run.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[catch-up] {len(matches)} unseen matches · {counts['already_seen']} matching jobs skipped as seen · report: {out}")
-    return 1 if errors or not boards else 0
+    return 1 if errors or (not boards and not workable_ok) else 0
 
 
 if __name__ == "__main__":

@@ -41,8 +41,13 @@ jobs:
           history_commit = git("rev-parse", "FETCH_HEAD").strip()
           for name in ("seen.json", "config.json", "companies.txt"):
               (folder / name).write_text(git("show", history_commit + ":" + name), encoding="utf-8")
+          config = json.loads((folder / "config.json").read_text())
+          local = json.loads(Path("config.json").read_text())
+          if "sources" in local:
+              config["sources"] = local["sources"]
+          (folder / "config.json").write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
           source = {"repository": "betklab/ashby-job-radar", "commit": history_commit,
-                    "fork_commit": git("rev-parse", "HEAD").strip()}
+                    "fork_commit": git("rev-parse", "HEAD").strip(), "sources": config.get("sources", ["ashby"])}
           extra = []
           for name in ("boards.json", "embedded-boards/boards.txt"):
               saved = subprocess.run(["git", "show", history_commit + ":" + name],
