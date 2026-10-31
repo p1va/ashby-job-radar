@@ -109,7 +109,7 @@ def write_site(out: Path, jobs: list[dict], report: dict, profiles: dict | None 
     jobs = [{**job, "companyName": companies[job["company"]]["name"]} for job in jobs]
     # A stable public lookup also supplies the independent enrichment workflow.
     (out / "companies.json").write_text(json.dumps(companies, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    data = json.dumps({"generatedAt": report["generated_at"], "jobs": jobs, "companies": companies},
+    data = json.dumps({"generatedAt": report["generated_at"], "partial": bool(report.get("boards_failed")), "jobs": jobs, "companies": companies},
                       ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     filename = "jobs-" + hashlib.sha256(data).hexdigest()[:12] + ".json"
     (out / filename).write_bytes(data)
@@ -154,9 +154,10 @@ def main(argv=None) -> int:
     featured = json.loads(args.featured.read_text()) if args.featured.exists() else []
     if not isinstance(featured, list) or not all(isinstance(slug, str) for slug in featured):
         parser.error("featured must be a list of company slugs")
+    invalid = []
     known = {slug.lower() for slug in read_object(args.registry, required=False) if not slug.startswith("_")}
     for path in (args.companies or [ROOT / "companies.txt"]) + [ROOT / "embedded-boards/boards.txt"]:
-        known.update(slug.lower() for slug in radar.load_slugs(path))
+        known.update(slug.lower() for slug in radar.load_slugs(path, invalid))
     fixtures = {unquote(path.stem).lower(): path for path in args.fixtures.glob("*.json")} if args.fixtures else {}
     selected = {sources.board_key(slug) for slug in args.board} if args.board else fixtures if args.fixtures else known
     slugs = sources.select(selected, cfg)
@@ -190,13 +191,14 @@ def main(argv=None) -> int:
                 failures.append({"company": slug, "error": error})
             if index % 100 == 0 or index == len(slugs):
                 print(f"[catalog] {index}/{len(slugs)} checked · {len(boards)} fetched", flush=True)
-    workable_ok = False
+    workable_ok, scan_failed = False, False
     if use_workable:
         print("[catalog] Scanning Workable Germany", flush=True)
         try:
             boards.update(radar.fetch_workable())
             workable_ok = True
         except Exception as error:
+            scan_failed = True
             failures.append({"company": "workable search", "error": f"{type(error).__name__}: {error}"})
     if args.cache:
         from urllib.parse import quote
@@ -215,12 +217,21 @@ def main(argv=None) -> int:
     report["sources"] = active_sources
     report["roles_by_source"] = {source: sum(job["source"] == source for job in jobs) for source in active_sources}
     report["workable_scan_complete"] = workable_ok
+    report["invalid_companies"] = [{"value": value, "error": error} for value, error in invalid]
+    # A few unavailable boards should not freeze thousands of successful checks.
+    # Apply the allowance per provider so a small source's outage cannot disappear
+    # inside the larger Ashby count. A failed global scan always blocks publication.
+    exceeded = [source for source in active_sources if source != "workable"
+                and sum(sources.provider(row["company"]) == source for row in failures
+                        if row["company"] != "workable search")
+                > sum(sources.provider(key) == source for key in slugs) // 20]
+    report["failure_budget_exceeded"] = exceeded
     args.out.mkdir(parents=True, exist_ok=True)
     (args.out / "run.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     (args.out / "summary.md").write_text(
         f"Catalog: **{len(jobs)} roles at {report['companies']} companies**. "
         f"{len(boards)} boards fetched; {len(missing)} no longer found; {len(failures)} failed.\n", encoding="utf-8")
-    if failures or (not boards and not workable_ok):
+    if scan_failed or exceeded or (not boards and not workable_ok):
         print("[catalog] Incomplete fetch; keeping the previous published catalog.", file=sys.stderr)
         return 1
     write_site(args.out / "site", jobs, report, profiles, featured)

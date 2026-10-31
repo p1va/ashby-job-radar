@@ -120,6 +120,27 @@ class CatalogTests(unittest.TestCase):
         self.assertFalse((self.out / "site").exists())
         self.assertEqual(json.loads((self.out / "run.json").read_text())["boards_failed"], 1)
 
+    def test_one_unavailable_board_in_twenty_publishes_with_partial_status(self):
+        flags = [arg for i in range(20) for arg in ("--board", "sample" + str(i))]
+        def fetch(slug):
+            return (slug, None, "HTTP 503") if slug == "sample0" else (slug, [self.job(id=slug, jobUrl="https://example.com/" + slug)], None)
+        with patch.object(build.radar, "fetch_board", side_effect=fetch):
+            self.assertEqual(build.main(self.args() + flags), 0)
+        payload = json.loads(next((self.out / "site").glob("jobs-*.json")).read_text())
+        self.assertTrue(payload["partial"])
+        self.assertEqual(len(payload["jobs"]), 19)
+
+    def test_small_provider_outage_is_not_hidden_by_a_larger_source(self):
+        config = json.loads(self.config.read_text())
+        self.config.write_text(json.dumps({**config, "sources": ["ashby", "greenhouse"]}))
+        flags = [arg for i in range(20) for arg in ("--board", "sample" + str(i))]
+        def fetch(slug, cfg=None):
+            return (slug, None, "HTTP 503") if slug.startswith("greenhouse:") else (slug, [self.job(id=slug)], None)
+        with patch.object(build.radar, "fetch_board", side_effect=fetch):
+            self.assertEqual(build.main(self.args() + flags + ["--board", "greenhouse:sample"]), 1)
+        self.assertFalse((self.out / "site").exists())
+        self.assertEqual(json.loads((self.out / "run.json").read_text())["failure_budget_exceeded"], ["greenhouse"])
+
     def test_new_provider_names_source_and_safe_company_details_are_exported(self):
         matches, _ = build.select_matches({"workable:uuid": [self.job(
             id="workable:job", source="workable", companyName="Actual Company",

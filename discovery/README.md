@@ -111,4 +111,9 @@ python3 -B -m unittest discover -s serper-discovery -p 'test_*.py'
 `job-board/build.py --cache` saves normalized responses beneath the new output
 directory. Pass that `boards` directory to `--fixtures` to replay matching and
 rendering offline. Catalog builds and source previews never advance email
-checkpoints; failed required fetches leave the previous published catalog up.
+checkpoints. Failed provider scans always keep the previous catalog up. Up to
+one in twenty per-company failures are tolerated within each provider, with a
+visible "Partially refreshed" label; larger failures withhold publication.
+Invalid pasted company links are skipped with warnings and included in run
+reports (and the radar's broken-company list), so one bad row cannot hide the
+remaining companies.

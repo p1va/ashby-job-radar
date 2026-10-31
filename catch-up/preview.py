@@ -187,9 +187,10 @@ def main(argv=None) -> int:
         seen = read_object(args.seen)
         registry = read_object(args.registry, required=False)
         source_info = read_object(args.source_info) if args.source_info else {}
+        invalid = []
         known = {slug.lower() for slug in registry if not slug.startswith("_")}
         for path in company_files + [args.embedded]:
-            known.update(slug.lower() for slug in radar.load_slugs(path))
+            known.update(slug.lower() for slug in radar.load_slugs(path, invalid))
         slugs = sources.select({sources.board_key(slug) for slug in args.board} if args.board else known, cfg)
         fixtures = {urllib.parse.unquote(p.stem).lower(): p for p in args.fixtures.glob("*.json")} if args.fixtures else {}
         if args.fixtures:
@@ -254,7 +255,8 @@ def main(argv=None) -> int:
               "history_retention_days": cfg.get("forget_after_days", 60), "history_last_run": seen.get("_last_run"),
               "inputs": {"config": provenance(args.config), "seen": provenance(args.seen), "registry": provenance(args.registry),
                          "companies": [provenance(p) for p in company_files], "embedded": provenance(args.embedded)},
-              "source": source_info, "failures": errors}
+              "source": source_info, "failures": errors,
+              "invalid_companies": [{"value": value, "error": error} for value, error in invalid]}
     rows = [public_row(job) for job in matches]
     (out / "matches.json").write_text(json.dumps(rows, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     write_csv(out / "matches.csv", rows, ["id", "title", "company", "location", "work_style", "german_required", "compensation", "published", "url"])

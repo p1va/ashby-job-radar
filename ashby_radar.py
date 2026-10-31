@@ -52,16 +52,27 @@ def load_config(path: Path) -> dict:
     return cfg
 
 
-def load_slugs(path: Path) -> list[str]:
+def parse_company(value: str, origin: str, invalid: list | None = None) -> str | None:
+    try:
+        return sources.board_key(value)
+    except ValueError as error:
+        message = f"{origin}: {error}"
+        print(f"[companies] skipped {value!r}: {message}", file=sys.stderr)
+        if invalid is not None:
+            invalid.append((value, message))
+        return None
+
+
+def load_slugs(path: Path, invalid: list | None = None) -> list[str]:
     """Accept bare Ashby slugs, provider:slug names or board URLs; # comments."""
     slugs = []
     if not path.exists():
         return slugs
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         line = line.split("#", 1)[0].strip()
         if not line:
             continue
-        slug = sources.board_key(line)
+        slug = parse_company(line, f"{path.name}:{number}", invalid)
         if slug and slug.lower() not in {s.lower() for s in slugs}:
             slugs.append(slug)
     return slugs
@@ -80,7 +91,7 @@ def _notion_text(prop: dict) -> str:
     return ""
 
 
-def load_slugs_notion(cfg: dict) -> list[str] | None:
+def load_slugs_notion(cfg: dict, invalid: list | None = None) -> list[str] | None:
     """Read Ashby IDs from a Notion database (NOTION_TOKEN + NOTION_DATABASE_ID).
     Column name from config 'notion.ashby_id_property' (text, title or URL column).
     If 'notion.active_property' names a checkbox column, only ticked rows are used."""
@@ -110,7 +121,7 @@ def load_slugs_notion(cfg: dict) -> list[str] | None:
             if not prop:
                 continue
             raw = _notion_text(prop).strip()
-            slug = sources.board_key(raw) if raw else ""
+            slug = parse_company(raw, "Notion row", invalid) if raw else ""
             if slug and slug.lower() not in {s.lower() for s in slugs}:
                 slugs.append(slug)
         if not data.get("has_more"):
@@ -699,12 +710,13 @@ def main(argv=None) -> int:
     cfg = load_config(args.config)
     active_sources = sources.enabled(cfg)
     now = datetime.now(timezone.utc)
-    slugs = load_slugs(args.companies)
+    invalid = []
+    slugs = load_slugs(args.companies, invalid)
     reg = load_registry(args.registry)
     seen = load_json(args.seen, {})
     if not args.fixtures:
         try:
-            notion = load_slugs_notion(cfg)
+            notion = load_slugs_notion(cfg, invalid)
         except Exception as e:
             print(f"[notion] could not read database: {e}", file=sys.stderr)
             notion = None
@@ -734,7 +746,7 @@ def main(argv=None) -> int:
               f"checking {len(slugs)} listed + {len(extra)} crawled", file=sys.stderr)
         slugs = slugs + extra
 
-    boards, bad, failures = {}, [], []
+    boards, bad, failures = {}, list(invalid), []
     workable_ok, workable_started = False, None
     if "workable" in active_sources and not args.fixtures:
         state = reg.setdefault("_meta", {}).setdefault("workable", {})
@@ -804,6 +816,7 @@ def main(argv=None) -> int:
               "failures": [{"company": slug, "error": err} for slug, err in errors]}
     report["sources"] = active_sources
     report["workable_scan_complete"] = workable_ok
+    report["invalid_companies"] = [{"value": value, "error": error} for value, error in invalid]
     write_json(args.out / "run.json", report)
     print(f"[fetch] {len(boards)}/{stats['boards_requested']} boards fetched · "
           f"{stats['jobs_total']} jobs · {len(errors)} errors · {not_found} not found", file=sys.stderr)

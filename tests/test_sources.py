@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -40,6 +41,29 @@ def workable(identifier="job-1", **changes):
 
 
 class AdapterTests(unittest.TestCase):
+    def test_invalid_file_entries_do_not_hide_valid_boards(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "companies.txt"
+            path.write_text("first\nhttps://jobs.lever.co/acme\nhttps://example.com/careers\ngreenhouse:n26\nlast\n")
+            invalid = []
+            with contextlib.redirect_stderr(io.StringIO()) as warnings:
+                self.assertEqual(radar.load_slugs(path, invalid), ["first", "greenhouse:n26", "last"])
+            self.assertEqual(len(invalid), 2)
+            self.assertIn("companies.txt:2", warnings.getvalue())
+            self.assertIn("companies.txt:3", warnings.getvalue())
+
+    def test_invalid_notion_rows_do_not_discard_other_companies(self):
+        values = ["first", "https://jobs.lever.co/acme", "https://example.com/careers", "greenhouse:n26"]
+        response = {"results": [{"properties": {"Ashby ID": {"type": "url", "url": value}}} for value in values]}
+        invalid = []
+        with patch.dict(os.environ, {"NOTION_TOKEN": "test-token", "NOTION_DATABASE_ID": "a" * 32}), \
+             patch.object(radar.urllib.request, "urlopen", return_value=io.BytesIO(json.dumps(response).encode())), \
+             contextlib.redirect_stderr(io.StringIO()) as warnings:
+            self.assertEqual(radar.load_slugs_notion(CONFIG, invalid), ["first", "greenhouse:n26"])
+        self.assertEqual(len(invalid), 2)
+        self.assertIn("Notion row", warnings.getvalue())
+        self.assertNotIn("could not read database", warnings.getvalue())
+
     def test_names_are_backward_compatible_and_hosts_are_checked(self):
         cases = {"Flock%20Safety": "flock safety", "ashby:Acme": "acme",
                  "https://jobs.ashbyhq.com/Acme/job": "acme", "greenhouse:N26": "greenhouse:n26",
@@ -153,6 +177,20 @@ class DeliveryTests(unittest.TestCase):
         self.assertEqual(json.loads((self.root / "output/run.json").read_text())["matches"], 1)
         self.assertEqual(json.loads(self.registry.read_text())["_meta"]["workable"], initial)
         self.assertEqual(self.seen.read_bytes(), before)
+
+    def test_invalid_company_entries_are_reported_while_valid_boards_still_run(self):
+        self.config.write_text(json.dumps({**self.cfg, "sources": ["ashby"]}))
+        self.companies.write_text("valid\nhttps://jobs.lever.co/acme\nhttps://example.com/careers\n")
+        posting = {"id": "role", "title": "Product Manager", "location": "Berlin",
+                   "publishedAt": "2026-10-30T10:00:00Z", "jobUrl": "https://example.com/job"}
+        with patch.object(radar, "datetime", FrozenTime), \
+             patch.object(radar, "fetch_board", return_value=("valid", [posting], None)), \
+             contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(radar.main(self.args + ["--no-email"]), 0)
+        report = json.loads((self.root / "output/run.json").read_text())
+        self.assertEqual(report["matches"], 1)
+        self.assertEqual(len(report["invalid_companies"]), 2)
+        self.assertIn("https://jobs.lever.co/acme", (self.root / "output/digest.md").read_text())
 
     def test_success_records_native_id_and_advances_only_provider_metadata(self):
         self.assertEqual(self.run_radar(lambda: self.jobs()), 0)

@@ -376,8 +376,8 @@ async function init() {
     $("hero-count").textContent = state.jobs.length.toLocaleString();
     $("hero-companies").textContent = new Set(state.jobs.map(job => job.company)).size.toLocaleString();
     const refreshed = new Date(data.generatedAt);
-    $("updated").textContent = "Refreshed " + dateFormat.format(refreshed);
-    $("updated").title = refreshed.toLocaleString();
+    $("updated").textContent = (data.partial ? "Partially refreshed " : "Refreshed ") + dateFormat.format(refreshed);
+    $("updated").title = refreshed.toLocaleString() + (data.partial ? " · Some companies could not be checked." : "");
     const selected = new URLSearchParams(location.search).get("job");
     setUpFilters();
     restoreState();
