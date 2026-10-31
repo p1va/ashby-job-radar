@@ -6,6 +6,11 @@ manual source preview while its public search's rate limits are evaluated.
 See [additional sources and backfills](discovery/README.md). No changes or new
 pull requests are made to the original repository by these experiments.
 
+Greenhouse does not supply a structured remote/hybrid field. The 31 October
+catalog has 182 of its 219 Greenhouse matches marked **Not stated** (33 Remote,
+4 Hybrid); only explicit wording in the advertised location is used. This is
+missing provider information, rather than an assumption that a role is office-based.
+
 This fork is for trying small fixes to the existing script before offering
 them to [the original project](https://github.com/betklab/ashby-job-radar).
 Keep its standard-library implementation, settings, and filtering rules.

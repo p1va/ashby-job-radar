@@ -107,7 +107,7 @@ def greenhouse_job(job: dict) -> dict:
         raise ValueError("Greenhouse job has no ID or title")
     content = html.unescape(job.get("content") or "")
     return {"id": "greenhouse:" + str(job["id"]), "source": "greenhouse",
-            "companyName": job.get("company_name") or "", "title": job["title"],
+            "companyName": (job.get("company_name") or "").strip(), "title": job["title"],
             "location": (job.get("location") or {}).get("name") or "",
             "secondaryLocations": [], "workplaceType": "", "isListed": True,
             "publishedAt": job.get("first_published") if isinstance(job.get("first_published"), str) else None,

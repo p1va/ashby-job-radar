@@ -84,7 +84,7 @@ class AdapterTests(unittest.TestCase):
     def test_greenhouse_returns_nonmatching_jobs_and_ignores_office_assignments(self):
         engineer = greenhouse(id=43, title="Software Engineer")
         london = greenhouse(id=44, location={"name": "London"}, offices=[{"location": "Berlin"}])
-        jobs = [greenhouse(), engineer, london]
+        jobs = [greenhouse(company_name="Actual Company "), engineer, london]
         def request(url, parse):
             detailed = "content=true" in url
             payload = [{**j, "content": "&lt;p&gt;Fluent in German.&lt;/p&gt;"} for j in jobs] if detailed else jobs
@@ -94,6 +94,7 @@ class AdapterTests(unittest.TestCase):
         self.assertTrue(radar.has_germany([normalized[1]], CONFIG))
         self.assertIsNone(radar.match_location(normalized[2], CONFIG))
         self.assertEqual(normalized[0]["id"], "greenhouse:42")
+        self.assertEqual(normalized[0]["companyName"], "Actual Company")
         self.assertEqual(normalized[0]["descriptionPlain"], "Fluent in German.")
         self.assertTrue(radar.german_required(normalized[0], CONFIG))
 
