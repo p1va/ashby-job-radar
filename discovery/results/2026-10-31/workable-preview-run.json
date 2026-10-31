@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-10-31T14:19:25.575418+00:00",
+  "mode": "live",
+  "preview": true,
+  "workable_scan_complete": true,
+  "sources": [
+    "workable"
+  ],
+  "publication_cutoff": null,
+  "result_limit": null,
+  "boards_requested": 0,
+  "boards_ok": 274,
+  "boards_not_found": 0,
+  "boards_failed": 0,
+  "jobs_read": 2918,
+  "matching_jobs": 185,
+  "already_seen": 0,
+  "duplicate_matches": 0,
+  "untrackable_matches": 0,
+  "matches_without_date": 0,
+  "matches": 185,
+  "matching_companies": 59,
+  "grouping": "company",
+  "company_order": "alphabetical",
+  "job_order": "newest_first_within_company",
+  "saved_seen_ids": 0,
+  "history_retention_days": 60,
+  "history_last_run": null,
+  "inputs": {
+    "config": {
+      "path": "/home/runner/work/_temp/source-config.json",
+      "sha256": "225e163a410fb87c3588aef9ee84b571fe40b1a92a2831fc3e5598e8bfd42de5"
+    },
+    "seen": {
+      "path": "/home/runner/work/_temp/preview-seen.json",
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    "registry": {
+      "path": "/home/runner/work/ashby-job-radar/ashby-job-radar/boards.json",
+      "sha256": "078f1fab50ded94c8cdc11c4cca89d5c59d64047b119bc8d835c3d57c80e40f5"
+    },
+    "companies": [
+      {
+        "path": "/home/runner/work/ashby-job-radar/ashby-job-radar/companies.txt",
+        "sha256": "f9d1001f806e563372111b5bb5f769909f67efe905d8ef662e235a3c99162f94"
+      }
+    ],
+    "embedded": {
+      "path": "/home/runner/work/ashby-job-radar/ashby-job-radar/embedded-boards/boards.txt",
+      "missing": true
+    }
+  },
+  "source": {},
+  "failures": [],
+  "invalid_companies": []
+}

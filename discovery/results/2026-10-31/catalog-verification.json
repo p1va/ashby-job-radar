@@ -73,7 +73,7 @@
     ]
   },
   "checks": {
-    "unit_tests": 58,
+    "unit_tests": 63,
     "python_syntax": "3.9",
     "emails_sent": 0
   },
@@ -82,5 +82,116 @@
     "publication_withheld": true,
     "normal_config_enabled": false,
     "preview_workflow": "Preview additional sources"
+  },
+  "review": {
+    "reviewer": "Claude Code (t15)",
+    "approved_commit": "53b7bfe",
+    "decision": "approved, no blockers",
+    "cli_followup": "984d729"
+  },
+  "pages_actions": {
+    "run": 41209983295,
+    "commit": "e2223523dc033b13a558d6c3bbca5ee87ca1292d",
+    "result": "success",
+    "live_roles": 759,
+    "live_companies": 240,
+    "boards_requested": 4037,
+    "boards_ok": 3544,
+    "boards_not_found": 493,
+    "boards_failed": 0,
+    "initial_run": 41209546450
+  },
+  "live_browser": {
+    "base": "https://p1va.github.io/ashby-job-radar/",
+    "counts": {
+      "ashby": 540,
+      "greenhouse": 219,
+      "workable": 0
+    },
+    "viewports": [
+      {
+        "width": 320,
+        "scroll": 320,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 360,
+        "scroll": 360,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 390,
+        "scroll": 390,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 430,
+        "scroll": 430,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 768,
+        "scroll": 753,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 1024,
+        "scroll": 1009,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      },
+      {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "hero": "rgb(41, 40, 62)"
+      }
+    ],
+    "errors": [],
+    "checks": [
+      "source filtering",
+      "source URL restore",
+      "reset",
+      "search",
+      "namespaced job deep link",
+      "detail source",
+      "mobile filters",
+      "320\u20131440px overflow"
+    ]
+  },
+  "workable_actions": {
+    "run": 41209580352,
+    "result": "success",
+    "mode": "live",
+    "jobs_read": 2918,
+    "matching_jobs": 185,
+    "companies": 59,
+    "german_required_flags": 85,
+    "scan_complete": true,
+    "duration": "5m29s",
+    "normal_config_enabled": false
+  },
+  "partial_notice_browser": {
+    "result": "pass",
+    "viewports": [
+      320,
+      360,
+      390,
+      430,
+      768,
+      1024,
+      1440
+    ]
+  },
+  "athena": {
+    "executed": false,
+    "reason": "No AWS CLI, profile or credentials in this shell",
+    "sql": "discovery/athena-greenhouse.sql",
+    "csv_import": "discovery/backfill.py --athena results.csv"
   }
 }
