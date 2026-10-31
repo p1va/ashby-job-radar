@@ -1,0 +1,7 @@
+# Small initial list verified during the 31 October investigation.
+greenhouse:n26
+greenhouse:getyourguide
+greenhouse:contentful
+greenhouse:celonis
+greenhouse:isaraerospace
+greenhouse:gropyus

@@ -1,5 +1,10 @@
 # Discover Ashby companies with Serper
 
+The same tool now supports `--source greenhouse`; its defaults search Berlin,
+Munich, remote Germany and EU-hosted Greenhouse boards. Registry keys use
+`greenhouse:<token>` and each candidate is checked through Greenhouse's API.
+Existing Ashby commands retain their behavior. See the [backfill guide](../discovery/README.md).
+
 Run Google queries through [Serper](https://serper.dev/), extract Ashby board
 slugs, and check each unique board through Ashby's public posting API. This is
 a standalone discovery tool: it can add companies to `boards.json` for the

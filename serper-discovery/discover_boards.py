@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Discover live Ashby boards through Serper's Google search API. Stdlib, Python 3.9+."""
+"""Discover live Ashby or Greenhouse boards with Serper. Stdlib, Python 3.9+."""
 from __future__ import annotations
 
 import argparse
@@ -22,6 +22,8 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+import sources
 SERPER = "https://google.serper.dev/search"
 ASHBY = "https://api.ashbyhq.com/posting-api/job-board/"
 QUERIES = [
@@ -136,21 +138,39 @@ def result_links(result: dict):
             yield item["link"]
 
 
-def page_links(body: bytes) -> set[str]:
+def board_link(url: str, source: str = "ashby") -> tuple[str, str] | None:
+    if source == "ashby":
+        return ashby_link(url)
+    try:
+        key = sources.board_key(url)
+        if sources.provider(key) != source:
+            return None
+        parsed = urllib.parse.urlsplit(url)
+        match = re.search(r"/jobs/(\d+)", parsed.path)
+        jid = match.group(1) if match else (urllib.parse.parse_qs(parsed.query).get("gh_jid") or [""])[0]
+        return key, jid
+    except (ValueError, TypeError, AttributeError):
+        return None
+
+
+def page_links(body: bytes, source: str = "ashby") -> set[str]:
     text = html.unescape(body.decode("utf-8", errors="replace").replace(r"\/", "/"))
-    return {url for url in PAGE_LINK.findall(text) if ashby_link(url)}
+    pattern = PAGE_LINK if source == "ashby" else re.compile(r"https?://(?:boards|job-boards|job-boards\.eu)\.greenhouse\.io/[^\s\"'<>\\]+", re.I)
+    return {url for url in pattern.findall(text) if board_link(url, source)}
 
 
-def board_info(data: dict) -> dict:
+def board_info(data: dict, source: str = "ashby") -> dict:
     if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
         raise ValueError("Ashby response has no jobs list")
     if not all(isinstance(job, dict) for job in data["jobs"]):
         raise ValueError("Ashby response contains an invalid job")
     jobs = [job for job in data["jobs"] if job.get("isListed") is not False]
+    if source == "greenhouse":
+        jobs = [sources.greenhouse_job(job) for job in jobs]
     ids = set()
     for job in jobs:
         if job.get("id"):
-            ids.add(str(job["id"]).lower())
+            ids.add(str(job["id"]).lower().removeprefix("greenhouse:") if source == "greenhouse" else str(job["id"]).lower())
         link = ashby_link(job.get("jobUrl", ""))
         if link and link[1]:
             ids.add(link[1])
@@ -186,6 +206,7 @@ def positive(value: str) -> int:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--source", choices=["ashby", "greenhouse"], default="ashby", help="job-board provider to discover")
     ap.add_argument("--query", action="append", help="Google query; repeat to override the three defaults")
     ap.add_argument("--pages", type=positive, default=2, help="maximum pages per query (default: 2, ten results each)")
     ap.add_argument("--country", default="de", help="Serper gl (default: de)")
@@ -212,7 +233,7 @@ def main(argv=None) -> int:
     out = args.out or ROOT / "data/exploration" / datetime.now(timezone.utc).strftime("serper-%Y%m%dT%H%M%S%fZ")
     out.mkdir(parents=True, exist_ok=False)
     errors, searches, hits, boards = [], [], [], {}
-    summary = {"generated_at": datetime.now(timezone.utc).isoformat(), "registry": str(args.boards),
+    summary = {"generated_at": datetime.now(timezone.utc).isoformat(), "registry": str(args.boards), "source": args.source,
                "known_companies": len(known), "serper_requests": 0, "credits_reported": 0,
                "replay": str(args.replay) if args.replay else None, "errors": errors}
 
@@ -229,7 +250,10 @@ def main(argv=None) -> int:
             ap.error("No successful search responses in --replay directory")
     else:
         stop = False
-        for query in list(dict.fromkeys(args.query or QUERIES)):
+        defaults = QUERIES if args.source == "ashby" else [
+            'site:job-boards.greenhouse.io "Berlin"', 'site:job-boards.greenhouse.io "Munich"',
+            'site:job-boards.greenhouse.io "Remote" "Germany"', 'site:job-boards.eu.greenhouse.io "Germany"']
+        for query in list(dict.fromkeys(args.query or defaults)):
             seen_urls = set()
             for page in range(1, args.pages + 1):
                 payload = {"q": query, "gl": args.country, "hl": args.language, "num": 10, "page": page}
@@ -278,7 +302,7 @@ def main(argv=None) -> int:
     for hit in list(hits):
         if not args.follow_sites:
             break
-        if ashby_link(hit["url"]):
+        if board_link(hit["url"], args.source):
             continue
         url = hit["url"]
         try:
@@ -290,7 +314,7 @@ def main(argv=None) -> int:
             followed[url] = set()
             try:
                 body = request(url, limit=2 * 1024 * 1024)
-                followed[url] = page_links(body)
+                followed[url] = page_links(body, args.source)
                 page_file = out / "pages" / f"{len(followed):03d}.html"
                 page_file.parent.mkdir(exist_ok=True)
                 page_file.write_bytes(body)
@@ -301,15 +325,17 @@ def main(argv=None) -> int:
             hits.append({**hit, "url": link, "source": url})
 
     for hit in hits:
-        parsed = ashby_link(hit["url"])
+        parsed = board_link(hit["url"], args.source)
         if parsed:
             hit["slug"], hit["job_id"] = parsed
             boards.setdefault(parsed[0], {"slug": parsed[0], "known": parsed[0] in known, "hits": []})["hits"].append(hit)
 
     for slug, board in sorted(boards.items()):
         try:
-            data = json.loads(request(ASHBY + urllib.parse.quote(slug, safe="")))
-            info = board_info(data)
+            url = ("https://boards-api.greenhouse.io/v1/boards/" + urllib.parse.quote(slug.split(":", 1)[1], safe="") + "/jobs"
+                   if args.source == "greenhouse" else ASHBY + urllib.parse.quote(slug, safe=""))
+            data = json.loads(request(url))
+            info = board_info(data, args.source)
             write_json(out / "boards" / (urllib.parse.quote(slug, safe="") + ".json"), data)
             board.update({k: v for k, v in info.items() if k != "job_ids"}, status="live")
             for hit in board["hits"]:

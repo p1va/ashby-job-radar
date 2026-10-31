@@ -12,7 +12,7 @@ Company names, websites, logos and board introductions come from a separately re
 
 In the fork's **Actions → Publish job board → Run workflow**, or wait for the daily 06:35 UTC run. Changes to the catalog code and company sources also trigger a rebuild.
 
-The workflow snapshots the original repository's current config and company sources at one commit. It combines them with the fork's registry, embedded boards and discovery seeds. Each known board is fetched once using the radar's existing public REST client, including compression and bounded retries. The board response already contains job descriptions, so there is no request per job.
+The workflow snapshots the original repository's current role/location preferences and company sources at one commit, with the fork's own `sources` setting. It combines them with the fork's registry, embedded boards and discovery seeds. Ashby boards are fetched once; Greenhouse uses a light list and a second board request when matching candidates need descriptions. Both use compression and bounded retries. The **Listed on** filter selects providers, including shareable `?source=greenhouse` links. See [additional sources](../discovery/README.md) for backfills and the optional Workable preview.
 
 No email is sent and no registry or sent history is changed. This workflow requires no search API key or SMTP secrets. A 404 removes a dead board from that build. Any other failed board stops publication, preserving the previous site. The Actions summary and a 30-day report artifact record counts, failures and source commits.
 
@@ -35,4 +35,4 @@ python -B -m unittest discover -s job-board -p 'test_*.py'
 
 GitHub Pages must be enabled with **Source: GitHub Actions** in the fork's repository settings. `.github/workflows/job-board.yml` is restricted to this fork, so adding these files upstream does not automatically publish there.
 
-Company display names are derived from Ashby board slugs, as in the digest. Location and work-style labels come from the job postings; they are not verified company headquarters. Older publication dates may still correspond to open listings. Follow the original posting for current availability and application details.
+Company display names use cached Ashby profiles or the provider's advertised company name, falling back to a board slug. Location and work-style labels come from job postings; they are not verified company headquarters. Older publication dates may still correspond to open listings. Follow the original posting for current availability and application details.

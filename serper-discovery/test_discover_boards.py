@@ -24,6 +24,14 @@ class Response(io.BytesIO):
 
 
 class ParsingTests(unittest.TestCase):
+    def test_greenhouse_hosts_embeds_and_job_ids_are_separate_from_ashby(self):
+        self.assertEqual(discovery.board_link("https://job-boards.eu.greenhouse.io/n26/jobs/42", "greenhouse"), ("greenhouse:n26", "42"))
+        self.assertEqual(discovery.board_link("https://boards.greenhouse.io/embed/job_board?for=n26", "greenhouse"), ("greenhouse:n26", ""))
+        self.assertIsNone(discovery.board_link("https://job-boards.greenhouse.io.evil.test/n26", "greenhouse"))
+        self.assertIsNone(discovery.board_link("https://jobs.ashbyhq.com/n26", "greenhouse"))
+        info = discovery.board_info({"jobs": [{"id": 42, "title": "Product Manager", "location": {"name": "Berlin"}}]}, "greenhouse")
+        self.assertEqual((info["jobs"], info["berlin_jobs"], info["job_ids"]), (1, 1, {"42"}))
+
     def test_actual_urls_case_spaces_and_job_ids(self):
         self.assertEqual(discovery.ashby_link(f"https://JOBS.ASHBYHQ.COM/Flock%20Safety/{JID}?utm=x"),
                          ("flock safety", JID))

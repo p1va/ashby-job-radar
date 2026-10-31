@@ -1,6 +1,6 @@
 # Company information and featured companies
 
-`companies.json` is a persistent lookup keyed by Ashby board slug. It stores the public organization ID, real name, website, careers URL, logo, board introduction, timezone, source and fetch date. The site uses the real name, logo, website and plain-text introduction when available. Missing or failed enrichment falls back to the board slug without removing any jobs.
+`companies.json` is a persistent lookup keyed by Ashby board slug. It stores the public organization ID, real name, website, careers URL, logo, board introduction, timezone, source and fetch date. The site uses the real name, logo, website and plain-text introduction when available. Missing or failed enrichment falls back to the board slug without removing any jobs. This GraphQL refresher skips other providers; their advertised company details come directly from their job responses.
 
 ## When to fetch
 

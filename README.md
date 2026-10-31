@@ -1,5 +1,9 @@
 # 📡 Ashby Job Radar
 
+This fork also supports opt-in Greenhouse boards and an experimental Workable
+preview. See [additional sources and backfills](discovery/README.md) and
+[fork workflows](FORK.md); previews send no email.
+
 **Every morning, an email with the jobs that just went live in Germany. Only the new ones, and only the roles you actually care about.**
 
 ## Why this exists

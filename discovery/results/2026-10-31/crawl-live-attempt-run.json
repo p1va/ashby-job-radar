@@ -1,0 +1,26 @@
+{
+  "added": [
+    "greenhouse:celonis",
+    "greenhouse:contentful",
+    "greenhouse:getyourguide",
+    "greenhouse:gropyus",
+    "greenhouse:isaraerospace",
+    "greenhouse:n26"
+  ],
+  "already_known": 0,
+  "candidates": 6,
+  "checked": 6,
+  "completed_queries": [],
+  "deferred": 0,
+  "errors": [
+    {
+      "error": "HTTPError: HTTP Error 502: Bad Gateway",
+      "stage": "crawl"
+    }
+  ],
+  "generated_at": "2026-10-31T13:58:31.517713+00:00",
+  "german_boards": 6,
+  "live": 6,
+  "not_found": 0,
+  "source": "greenhouse"
+}

@@ -1,5 +1,11 @@
 # Testing fixes in this fork
 
+The fork also experiments with opt-in Greenhouse and Workable adapters. Normal
+publication currently enables Ashby and Greenhouse; Workable has a separate
+manual source preview while its public search's rate limits are evaluated.
+See [additional sources and backfills](discovery/README.md). No changes or new
+pull requests are made to the original repository by these experiments.
+
 This fork is for trying small fixes to the existing script before offering
 them to [the original project](https://github.com/betklab/ashby-job-radar).
 Keep its standard-library implementation, settings, and filtering rules.
