@@ -159,7 +159,10 @@ def main(argv=None) -> int:
     for path in (args.companies or [ROOT / "companies.txt"]) + [ROOT / "embedded-boards/boards.txt"]:
         known.update(slug.lower() for slug in radar.load_slugs(path, invalid))
     fixtures = {unquote(path.stem).lower(): path for path in args.fixtures.glob("*.json")} if args.fixtures else {}
-    selected = {sources.board_key(slug) for slug in args.board} if args.board else fixtures if args.fixtures else known
+    try:
+        selected = {sources.board_key(slug) for slug in args.board} if args.board else fixtures if args.fixtures else known
+    except ValueError as error:
+        parser.error(str(error))
     slugs = sources.select(selected, cfg)
     if args.fixtures:
         slugs = sorted(key for key in selected if sources.provider(key) in active_sources)
