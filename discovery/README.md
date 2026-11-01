@@ -5,7 +5,7 @@ adapters in `sources.py`. Standard library only; keep running the existing
 commands. Nothing in these discovery commands sends email or updates sent history.
 
 ```json
-"sources": ["ashby", "greenhouse"]
+"sources": ["ashby", "greenhouse", "workable"]
 ```
 
 Missing `sources` means Ashby only. The fork explicitly enables Greenhouse.
@@ -16,8 +16,9 @@ requests (all HTTP 200), yielding 184 matches at 58 companies in 6m13s.
 Those are 144 distinct company/title combinations; many IDs differ by city.
 Recruiting agencies and relocation advertisements are included when their
 advertised location matches the current rules. These are not 184 unique
-direct-employer roles. Details and company websites are available; structured
-salary was absent from every matching result in this probe.
+direct-employer roles. The adapter provides descriptions and company websites,
+but does not expose structured salary. An archived raw search sample also has
+no salary fields; the normalized-output count alone does not prove API absence.
 Use **Actions → Preview additional sources → workable** to collect a separate
 HTML/CSV/JSON artifact, without publishing or recording delivery. The scan is
 serial, paced two seconds between pages, and discards incomplete results.

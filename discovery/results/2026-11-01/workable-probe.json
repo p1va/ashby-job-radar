@@ -21,6 +21,7 @@
   "matching_jobs_with_description": 184,
   "matching_jobs_with_company_website": 184,
   "matching_jobs_with_structured_salary": 0,
+  "salary_scope": "Normalized adapter output; the archived raw search sample also exposes no salary fields.",
   "german_required_flags": 85,
   "exact_company_title_overlap_with_873_catalog": 0,
   "limitations": [

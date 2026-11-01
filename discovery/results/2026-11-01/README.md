@@ -1,5 +1,9 @@
 # Athena Greenhouse backfill — 1 November 2026
 
+Later that day, the [parallel source pipeline](PIPELINE.md) enabled Workable on
+the fork, bringing the live total to **1,057 postings at 357 company board keys**.
+The Athena-only measurements and 873-role snapshot below remain historical.
+
 Imported into **p1va/ashby-job-radar only**. No original-repository changes,
 email, sent-history changes, AWS requests or Serper credits. Stefano exported
 the Athena results himself. The application code and country scheduling policy

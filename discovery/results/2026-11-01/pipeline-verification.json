@@ -1,0 +1,76 @@
+{
+  "deployed_commit": "6be3417d1284aa66d0cd0959f3bd223d5c58083f",
+  "site": "https://p1va.github.io/ashby-job-radar/",
+  "run": "https://github.com/p1va/ashby-job-radar/actions/runs/41295086405",
+  "conclusion": "success",
+  "workflow_seconds": 384,
+  "jobs": {
+    "prepare": {
+      "status": "success",
+      "started_at": "2026-11-01T09:53:58Z",
+      "seconds": 11
+    },
+    "collect (workable)": {
+      "status": "success",
+      "started_at": "2026-11-01T09:54:12Z",
+      "seconds": 336
+    },
+    "collect (ashby)": {
+      "status": "success",
+      "started_at": "2026-11-01T09:54:12Z",
+      "seconds": 65
+    },
+    "collect (greenhouse)": {
+      "status": "success",
+      "started_at": "2026-11-01T09:54:12Z",
+      "seconds": 146
+    },
+    "combine": {
+      "status": "success",
+      "started_at": "2026-11-01T09:59:51Z",
+      "seconds": 13
+    },
+    "deploy": {
+      "status": "success",
+      "started_at": "2026-11-01T10:00:09Z",
+      "seconds": 9
+    }
+  },
+  "live_data_file": "jobs-83f25dab47c8.json",
+  "live_data_sha256": "83f25dab47c8c10c7f9b002aa00a33427d98979a7dd20ef6e5993d6b63c8d582",
+  "live_roles": 1057,
+  "live_companies": 357,
+  "roles_by_source": {
+    "ashby": 540,
+    "greenhouse": 333,
+    "workable": 184
+  },
+  "all_sources_fresh": true,
+  "partial": false,
+  "duplicate_ids": 0,
+  "digest_unseen": 930,
+  "digest_seen_skipped": 127,
+  "tests_passed": 78,
+  "browser_errors": [],
+  "browser_viewports": [
+    320,
+    360,
+    390,
+    430,
+    768,
+    1024,
+    1440
+  ],
+  "independent_review": "Claude Code t15 approved both rounds, confirmed fault test actual flat single-artifact layout, and independently verified final live counts/source metadata/unique IDs.",
+  "email_sent": false,
+  "registry_and_seen_unchanged": true,
+  "workable_matching_rows": 184,
+  "workable_distinct_company_title": 144,
+  "local_workable_http_429": 0,
+  "actions_retry_http_statuses": "Not instrumented; zero terminal collection errors.",
+  "known_follow_ups": [
+    "Display grouping for Workable city variants without merging seen IDs.",
+    "Investigate JOIN directly; clarify Arbeitnow public reuse terms first.",
+    "Real email delivery as a separate job using existing daily eligibility and sent-state rules."
+  ]
+}
