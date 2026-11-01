@@ -1,0 +1,54 @@
+{
+  "deployed_commit": "06daa565941d88d47775cd2ff8d8de5c545640b5",
+  "repository": "p1va/ashby-job-radar",
+  "site": "https://p1va.github.io/ashby-job-radar/",
+  "pages_run": "https://github.com/p1va/ashby-job-radar/actions/runs/41289685624",
+  "pages_build_seconds": 144,
+  "collection_step_seconds": 136,
+  "pages_deploy_seconds": 8,
+  "build_conclusion": "success",
+  "deploy_conclusion": "success",
+  "live_data_file": "jobs-3784c383dfd3.json",
+  "live_data_bytes": 5407485,
+  "live_data_sha256": "3784c383dfd357e1d92704fbb4949df6512b788184969d0ac9e01413187d94d6",
+  "live_roles": 873,
+  "live_companies": 299,
+  "partial": false,
+  "roles_by_source": {
+    "ashby": 540,
+    "greenhouse": 333
+  },
+  "new_roles": 114,
+  "new_company_keys": 59,
+  "greenhouse_http_429_in_instrumented_local_build": 0,
+  "actions_http_retries": "Not instrumented in Actions; run reports zero terminal errors.",
+  "tests": {
+    "root": 15,
+    "catch_up": 11,
+    "catalog": 13,
+    "company_info": 8,
+    "serper": 16,
+    "total_offline": 63,
+    "pages_checks": 47
+  },
+  "review": "Claude Code t15 approved round 2 and independently confirmed live payload and only one workflow ran for this commit.",
+  "browser_checks": [
+    "source filtering",
+    "source URL restore",
+    "reset",
+    "search",
+    "namespaced job deep link",
+    "detail source",
+    "mobile filters",
+    "320\u20131440px overflow"
+  ],
+  "browser_errors": [],
+  "email_workflow_dispatched": false,
+  "application_code_changed": false,
+  "existing_registry_states_preserved": true,
+  "follow_ups": [
+    "Independent source pipeline steps (deferred by user until Greenhouse import finished).",
+    "Explicit board aliases or durable duplicate policy.",
+    "Support punctuation tokens with shared parser and URL/cache tests."
+  ]
+}

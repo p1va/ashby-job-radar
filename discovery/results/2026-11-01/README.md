@@ -25,6 +25,17 @@ remain. No general fuzzy deduplication was introduced. Two old Clera postings
 were replaced by two different Clera postings between the baseline and current
 fetch, leaving the existing-board total unchanged.
 
+Published successfully by [Pages run 41289685624](https://github.com/p1va/ashby-job-radar/actions/runs/41289685624)
+from commit `06daa56`. Actions fetched 7,822 of 8,315 boards, with 493 real
+404s, **zero failures**, 225,612 jobs read and the same **873 / 299** result.
+The live collection step took **136 seconds**, the build job **2m24s**, and
+deployment **8 seconds**. All 63 offline tests pass; Pages ran its 47 checks.
+Live browser checks passed for search, source filters, shareable URLs, job
+details and mobile widths from 320 to 1,440px. Claude independently approved
+the final import and confirmed the published payload. Only the board workflow
+ran for this commit. See [verification.json](verification.json),
+[pages-run.json](pages-run.json) and [browser-verification.json](browser-verification.json).
+
 ## Evidence
 
 - [inputs.json](inputs.json): original filenames, hashes, row/host counts.

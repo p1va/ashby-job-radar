@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-11-01T08:38:13.858461+00:00",
+  "mode": "live",
+  "boards_requested": 8315,
+  "boards_ok": 7822,
+  "boards_not_found": 493,
+  "boards_failed": 0,
+  "jobs_read": 225612,
+  "roles": 873,
+  "companies": 299,
+  "selection": {
+    "matching_jobs": 873,
+    "already_seen": 0,
+    "duplicate_matches": 0,
+    "untrackable_matches": 0,
+    "matches_without_date": 2
+  },
+  "source": {
+    "repository": "betklab/ashby-job-radar",
+    "commit": "30e476df1c785b33034862722fa639010ae80b5c",
+    "fork_commit": "06daa565941d88d47775cd2ff8d8de5c545640b5",
+    "sources": [
+      "ashby",
+      "greenhouse"
+    ],
+    "extra_company_ref": "f7683c90099a7c70b3319aa26a7bd3da992b1c2e"
+  },
+  "failures": [],
+  "sources": [
+    "ashby",
+    "greenhouse"
+  ],
+  "roles_by_source": {
+    "ashby": 540,
+    "greenhouse": 333
+  },
+  "workable_scan_complete": false,
+  "invalid_companies": [],
+  "failure_budget_exceeded": []
+}
