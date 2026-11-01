@@ -15,7 +15,11 @@ missing provider information, rather than an assumption that a role is office-ba
 
 This fork is for trying small fixes to the existing script before offering
 them to [the original project](https://github.com/betklab/ashby-job-radar).
-Keep its standard-library implementation, settings, and filtering rules.
+Keep its standard-library implementation and offer focused fixes. This fork
+explicitly opts into Europe/worldwide remote candidates and matching primary
+titles without former-role background qualifiers; those preferences are not
+changes to the original owner's settings. See the catalog guide for the scope
+labels and exclusion diagnostics.
 
 The fork's `main` contains the tested fixes together. Focused commits make it
 easy to prepare upstream contributions later; separate fix branches are optional.

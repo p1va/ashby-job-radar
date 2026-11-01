@@ -3,6 +3,7 @@
 `companies.json` is a persistent lookup keyed by board: a bare Ashby slug or `greenhouse:<token>`. It stores the real name, website, careers URL, logo, board introduction, source and fetch date where the provider publishes them (Ashby also gives the organization ID and timezone). The site uses the real name, logo, website and plain-text introduction when available. Missing or failed enrichment falls back to the board slug without removing any jobs. Workable is skipped: its job responses already carry company details.
 
 Greenhouse has no logo field in its public API. For each Greenhouse company the refresher makes two requests:
+
 - the public board API `boards-api.greenhouse.io/v1/boards/<token>`, for the name and board introduction;
 - the hosted board page `job-boards.greenhouse.io/<token>` (that host also serves EU boards; `job-boards.eu.greenhouse.io` is tried only after a 404). The page's `og:image` is kept only when it is a logo uploaded to Greenhouse (`*recruiting.cdn.greenhouse.io/external_greenhouse_job_boards/logos/…`).
 
@@ -14,7 +15,11 @@ Redirects are not followed: a redirect means the company runs its own careers si
 
 The daily job-board build only reads the cache. It never waits on enrichment or queries a profile per role. A profile refresh checkpoints each successful result, commits successful progress even if another company fails, and explicitly starts **Publish job board** if the cache changed. Failed enrichment stays visible in the Action result and report. Last good profiles and companies no longer represented are preserved. A rate limit or server outage stops the rest of that provider's batch after the existing bounded retries; the other provider carries on.
 
-No API keys are required. This uses the public hosted board's GraphQL endpoint, not an employer's authenticated API. Its schema can change, so GraphQL errors are checked even for HTTP 200 responses. Company timezone is retained as metadata; it is not treated as headquarters. No headquarters or industry is inferred. A board introduction is company-supplied board text, not a verified company overview.
+No API keys are required. Ashby uses its public hosted board's GraphQL endpoint,
+and Greenhouse uses its public board API and hosted page. GraphQL errors are
+checked even for HTTP 200 responses. Company timezone is retained as metadata;
+it is not treated as headquarters. No headquarters or industry is inferred. A
+board introduction is company-supplied board text, not a verified company overview.
 
 ```sh
 python -B company-info/refresh.py --report /tmp/company-report.json

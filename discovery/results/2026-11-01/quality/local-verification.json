@@ -1,0 +1,135 @@
+{
+  "stage": "Saved-response replay before publication; live Actions counts may differ.",
+  "baseline_roles": 1057,
+  "preview_roles": 1233,
+  "baseline_companies": 357,
+  "preview_companies": 431,
+  "preview_roles_by_source": {
+    "workable": 184,
+    "ashby": 647,
+    "greenhouse": 402
+  },
+  "preview_broad_scopes": {
+    "Remote Europe": 141,
+    "Remote Worldwide": 35
+  },
+  "baseline_repeated_spacer_descriptions": 728,
+  "preview_repeated_spacer_descriptions": 0,
+  "baseline_greenhouse_logos": 0,
+  "preview_greenhouse_logos": 78,
+  "profile_cache_added": 229,
+  "existing_profiles_preserved": true,
+  "cached_greenhouse_logos": 80,
+  "tests_passed": 96,
+  "native_examples": {
+    "elevenlabs": {
+      "matched": 3,
+      "excluded": {
+        "not_listed": 0,
+        "title_not_included": 110,
+        "title_excluded": 0,
+        "location_not_recognized": 25,
+        "outside_focus": 0
+      },
+      "roles": [
+        {
+          "id": "13fcee94-512f-4229-b7ab-f91d3fdd24e3",
+          "title": "ElevenMusic - Content Creator & Strategist",
+          "scope": "Remote Europe",
+          "url": "https://jobs.ashbyhq.com/elevenlabs/13fcee94-512f-4229-b7ab-f91d3fdd24e3"
+        },
+        {
+          "id": "8e1735ec-c5e2-4292-adbd-764a58e7ce17",
+          "title": "Model Partnerships - ElevenCreative",
+          "scope": "Remote Europe",
+          "url": "https://jobs.ashbyhq.com/elevenlabs/8e1735ec-c5e2-4292-adbd-764a58e7ce17"
+        },
+        {
+          "id": "2c9dfcd0-0aa3-466a-8a5a-2b2351afbf81",
+          "title": "Public Sector Partnerships Lead - Europe ",
+          "scope": "Remote Europe",
+          "url": "https://jobs.ashbyhq.com/elevenlabs/2c9dfcd0-0aa3-466a-8a5a-2b2351afbf81"
+        }
+      ]
+    },
+    "supabase": {
+      "matched": 7,
+      "excluded": {
+        "not_listed": 0,
+        "title_not_included": 56,
+        "title_excluded": 0,
+        "location_not_recognized": 5,
+        "outside_focus": 0
+      },
+      "roles": [
+        {
+          "id": "85f4d148-4602-4139-802a-962705133892",
+          "title": "Product Manager - Spark",
+          "scope": "Remote Worldwide",
+          "url": "https://jobs.ashbyhq.com/supabase/85f4d148-4602-4139-802a-962705133892"
+        },
+        {
+          "id": "c20228c2-45ff-4b77-ab77-906f39a06ca3",
+          "title": "Product Manager -  Administration & Governance",
+          "scope": "Remote Worldwide",
+          "url": "https://jobs.ashbyhq.com/supabase/c20228c2-45ff-4b77-ab77-906f39a06ca3"
+        },
+        {
+          "id": "bd5ce178-84c9-469e-89f4-493c21b50622",
+          "title": "Product Manager - Realtime",
+          "scope": "Remote Worldwide",
+          "url": "https://jobs.ashbyhq.com/supabase/bd5ce178-84c9-469e-89f4-493c21b50622"
+        },
+        {
+          "id": "9a4c9984-07c7-4b47-982f-371de3f6ff50",
+          "title": "Product Manager - Auth",
+          "scope": "Remote Worldwide",
+          "url": "https://jobs.ashbyhq.com/supabase/9a4c9984-07c7-4b47-982f-371de3f6ff50"
+        },
+        {
+          "id": "9c04bc60-78a1-4529-950d-4704ab475764",
+          "title": "Head of AI Native Operations",
+          "scope": "Remote Worldwide",
+          "url": "https://jobs.ashbyhq.com/supabase/9c04bc60-78a1-4529-950d-4704ab475764"
+        },
+        {
+          "id": "59083a14-b2b6-4dd8-8037-739aa1ad1e22",
+          "title": "Senior Data Analyst - Marketing",
+          "scope": "Remote Worldwide",
+          "url": "https://jobs.ashbyhq.com/supabase/59083a14-b2b6-4dd8-8037-739aa1ad1e22"
+        },
+        {
+          "id": "47bcfdb8-b954-423e-8a9e-85256434575c",
+          "title": "Product Lead - Infrastructure",
+          "scope": "Remote Worldwide",
+          "url": "https://jobs.ashbyhq.com/supabase/47bcfdb8-b954-423e-8a9e-85256434575c"
+        }
+      ]
+    },
+    "posthog": {
+      "matched": 1,
+      "excluded": {
+        "not_listed": 0,
+        "title_not_included": 8,
+        "title_excluded": 2,
+        "location_not_recognized": 0,
+        "outside_focus": 0
+      },
+      "roles": [
+        {
+          "id": "3c592b84-8b34-4ae4-ae23-cadce8f2212d",
+          "title": "Product Manager, Observability (ex-founder or ex-product engineer)",
+          "scope": "Remote Europe",
+          "url": "https://jobs.ashbyhq.com/posthog/3c592b84-8b34-4ae4-ae23-cadce8f2212d"
+        }
+      ]
+    }
+  },
+  "preserved_inputs": {
+    "boards.json": "79df6c5473ef947952f2c81c0cd63624082c92467570c2543a4af8c24e3fca19",
+    "seen.json": "d5df22c5f0e12ea8502b8ae1e8a9476cb6aae698673c0581d078110c3ad1f401",
+    "companies.txt": "f9d1001f806e563372111b5bb5f769909f67efe905d8ef662e235a3c99162f94",
+    "company-info/featured.json": "5e0b8bcf4477a1804b34abab881b85d498ef87e9958742674fe4f46ad901833b"
+  },
+  "review": "Claude Code t15 approved after three rounds; real cached-scope and indented-list regressions addressed."
+}

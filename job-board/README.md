@@ -2,7 +2,27 @@
 
 A static job catalog for the fork, published at https://p1va.github.io/ashby-job-radar/.
 
-It includes **every currently listed role matching the radar's location and title preferences**, including roles already emailed. It uses the same predicates as catch-up, with no sent-history check, publication cutoff or 100-role cap. Berlin, Munich and remote Germany are the current focus. This is a matching catalog, not every worldwide role at those companies.
+It includes **every currently listed role matching the radar's location and title preferences**, including roles already emailed. It uses the same predicates as catch-up, with no sent-history check, publication cutoff or 100-role cap. The fork includes Berlin, Munich, remote Germany and clearly scoped remote Europe/worldwide candidates. This is a matching catalog, not every worldwide role at those companies.
+
+Broad remote roles keep their **Remote Europe** or **Remote Worldwide** label,
+their original advertised locations/countries, and a note to check the source's
+country and timezone requirements. These labels do not assert Germany-specific
+eligibility. Bare **Remote**, country-scoped **Anywhere**, and a loose **Global**
+secondary tag on a US/city primary location do not widen eligibility. Europe
+takes priority when a posting lists both Europe and a worldwide scope.
+
+The fork opts into `include_remote_europe`, `include_remote_global` and
+`ignore_background_qualifiers`. The latter ignores parenthetical background
+starting with **ex-** or **former** when matching both inclusion and exclusion
+terms: a Product Manager who is an ex-engineer can match; Product Engineer and
+Product Manager (Internship) remain excluded. The original displayed title stays
+intact. `selection.excluded` in each collection report counts exclusions for
+unlisted jobs, title rules, unrecognised locations and locations outside focus.
+
+Descriptions and introductions share one plain-text parser and whitespace
+normalizer. Spacer lines, including non-breaking spaces, collapse to paragraph
+breaks; HTML list items keep bullet markers. Native plain text is normalized
+too. Indentation and ordinary paragraph breaks are preserved.
 
 The default view groups roles by company. Search covers company, title, locations, department and full descriptions; uncheck “Search job descriptions, too” to narrow it. Words are combined with AND; quotes keep phrases together. Location and work-style selections use OR within each filter, AND between filters. Filters and job details can be shared using the page URL. Sorting, a flat role view and a mobile filter panel are included.
 
@@ -12,7 +32,7 @@ Company names, websites, logos and board introductions come from a separately re
 
 In the fork's **Actions → Publish job board → Run workflow**, or wait for the daily 06:35 UTC run. Changes to the catalog code and company sources also trigger a rebuild.
 
-The workflow snapshots the original repository's current role/location preferences, company sources and sent history at one commit, with the fork's own `sources` setting. It combines them with the fork's registry, embedded boards and discovery seeds. Ashby boards are fetched once; Greenhouse uses a light list and a second board request when matching candidates need descriptions. Both use compression and bounded retries. The **Listed on** filter selects providers, including shareable `?source=greenhouse` links. See [additional sources](../discovery/README.md) for backfills and Workable's paced Germany search.
+The workflow snapshots the original repository's current role/location preferences, company sources and sent history at one commit, with the fork's own provider and three coverage opt-ins recorded as `preference_overrides` in the source report. It combines them with the fork's registry, embedded boards and discovery seeds. Ashby boards are fetched once; Greenhouse uses a light list and a second board request when matching candidates need descriptions. Both use compression and bounded retries. The **Listed on** filter selects providers, including shareable `?source=greenhouse` links. See [additional sources](../discovery/README.md) for backfills and Workable's paced Germany search.
 
 No email is sent and no registry or sent history is changed. This workflow requires no search API key or SMTP secrets. The report artifact includes a full HTML/Markdown/CSV/JSON **catch-up digest preview**: all unseen current matches from fresh collections, with no daily date cutoff or result cap. It is not the existing daily email's selection policy. The original email workflow remains separate.
 
