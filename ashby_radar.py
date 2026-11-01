@@ -459,10 +459,17 @@ def match_location(job: dict, cfg: dict) -> str | None:
             re.search(r"\b" + re.escape(norm(t)) + r"\b", blob) for t in cfg["country_terms"]):
         return "Germany"
     if work_style(job) == "Remote":
-        if cfg.get("include_remote_global") and re.search(r"\b(global|worldwide|world-wide|anywhere)\b", blob):
-            return "Remote Worldwide"
         if cfg.get("include_remote_europe") and re.search(r"\b(europe|emea|eu|european union)\b", blob):
             return "Remote Europe"
+        if cfg.get("include_remote_global"):
+            # Match a scope label, not 'Bonifacio Global City' or 'Global (APAC)'.
+            worldwide = (r"(?:fully\s+)?(?:remote[\s,()|/-]*)?"
+                         r"(?:global(?:\s+anywhere)?|world[- ]?wide|anywhere in the world)"
+                         r"(?:[\s,()|/-]*remote(?:\s+work)?)?[\s,()|/-]*")
+            primary = norm(job.get("location") or "").strip()
+            if (re.fullmatch(worldwide, primary) or primary in ("remote", "fully remote")
+                    and any(re.fullmatch(worldwide, country) for country in countries)):
+                return "Remote Worldwide"
     return None
 
 

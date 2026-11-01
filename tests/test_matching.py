@@ -37,6 +37,30 @@ class MatchingTests(unittest.TestCase):
             with self.subTest(job=job):
                 self.assertIsNone(radar.match_location(job, CONFIG))
 
+    def test_anywhere_does_not_override_a_country_scope(self):
+        for location in ["Anywhere in the United States", "anywhere in the US- remote", "Anywhere in California",
+                         "Remote - Anywhere", "Anywhere | Singapore", "Fully Remote - can be based anywhere in the U.S."]:
+            with self.subTest(location=location):
+                self.assertIsNone(radar.match_location({"location": location, "workplaceType": "Remote"}, CONFIG))
+        self.assertEqual(radar.match_location({"location": "Remote anywhere in the world", "workplaceType": "Remote"}, CONFIG),
+                         "Remote Worldwide")
+
+    def test_europe_wins_over_a_worldwide_tag_and_secondary_global_does_not_widen_us(self):
+        self.assertEqual(radar.match_location({"location": "Europe - Anywhere", "workplaceType": "Remote",
+            "secondaryLocations": [{"location": "Global"}]}, CONFIG), "Remote Europe")
+        job = {"title": "Account Director (US, Fully-Remote, EST Hours)", "location": "US", "workplaceType": "Remote",
+               "address": {"postalAddress": {"addressCountry": "United States"}},
+               "secondaryLocations": [{"location": "New York"}, {"location": "Global"}]}
+        self.assertIsNone(radar.match_location(job, CONFIG))
+
+    def test_global_is_a_region_label_not_a_place_name_or_narrow_region(self):
+        for location in ["Bonifacio Global City", "Remote, Global (APAC)", "Global - US only"]:
+            with self.subTest(location=location):
+                self.assertIsNone(radar.match_location({"location": location, "workplaceType": "Remote"}, CONFIG))
+        for location in ["Global (Remote)", "Remote - Global Anywhere", "Remote, Global", "Worldwide", "global - remote work"]:
+            with self.subTest(location=location):
+                self.assertEqual(radar.match_location({"location": location, "workplaceType": "Remote"}, CONFIG), "Remote Worldwide")
+
     def test_role_exclusions_stay_effective_and_background_does_not_create_a_match(self):
         for title in ["Product Engineer (ex-founder)", "Product Manager (Internship)",
                       "Product Manager (Engineer)", "Product Manager (former engineer) - Internship"]:
