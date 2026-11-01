@@ -66,7 +66,9 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(build.description({"descriptionPlain": "First\r\n\xa0\r\n \r\n\r\nSecond\n  • Item\n\n\nNext"}),
                          "First\n\nSecond\n  • Item\n\nNext")
         self.assertEqual(build.description({"descriptionHtml": '<p>About</p><p>&nbsp;</p><ul><li> <p>First</p></li><li><p>&nbsp;</p><p>Second<br>continued</p></li><li>&nbsp;</li></ul><script>hidden()</script>'}),
-                         "About\n\n• First\n\n• Second\ncontinued")
+                         "About\n\n• First\n• Second\ncontinued")
+        self.assertEqual(build.description({"descriptionHtml": '<ul>\n  <li>One</li>\n  <li>Two</li>\n</ul><p>After</p>'}),
+                         "• One\n• Two\n\nAfter")
 
     def test_broad_remote_scope_preserves_country_evidence_and_explanation(self):
         cfg = {**json.loads(self.config.read_text()), "include_remote_europe": True}
