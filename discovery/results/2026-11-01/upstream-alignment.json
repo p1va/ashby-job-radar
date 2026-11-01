@@ -1,0 +1,31 @@
+{
+  "upstream_commit": "d9ea8e7cbb2b0c26da977720fc599a20b992a256",
+  "fork_base": "165f49aac9fa9a62376c4ad76e2f529396ab4ecf",
+  "registry_before": 6812,
+  "registry_after": 8299,
+  "owner_registry": 3660,
+  "greenhouse_retained": 4639,
+  "copied_files": [
+    "companies.txt",
+    "embedded-boards/boards.txt",
+    "seen.json",
+    "output/digest.json",
+    "output/digest.md",
+    "output/digest.html"
+  ],
+  "removed_stale_preview": [
+    "output/run.json"
+  ],
+  "fork_preferences_retained": {
+    "sources": [
+      "ashby",
+      "greenhouse",
+      "workable"
+    ],
+    "include_remote_europe": true,
+    "include_remote_global": true,
+    "ignore_background_qualifiers": true
+  },
+  "company_profiles_retained": 378,
+  "featured_unchanged": true
+}
