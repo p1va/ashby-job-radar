@@ -6,10 +6,8 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 import hashlib
-from html.parser import HTMLParser
 import json
 from pathlib import Path
-import re
 import sys
 from urllib.parse import unquote, urlsplit
 
@@ -21,37 +19,10 @@ import ashby_radar as radar
 import sources
 
 
-class PlainText(HTMLParser):
-    """Keep readable paragraph breaks without executing or publishing employer HTML."""
-
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.parts = []
-        self.hidden = 0
-
-    def handle_starttag(self, tag, attrs):
-        if tag in ("script", "style"):
-            self.hidden += 1
-        elif not self.hidden and tag in ("p", "div", "br", "li", "h1", "h2", "h3", "h4"):
-            self.parts.append("\n" if tag == "br" else "\n\n")
-
-    def handle_endtag(self, tag):
-        if tag in ("script", "style"):
-            self.hidden = max(0, self.hidden - 1)
-        elif not self.hidden and tag in ("p", "div", "li", "h1", "h2", "h3", "h4"):
-            self.parts.append("\n\n")
-
-    def handle_data(self, data):
-        if not self.hidden:
-            self.parts.append(data)
-
-
 def description(job: dict) -> str:
     if job.get("descriptionPlain"):
-        return job["descriptionPlain"].strip()
-    parser = PlainText()
-    parser.feed(job.get("descriptionHtml") or "")
-    return re.sub(r"\n[ \t]*\n(?:[ \t]*\n)+", "\n\n", "".join(parser.parts)).strip()
+        return sources.normalize_text(job["descriptionPlain"])
+    return sources.plain_text(job.get("descriptionHtml") or "")
 
 
 def public_job(job: dict) -> dict:

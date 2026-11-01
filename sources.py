@@ -70,24 +70,40 @@ class PlainText(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag in ("script", "style"):
             self.hidden += 1
-        elif not self.hidden and tag in ("p", "div", "br", "li", "h1", "h2", "h3", "h4"):
+        elif not self.hidden and tag == "li":
+            self.parts.append("\n• ")
+        elif not self.hidden and tag == "br":
+            self.parts.append("\n")
+        elif not self.hidden and tag in ("p", "div", "h1", "h2", "h3", "h4") and not self.at_bullet():
             self.parts.append("\n\n")
 
     def handle_endtag(self, tag):
         if tag in ("script", "style"):
             self.hidden = max(0, self.hidden - 1)
-        elif not self.hidden and tag in ("p", "div", "li", "h1", "h2", "h3", "h4"):
+        elif not self.hidden and tag == "li" and self.at_bullet():
+            self.parts.pop()
+        elif not self.hidden and tag in ("p", "div", "li", "h1", "h2", "h3", "h4") and not self.at_bullet():
             self.parts.append("\n\n")
 
     def handle_data(self, data):
-        if not self.hidden:
+        if not self.hidden and not (self.at_bullet() and not data.strip()):
             self.parts.append(data)
+
+
+    def at_bullet(self):
+        return bool(self.parts and self.parts[-1] == "\n• ")
+
+
+def normalize_text(value: str) -> str:
+    """Remove spacer lines while preserving paragraphs, bullets and indentation."""
+    text = "\n".join(line.rstrip() for line in value.replace("\xa0", " ").splitlines())
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 
 def plain_text(value: str) -> str:
     parser = PlainText()
     parser.feed(value)
-    return re.sub(r"\n[ \t]*\n(?:[ \t]*\n)+", "\n\n", "".join(parser.parts)).strip()
+    return normalize_text("".join(parser.parts))
 
 
 def jobs_list(body: bytes) -> list[dict]:

@@ -62,6 +62,12 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(build.description({"descriptionPlain": "Plain text", "descriptionHtml": "ignored"}), "Plain text")
         self.assertEqual(build.description({"descriptionHtml": '<h2>About &amp; work</h2><p>Build <b>tools</b>.</p><script>bad()</script><style>bad{}</style><p>Apply.</p>'}), "About & work\n\nBuild tools.\n\nApply.")
 
+    def test_plain_and_html_descriptions_remove_spacer_lines_and_keep_lists(self):
+        self.assertEqual(build.description({"descriptionPlain": "First\r\n\xa0\r\n \r\n\r\nSecond\n  • Item\n\n\nNext"}),
+                         "First\n\nSecond\n  • Item\n\nNext")
+        self.assertEqual(build.description({"descriptionHtml": '<p>About</p><p>&nbsp;</p><ul><li> <p>First</p></li><li><p>&nbsp;</p><p>Second<br>continued</p></li><li>&nbsp;</li></ul><script>hidden()</script>'}),
+                         "About\n\n• First\n\n• Second\ncontinued")
+
     def test_failed_fetch_never_creates_publishable_site(self):
         with patch.object(build.radar, "fetch_board", return_value=("sample", None, "HTTP 429")):
             self.assertEqual(build.main(self.args() + ["--board", "sample"]), 1)
