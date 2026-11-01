@@ -408,8 +408,7 @@ def fetch_board(slug: str, cfg: dict | None = None) -> tuple[str, list[dict] | N
     try:
         if sources.provider(slug) == "greenhouse":
             def candidate(job):
-                return (word_hit(job["title"], cfg["title_include"])
-                        and not word_hit(job["title"], cfg["title_exclude"])
+                return (not title_rejection(job["title"], cfg)
                         and match_location(job, cfg)) if cfg else True
             return slug, sources.fetch_greenhouse(slug, request, candidate), None
         if sources.provider(slug) != "ashby":
@@ -459,9 +458,11 @@ def match_location(job: dict, cfg: dict) -> str | None:
     if countries.intersection({"de", "deu", "germany", "deutschland"}) or any(
             re.search(r"\b" + re.escape(norm(t)) + r"\b", blob) for t in cfg["country_terms"]):
         return "Germany"
-    if cfg.get("include_remote_europe") and any(
-            re.search(r"\b" + t + r"\b", blob) for t in ("europe", "emea", "eu")):
-        return "Remote Europe"
+    if work_style(job) == "Remote":
+        if cfg.get("include_remote_global") and re.search(r"\b(global|worldwide|world-wide|anywhere)\b", blob):
+            return "Remote Worldwide"
+        if cfg.get("include_remote_europe") and re.search(r"\b(europe|emea|eu|european union)\b", blob):
+            return "Remote Europe"
     return None
 
 
@@ -484,6 +485,17 @@ def work_style(job: dict) -> str:
 def word_hit(text: str, words: list[str]) -> list[str]:
     t = norm(text)
     return [w for w in words if re.search(r"\b" + re.escape(norm(w)) + r"\b", t)]
+
+
+def title_rejection(title: str, cfg: dict) -> str | None:
+    """Match the role, optionally ignoring parenthetical former-role background."""
+    if cfg.get("ignore_background_qualifiers"):
+        title = re.sub(r"\(\s*(?:ex[- ]|former\b)[^)]*\)", "", title, flags=re.I)
+    if not word_hit(title, cfg["title_include"]):
+        return "title_not_included"
+    if word_hit(title, cfg["title_exclude"]):
+        return "title_excluded"
+    return None
 
 
 def parse_date(s: str | None) -> datetime | None:
@@ -531,6 +543,9 @@ def in_focus(loc: str, style: str, cfg: dict) -> bool:
         return True
     if any(c in focus for c in loc.split(" / ")):
         return True
+    if style == "Remote" and ((loc == "Remote Europe" and cfg.get("include_remote_europe"))
+                              or (loc == "Remote Worldwide" and cfg.get("include_remote_global"))):
+        return True
     return bool(cfg.get("include_remote_germany", True)) and loc == "Germany" and style == "Remote"
 
 
@@ -562,10 +577,7 @@ def curate(boards: dict[str, list[dict]], cfg: dict, seen: dict, now: datetime, 
         for job in jobs:
             if job.get("isListed") is False:
                 continue
-            title = job.get("title", "")
-            if not word_hit(title, cfg["title_include"]):
-                continue
-            if word_hit(title, cfg["title_exclude"]):
+            if title_rejection(job.get("title", ""), cfg):
                 continue
             loc = match_location(job, cfg)
             if not loc:

@@ -68,6 +68,14 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(build.description({"descriptionHtml": '<p>About</p><p>&nbsp;</p><ul><li> <p>First</p></li><li><p>&nbsp;</p><p>Second<br>continued</p></li><li>&nbsp;</li></ul><script>hidden()</script>'}),
                          "About\n\n• First\n\n• Second\ncontinued")
 
+    def test_broad_remote_scope_preserves_country_evidence_and_explanation(self):
+        cfg = {**json.loads(self.config.read_text()), "include_remote_europe": True}
+        jobs, _ = build.select_matches({"posthog": [self.job(location="Remote", workplaceType="Remote",
+            address={"postalAddress": {"addressCountry": "US | EU"}})]}, cfg, {})
+        row = build.public_job(jobs[0])
+        self.assertEqual((row["location"], row["locations"]), ("Remote Europe", ["Remote", "US | EU"]))
+        self.assertIn("permitted countries", row["locationNote"])
+
     def test_failed_fetch_never_creates_publishable_site(self):
         with patch.object(build.radar, "fetch_board", return_value=("sample", None, "HTTP 429")):
             self.assertEqual(build.main(self.args() + ["--board", "sample"]), 1)

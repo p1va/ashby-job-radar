@@ -37,6 +37,9 @@ def public_job(job: dict) -> dict:
             str(address[key]) for key in ("addressLocality", "addressRegion", "addressCountry") if address.get(key)))
         if label and label not in locations:
             locations.append(label)
+        country = address.get("addressCountry")
+        if job["_loc"] in ("Remote Europe", "Remote Worldwide") and country and str(country) not in locations:
+            locations.append(str(country))
     return {
         "id": str(job.get("id") or url), "title": job["title"].strip(),
         "company": job["_slug"], "companyName": radar.job_company(job),
@@ -45,6 +48,10 @@ def public_job(job: dict) -> dict:
         "companyLogoUrl": public_url(job.get("companyLogoUrl")),
         "companyIntroduction": job.get("companyIntroduction") or "",
         "location": job["_loc"], "locations": locations,
+        "locationNote": ("Source lists Europe/EMEA; check the posting's permitted countries and timezones."
+                         if job["_loc"] == "Remote Europe" else
+                         "Source lists worldwide remote; check the posting's permitted countries and timezones."
+                         if job["_loc"] == "Remote Worldwide" else ""),
         "style": job["_style"], "salary": job["_comp"],
         "employment": job.get("employmentType") or "",
         "department": job.get("department") or "", "team": job.get("team") or "",

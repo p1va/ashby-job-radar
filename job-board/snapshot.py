@@ -11,22 +11,24 @@ def git(*args, required=True):
     return result.stdout if result.returncode == 0 else None
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--ref", default="FETCH_HEAD", help="already fetched original repository commit")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--include-seen", action="store_true", help="also snapshot sent history for a read-only digest preview")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     args.out.mkdir(parents=True, exist_ok=False)
     commit = git("rev-parse", args.ref).strip()
     config = json.loads(git("show", commit + ":config.json"))
     local = json.loads((Path(__file__).resolve().parent.parent / "config.json").read_text())
-    # Keep upstream role/location preferences; the fork chooses its own providers.
-    if "sources" in local:
-        config["sources"] = local["sources"]
+    # The fork opts into broader remote coverage; other upstream preferences stay current.
+    overrides = {key: local[key] for key in ("sources", "include_remote_europe", "include_remote_global",
+                                            "ignore_background_qualifiers") if key in local}
+    config.update(overrides)
     (args.out / "config.json").write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
     source = {"repository": "betklab/ashby-job-radar", "commit": commit,
-              "fork_commit": git("rev-parse", "HEAD").strip(), "sources": config.get("sources", ["ashby"])}
+              "fork_commit": git("rev-parse", "HEAD").strip(), "sources": config.get("sources", ["ashby"]),
+              "preference_overrides": overrides}
     extra = []
     refs = [commit]
     # Keep discovery seeds available while their small upstream PR is still open.

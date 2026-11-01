@@ -18,6 +18,8 @@
   "overlap_hours": 3,
   "focus_cities": ["Berlin", "Munich"],
   "include_remote_germany": true,
+  "include_remote_global": true,
+  "ignore_background_qualifiers": true,
   "workers": 16,
   "title_include": [
     "growth",
@@ -268,7 +270,7 @@
     "remote - de",
     "remote de"
   ],
-  "include_remote_europe": false,
+  "include_remote_europe": true,
   "german_required_phrases": [
     "fliessend deutsch",
     "fliessende deutschkenntnisse",

@@ -44,17 +44,25 @@ def select_matches(boards: dict, cfg: dict, seen: dict) -> tuple[list[dict], dic
     """Reuse the radar's predicates, with no publication cutoff or result cap."""
     matches, encountered = [], set()
     counts = {"matching_jobs": 0, "already_seen": 0, "duplicate_matches": 0,
-              "untrackable_matches": 0, "matches_without_date": 0}
+              "untrackable_matches": 0, "matches_without_date": 0,
+              "excluded": {reason: 0 for reason in ("not_listed", "title_not_included", "title_excluded",
+                                                     "location_not_recognized", "outside_focus")}}
     for slug, jobs in boards.items():
         for job in jobs:
-            title = job.get("title") or ""
-            if job.get("isListed") is False or not radar.word_hit(title, cfg["title_include"]):
+            if job.get("isListed") is False:
+                counts["excluded"]["not_listed"] += 1
                 continue
-            if radar.word_hit(title, cfg["title_exclude"]):
+            rejection = radar.title_rejection(job.get("title") or "", cfg)
+            if rejection:
+                counts["excluded"][rejection] += 1
                 continue
             location = radar.match_location(job, cfg)
             style = radar.work_style(job)
-            if not location or not radar.in_focus(location, style, cfg):
+            if not location:
+                counts["excluded"]["location_not_recognized"] += 1
+                continue
+            if not radar.in_focus(location, style, cfg):
+                counts["excluded"]["outside_focus"] += 1
                 continue
             url = job.get("jobUrl") or ""
             if not url or urllib.parse.urlsplit(url).scheme not in ("https", "http"):
