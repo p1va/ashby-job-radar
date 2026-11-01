@@ -106,9 +106,7 @@ def board_logo(page: str) -> str:
 
 def hosted_page(url: str) -> str:
     """GET without following redirects: a redirect means the company uses its own careers site."""
-    request = urllib.request.Request(url, headers={**radar.UA, "Accept-Encoding": "gzip"})
-    with NO_REDIRECT.open(request, timeout=30) as response:
-        return radar.read_response(response).decode("utf-8", "replace")
+    return radar.request(url, opener=NO_REDIRECT.open, parse=lambda body: body.decode("utf-8", "replace"))
 
 
 def hosted_logo(token: str) -> str:

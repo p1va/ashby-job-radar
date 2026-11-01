@@ -172,6 +172,15 @@ class GreenhouseProfileTests(unittest.TestCase):
         with patch.object(refresh, "hosted_page", side_effect=http_error(503)), self.assertRaises(urllib.error.HTTPError):
             refresh.hosted_logo("outage")
 
+    def test_hosted_page_reuses_gzip_and_bounded_retries_without_following_redirects(self):
+        class Response(io.BytesIO):
+            headers = {"Content-Encoding": "gzip"}
+        response = Response(gzip.compress(b'<meta property="og:image" content="logo">'))
+        with patch.object(refresh.NO_REDIRECT, "open", side_effect=[http_error(503), response]) as get, \
+                patch.object(refresh.radar.time, "sleep"):
+            self.assertIn('content="logo"', refresh.hosted_page("https://job-boards.greenhouse.io/sample"))
+        self.assertEqual(get.call_count, 2)
+
     def test_greenhouse_profile_uses_public_board_name_intro_and_hosted_logo(self):
         body = json.dumps({"name": " Braze ", "content": "<p>About Braze</p>"}).encode()
         with patch.object(refresh.radar, "request", side_effect=lambda url, parse: parse(body)) as get, \
