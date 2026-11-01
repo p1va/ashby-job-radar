@@ -1,0 +1,253 @@
+{
+  "generated_at": "2026-11-01T11:27:58.430046+00:00",
+  "mode": "combined",
+  "config_hash": "bff58454abe809c1cbfe244cdbcd540b4c103633685a2a59055f7b5c6a1345d9",
+  "source": {
+    "repository": "betklab/ashby-job-radar",
+    "commit": "30e476df1c785b33034862722fa639010ae80b5c",
+    "fork_commit": "c8b999ac80e428823e718660b532296d4b2a9687",
+    "sources": [
+      "ashby",
+      "greenhouse",
+      "workable"
+    ],
+    "preference_overrides": {
+      "sources": [
+        "ashby",
+        "greenhouse",
+        "workable"
+      ],
+      "include_remote_europe": true,
+      "include_remote_global": true,
+      "ignore_background_qualifiers": true
+    },
+    "extra_company_ref": "f7683c90099a7c70b3319aa26a7bd3da992b1c2e"
+  },
+  "sources": [
+    "ashby",
+    "greenhouse",
+    "workable"
+  ],
+  "source_status": {
+    "ashby": {
+      "state": "fresh",
+      "updatedAt": "2026-11-01T11:22:40.596905+00:00"
+    },
+    "greenhouse": {
+      "state": "fresh",
+      "updatedAt": "2026-11-01T11:22:39.034191+00:00"
+    },
+    "workable": {
+      "state": "fresh",
+      "updatedAt": "2026-11-01T11:22:37.916276+00:00"
+    }
+  },
+  "provider_reports": {
+    "ashby": {
+      "generated_at": "2026-11-01T11:22:40.596905+00:00",
+      "mode": "live",
+      "boards_requested": 3676,
+      "boards_ok": 3183,
+      "boards_not_found": 493,
+      "boards_failed": 0,
+      "jobs_read": 59333,
+      "roles": 647,
+      "companies": 234,
+      "selection": {
+        "matching_jobs": 647,
+        "already_seen": 0,
+        "duplicate_matches": 0,
+        "untrackable_matches": 0,
+        "matches_without_date": 0,
+        "excluded": {
+          "not_listed": 6,
+          "title_not_included": 46195,
+          "title_excluded": 2884,
+          "location_not_recognized": 9526,
+          "outside_focus": 75
+        }
+      },
+      "source": {
+        "repository": "betklab/ashby-job-radar",
+        "commit": "30e476df1c785b33034862722fa639010ae80b5c",
+        "fork_commit": "c8b999ac80e428823e718660b532296d4b2a9687",
+        "sources": [
+          "ashby",
+          "greenhouse",
+          "workable"
+        ],
+        "preference_overrides": {
+          "sources": [
+            "ashby",
+            "greenhouse",
+            "workable"
+          ],
+          "include_remote_europe": true,
+          "include_remote_global": true,
+          "ignore_background_qualifiers": true
+        },
+        "extra_company_ref": "f7683c90099a7c70b3319aa26a7bd3da992b1c2e"
+      },
+      "failures": [],
+      "sources": [
+        "ashby"
+      ],
+      "config_hash": "bff58454abe809c1cbfe244cdbcd540b4c103633685a2a59055f7b5c6a1345d9",
+      "roles_by_source": {
+        "ashby": 647
+      },
+      "workable_scan_complete": false,
+      "invalid_companies": [],
+      "failure_budget_exceeded": []
+    },
+    "greenhouse": {
+      "generated_at": "2026-11-01T11:22:39.034191+00:00",
+      "mode": "live",
+      "boards_requested": 4639,
+      "boards_ok": 4639,
+      "boards_not_found": 0,
+      "boards_failed": 0,
+      "jobs_read": 166300,
+      "roles": 402,
+      "companies": 139,
+      "selection": {
+        "matching_jobs": 402,
+        "already_seen": 0,
+        "duplicate_matches": 0,
+        "untrackable_matches": 0,
+        "matches_without_date": 2,
+        "excluded": {
+          "not_listed": 0,
+          "title_not_included": 147458,
+          "title_excluded": 2963,
+          "location_not_recognized": 15335,
+          "outside_focus": 142
+        }
+      },
+      "source": {
+        "repository": "betklab/ashby-job-radar",
+        "commit": "30e476df1c785b33034862722fa639010ae80b5c",
+        "fork_commit": "c8b999ac80e428823e718660b532296d4b2a9687",
+        "sources": [
+          "ashby",
+          "greenhouse",
+          "workable"
+        ],
+        "preference_overrides": {
+          "sources": [
+            "ashby",
+            "greenhouse",
+            "workable"
+          ],
+          "include_remote_europe": true,
+          "include_remote_global": true,
+          "ignore_background_qualifiers": true
+        },
+        "extra_company_ref": "f7683c90099a7c70b3319aa26a7bd3da992b1c2e"
+      },
+      "failures": [],
+      "sources": [
+        "greenhouse"
+      ],
+      "config_hash": "bff58454abe809c1cbfe244cdbcd540b4c103633685a2a59055f7b5c6a1345d9",
+      "roles_by_source": {
+        "greenhouse": 402
+      },
+      "workable_scan_complete": false,
+      "invalid_companies": [],
+      "failure_budget_exceeded": []
+    },
+    "workable": {
+      "generated_at": "2026-11-01T11:22:37.916276+00:00",
+      "mode": "live",
+      "boards_requested": 0,
+      "boards_ok": 273,
+      "boards_not_found": 0,
+      "boards_failed": 0,
+      "jobs_read": 2892,
+      "roles": 184,
+      "companies": 58,
+      "selection": {
+        "matching_jobs": 184,
+        "already_seen": 0,
+        "duplicate_matches": 0,
+        "untrackable_matches": 0,
+        "matches_without_date": 0,
+        "excluded": {
+          "not_listed": 0,
+          "title_not_included": 2523,
+          "title_excluded": 35,
+          "location_not_recognized": 0,
+          "outside_focus": 150
+        }
+      },
+      "source": {
+        "repository": "betklab/ashby-job-radar",
+        "commit": "30e476df1c785b33034862722fa639010ae80b5c",
+        "fork_commit": "c8b999ac80e428823e718660b532296d4b2a9687",
+        "sources": [
+          "ashby",
+          "greenhouse",
+          "workable"
+        ],
+        "preference_overrides": {
+          "sources": [
+            "ashby",
+            "greenhouse",
+            "workable"
+          ],
+          "include_remote_europe": true,
+          "include_remote_global": true,
+          "ignore_background_qualifiers": true
+        },
+        "extra_company_ref": "f7683c90099a7c70b3319aa26a7bd3da992b1c2e"
+      },
+      "failures": [],
+      "sources": [
+        "workable"
+      ],
+      "config_hash": "bff58454abe809c1cbfe244cdbcd540b4c103633685a2a59055f7b5c6a1345d9",
+      "roles_by_source": {
+        "workable": 184
+      },
+      "workable_scan_complete": true,
+      "invalid_companies": [],
+      "failure_budget_exceeded": []
+    }
+  },
+  "partial": false,
+  "boards_requested": 8315,
+  "boards_ok": 8095,
+  "boards_not_found": 493,
+  "boards_failed": 0,
+  "jobs_read": 228525,
+  "roles": 1233,
+  "companies": 431,
+  "roles_by_source": {
+    "ashby": 647,
+    "greenhouse": 402,
+    "workable": 184
+  },
+  "selection": {
+    "matching_jobs": 1233,
+    "already_seen": 0,
+    "duplicate_matches": 0,
+    "untrackable_matches": 0,
+    "matches_without_date": 2,
+    "excluded": {
+      "not_listed": 0,
+      "title_not_included": 0,
+      "title_excluded": 0,
+      "location_not_recognized": 0,
+      "outside_focus": 0
+    }
+  },
+  "fresh_sources": [
+    "ashby",
+    "greenhouse",
+    "workable"
+  ],
+  "unavailable_sources": [],
+  "retained_roles": 0,
+  "stale_max_hours": 48.0
+}

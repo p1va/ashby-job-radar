@@ -1,0 +1,90 @@
+{
+  "deployed_commit": "c8b999ac80e428823e718660b532296d4b2a9687",
+  "run": "https://github.com/p1va/ashby-job-radar/actions/runs/41301590003",
+  "conclusion": "success",
+  "workflow_seconds": 366,
+  "jobs": {
+    "prepare": {
+      "conclusion": "success",
+      "seconds": 11
+    },
+    "collect (greenhouse)": {
+      "conclusion": "success",
+      "seconds": 147
+    },
+    "collect (ashby)": {
+      "conclusion": "success",
+      "seconds": 58
+    },
+    "collect (workable)": {
+      "conclusion": "success",
+      "seconds": 313
+    },
+    "combine": {
+      "conclusion": "success",
+      "seconds": 19
+    },
+    "deploy": {
+      "conclusion": "success",
+      "seconds": 9
+    }
+  },
+  "live": {
+    "data_file": "jobs-ea82d9fc599f.json",
+    "roles": 1233,
+    "companies": 431,
+    "sources": {
+      "workable": 184,
+      "ashby": 647,
+      "greenhouse": 402
+    },
+    "scope_counts": {
+      "Remote Europe": 141,
+      "Remote Worldwide": 35
+    },
+    "target_companies": {
+      "elevenlabs": 3,
+      "supabase": 7,
+      "posthog": 1
+    },
+    "greenhouse_logos": 78,
+    "excessive_spacer_lines": 0,
+    "partial": false,
+    "source_status": {
+      "ashby": {
+        "state": "fresh",
+        "updatedAt": "2026-11-01T11:22:40.596905+00:00"
+      },
+      "greenhouse": {
+        "state": "fresh",
+        "updatedAt": "2026-11-01T11:22:39.034191+00:00"
+      },
+      "workable": {
+        "state": "fresh",
+        "updatedAt": "2026-11-01T11:22:37.916276+00:00"
+      }
+    }
+  },
+  "live_data_sha256": "ea82d9fc599fc8b6708c4530fc3519a4f0723b4d6c6593b4918077697149bbc3",
+  "loose_bullet_lists": 0,
+  "duplicate_ids": 0,
+  "digest_unseen": 1106,
+  "digest_already_seen": 127,
+  "tests_passed": 96,
+  "browser_errors": [],
+  "browser_viewports": [
+    320,
+    360,
+    390,
+    430,
+    768,
+    1024,
+    1440
+  ],
+  "independent_review": "Claude Code t15: three rounds on coverage/formatting, logo implementation reviewed by Codex, retry opener approved, final live counts/logos/formatting independently confirmed.",
+  "registry_seen_seeds_featured_unchanged": true,
+  "original_repo_changed": false,
+  "emails_sent": false,
+  "aws_queries": 0,
+  "serper_credits": 0
+}

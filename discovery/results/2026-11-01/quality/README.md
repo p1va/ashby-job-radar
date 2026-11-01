@@ -5,6 +5,17 @@ The original repository, registry, delivery history, seeds and featured list
 are unchanged. The fork explicitly opts into Europe/worldwide candidates and
 matching primary job titles without parenthetical former-role background.
 
+**Published and verified:** [run 41301590003](https://github.com/p1va/ashby-job-radar/actions/runs/41301590003)
+passed all six jobs from `c8b999a`. The live board has **1,233 postings / 431
+company keys**, 647 Ashby +402 Greenhouse +184 Workable, all fresh, no partial
+refresh. There are **141 Remote Europe and 35 Remote Worldwide** candidates,
+**3 ElevenLabs / 7 Supabase / 1 PostHog** matches and **78 logos among 139
+represented Greenhouse companies**. Published descriptions have zero repeated
+spacer-line runs or loose adjacent bullet pairs; IDs are unique. All 96 tests
+pass, and local/live Chrome checks pass at 320–1440px. Claude independently
+confirmed the final live payload. See [verification.json](verification.json),
+[pages-run.json](pages-run.json) and [browser-live.json](browser-live.json).
+
 ## Changes
 
 - One shared plain-text parser/normalizer removes spacer lines (including
@@ -57,5 +68,6 @@ queries, Serper credits or upstream changes were involved.
 See [local-verification.json](local-verification.json),
 [company-refresh.json](company-refresh.json),
 [greenhouse-profile-probe.json](greenhouse-profile-probe.json) and
-[browser-local.json](browser-local.json). Final Actions and live checks will
-be recorded beside these reports after publication.
+[browser-local.json](browser-local.json). Full local native examples, screenshots
+and the combined artifact are in `data/exploration/catalog-quality-20261101/`
+in the shared workspace.
