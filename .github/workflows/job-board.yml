@@ -60,6 +60,7 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          BUTTONDOWN_USERNAME: ${{ vars.BUTTONDOWN_USERNAME }}
       - name: Remember company logos
         if: ${{ !cancelled() && steps.pages.outputs.on == 'true' && hashFiles('profiles.json') != '' }}
         uses: actions/cache/save@v6
