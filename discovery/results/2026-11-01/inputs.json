@@ -1,0 +1,78 @@
+{
+  "source": "User-exported Athena results for the last three indexes",
+  "crawl_ids": "Not included in the CSV columns; no filename-to-crawl mapping assumed",
+  "files": [
+    {
+      "file": "d2e9f5e9-0265-422a-b8e4-76e9b54347d3.csv",
+      "bytes": 2535217,
+      "sha256": "70135ec4ee08f7ec04a884a07c61cd434ab32f784e0c11a5ca40ec73b01de724",
+      "header": [
+        "url"
+      ],
+      "rows": 31145,
+      "unique_boards": 3653,
+      "hosts": {
+        "job-boards.eu.greenhouse.io": 2511,
+        "job-boards.greenhouse.io": 28634
+      },
+      "rejected": {
+        "Invalid Greenhouse board token": 15
+      },
+      "sample": [
+        "https://job-boards.eu.greenhouse.io/agency/jobs/4645624101",
+        "https://job-boards.eu.greenhouse.io/eonio?utm_source=topstartups.io"
+      ]
+    },
+    {
+      "file": "ead1392b-c374-4943-b00f-160ab12bfb83.csv",
+      "bytes": 2520910,
+      "sha256": "e60cae0016ac60cabe18ea4406b7611ef85efd2a6f486331ebc03b3aa62f8d34",
+      "header": [
+        "url"
+      ],
+      "rows": 30745,
+      "unique_boards": 3305,
+      "hosts": {
+        "job-boards.eu.greenhouse.io": 2711,
+        "job-boards.greenhouse.io": 28034
+      },
+      "rejected": {
+        "Invalid Greenhouse board token": 11
+      },
+      "sample": [
+        "https://job-boards.eu.greenhouse.io/agency/jobs/4738026101",
+        "https://job-boards.eu.greenhouse.io/bakerhicks/jobs/4956750101"
+      ]
+    },
+    {
+      "file": "b39e7e2f-76db-46ca-96ba-490dba5a6580.csv",
+      "bytes": 2553508,
+      "sha256": "3197547725a36a90b3777f59dbecf4a43b8d069633c7d21512a9096fd5d53730",
+      "header": [
+        "url"
+      ],
+      "rows": 31339,
+      "unique_boards": 3350,
+      "hosts": {
+        "job-boards.eu.greenhouse.io": 2574,
+        "job-boards.greenhouse.io": 28765
+      },
+      "rejected": {
+        "Invalid Greenhouse board token": 26
+      },
+      "sample": [
+        "https://job-boards.eu.greenhouse.io/trgscreen/jobs/4919800101",
+        "https://job-boards.eu.greenhouse.io/veeamsoftware/jobs/4888372101"
+      ]
+    }
+  ],
+  "rows": 93229,
+  "unique_board_candidates": 4811,
+  "already_known": 351,
+  "new_candidates": 4460,
+  "url_rows_rejected_by_current_parser": 52,
+  "unsupported_live_board_tokens": 4,
+  "distinct_boards_including_unsupported": 4815,
+  "unsupported_german_jobs": 0,
+  "parser_policy": "Existing supported token rules unchanged; four valid punctuation tokens documented for follow-up rather than misclassified as malformed."
+}

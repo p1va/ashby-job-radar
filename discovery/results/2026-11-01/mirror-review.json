@@ -1,0 +1,243 @@
+{
+  "scope": "One-time import curation against the current matching catalog, not a complete-board or permanent equivalence rule.",
+  "reviewer": "Claude Code t15; independently confirmed all five exclusions.",
+  "omitted_boards": [
+    {
+      "omitted": "greenhouse:doctolib",
+      "retained": "doctolib",
+      "matching_copies": 12,
+      "reason": "All current title/location matches are reposts on the retained board; manually reviewed descriptions.",
+      "overlaps": [
+        {
+          "omitted_id": "greenhouse:8040014003",
+          "retained_id": "5bc2b243-0ad1-4ec9-b765-5b8dcef8b1bb",
+          "title": "Revenue Operations Lead (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.573,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:8034474003",
+          "retained_id": "74d6ea9a-184a-4536-a0fb-43be6c0632f0",
+          "title": "Localization Operations Manager (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.264,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:8009206003",
+          "retained_id": "478554d3-2f63-46fa-b0ea-b31e28925a8f",
+          "title": "Director Indirect Sales & Partnerships (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.834,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:8014394003",
+          "retained_id": "f584965b-65a6-4810-951e-bb1064db0e17",
+          "title": "Senior Lead Product Marketing(x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.194,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:7998974003",
+          "retained_id": "2d9687ec-f261-44aa-9a7d-38233f9e61df",
+          "title": "Senior Medical Content Manager (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.885,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:7993959003",
+          "retained_id": "804ce788-ffb6-4f9c-afb3-21d2fab56822",
+          "title": "Senior Medical Content Writer (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.402,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:7986187003",
+          "retained_id": "cac4f4ff-c73b-491d-99f9-fa2fd83fb28f",
+          "title": "Product Strategy Lead (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.028,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:7985252003",
+          "retained_id": "1aecfe4b-d7aa-4fd2-9f1f-ec40db90c418",
+          "title": "Senior AI Specialist (Operations) (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.766,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:7885633003",
+          "retained_id": "eca7c74d-ec90-4847-a222-48457fc48cec",
+          "title": "Product Support Consultant (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.468,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:7793643003",
+          "retained_id": "d5da6e90-5168-4ec9-b69a-6cbb768a8e51",
+          "title": "Senior AI Specialist (Operations) (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.616,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:7710574003",
+          "retained_id": "2cd8ce16-3f5c-4976-8c8e-46364c3f72a8",
+          "title": "Product Marketing Lead (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.369,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:7511809003",
+          "retained_id": "a6ec4f08-780c-4515-b27c-c3181ad9f23b",
+          "title": "Team Lead Technical Support - Product (x/f/m)",
+          "location": "Berlin",
+          "publication_delta_seconds": 0.574,
+          "description_identical": false
+        }
+      ]
+    },
+    {
+      "omitted": "greenhouse:thinkcellsoftware",
+      "retained": "greenhouse:think-cell",
+      "matching_copies": 4,
+      "reason": "All current title/location matches are reposts on the retained board; manually reviewed descriptions.",
+      "overlaps": [
+        {
+          "omitted_id": "greenhouse:5012539101",
+          "retained_id": "greenhouse:4997814101",
+          "title": "Product Marketing Lead (f/m/d)",
+          "location": "Berlin",
+          "publication_delta_seconds": 3.0,
+          "description_identical": true
+        },
+        {
+          "omitted_id": "greenhouse:5000543101",
+          "retained_id": "greenhouse:4997801101",
+          "title": "Performance Marketing Manager (f/m/d)",
+          "location": "Berlin",
+          "publication_delta_seconds": 3.0,
+          "description_identical": true
+        },
+        {
+          "omitted_id": "greenhouse:4969878101",
+          "retained_id": "greenhouse:4969664101",
+          "title": "Marketing Operations Manager (f/m/d)",
+          "location": "Berlin",
+          "publication_delta_seconds": 3.0,
+          "description_identical": true
+        },
+        {
+          "omitted_id": "greenhouse:4952453101",
+          "retained_id": "greenhouse:4947589101",
+          "title": "Principal Product Manager (AI Product) (f/m/d)",
+          "location": "Berlin",
+          "publication_delta_seconds": 22.0,
+          "description_identical": false
+        }
+      ]
+    },
+    {
+      "omitted": "greenhouse:artefactlinkedin",
+      "retained": "greenhouse:artefact",
+      "matching_copies": 2,
+      "reason": "All current title/location matches are reposts on the retained board; manually reviewed descriptions.",
+      "overlaps": [
+        {
+          "omitted_id": "greenhouse:8570502002",
+          "retained_id": "greenhouse:8570492002",
+          "title": "Senior Consultant (m/f/d) Data & AI Strategy",
+          "location": "Berlin / Munich",
+          "publication_delta_seconds": 2.0,
+          "description_identical": true
+        },
+        {
+          "omitted_id": "greenhouse:8570507002",
+          "retained_id": "greenhouse:8570503002",
+          "title": "Consulting Manager (m/f/d) Data & AI Strategy",
+          "location": "Berlin / Munich",
+          "publication_delta_seconds": 2.0,
+          "description_identical": false
+        }
+      ]
+    },
+    {
+      "omitted": "greenhouse:4lu44n1n37w012k",
+      "retained": "greenhouse:hellofresh",
+      "matching_copies": 2,
+      "reason": "All current title/location matches are reposts on the retained board; manually reviewed descriptions.",
+      "overlaps": [
+        {
+          "omitted_id": "greenhouse:8210897",
+          "retained_id": "greenhouse:8210895",
+          "title": "Senior Group Marketing Controller (All genders)",
+          "location": "Berlin",
+          "publication_delta_seconds": 102.0,
+          "description_identical": false
+        },
+        {
+          "omitted_id": "greenhouse:8169248",
+          "retained_id": "greenhouse:8169246",
+          "title": "Senior Indirect Procurement Category Manager - Marketing (All Genders)",
+          "location": "Berlin",
+          "publication_delta_seconds": 142.0,
+          "description_identical": false
+        }
+      ]
+    },
+    {
+      "omitted": "greenhouse:sonymusicde",
+      "retained": "greenhouse:sonymusicentertainment",
+      "matching_copies": 1,
+      "reason": "All current title/location matches are reposts on the retained board; manually reviewed descriptions.",
+      "overlaps": [
+        {
+          "omitted_id": "greenhouse:8919487002",
+          "retained_id": "greenhouse:8919520002",
+          "title": "People Experience Operations Manager (m/w/d)",
+          "location": "Berlin",
+          "publication_delta_seconds": 2.0,
+          "description_identical": true
+        }
+      ]
+    }
+  ],
+  "matching_copies_omitted": 21,
+  "trade_off": "Four German jobs on the omitted boards are absent from the retained boards, but none match the current role filters. Revisit if preferences change; no permanent skip list was added.",
+  "german_titles_outside_current_filters": [
+    {
+      "board": "greenhouse:doctolib",
+      "title": "Account Executive (x/f/m) Außendienst",
+      "location": "Germany"
+    },
+    {
+      "board": "greenhouse:4lu44n1n37w012k",
+      "title": "[DACH MAG] Senior  Production Planner",
+      "location": "Magdeburg, Saxony-Anhalt, Germany"
+    },
+    {
+      "board": "greenhouse:4lu44n1n37w012k",
+      "title": "People Technology Integrations Manager (All genders)",
+      "location": "Berlin, Berlin, Germany"
+    },
+    {
+      "board": "greenhouse:4lu44n1n37w012k",
+      "title": "Senior Category Manager Indirect Procurement CapEx (All genders)",
+      "location": "Berlin, Berlin, Germany"
+    }
+  ],
+  "pre_existing_overlaps_unchanged": [
+    "Quality Group board pair",
+    "Ashby/Greenhouse Parloa"
+  ],
+  "future_work": "Consider explicit aliases or exclusions separately; avoid deduplicating unrelated companies by title or publication time alone."
+}

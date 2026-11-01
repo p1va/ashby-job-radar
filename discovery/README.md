@@ -67,6 +67,10 @@ python3 -B discovery/backfill.py --source greenhouse \
   --athena results.csv --add --out /tmp/greenhouse-athena
 ```
 
+For a large export, set `--max-checks` explicitly: the default checks only 500
+unknown boards and defers the rest. For example, pass `--max-checks 5000` for
+4,460 unknown boards. Validate without `--add` first to inspect the report.
+
 The same command accepts multiple `--athena` CSVs, or `--seeds` with a list of
 board tokens, provider names or URLs. Only verified live boards are added;
 existing entries and delivery progress are retained. Classification uses every
@@ -76,7 +80,9 @@ The SQL finds hosted boards and Greenhouse-hosted embeds. A `gh_jid` on an
 external careers site identifies a job, not its board token; those sites still
 need their embed configuration inspected. The importer doesn't guess tokens
 from company domains. Athena was not executed from this shell: no AWS CLI or
-profile was available. SQL/import support is ready for an exported result.
+profile was available. The user's three exported CSVs were imported on
+[1 November](results/2026-11-01/README.md), with per-board validation and request
+costs recorded there.
 
 ## 31 October experiment
 

@@ -1,0 +1,55 @@
+[
+  {
+    "slug": "1pyra)mid_health&care",
+    "status": "live",
+    "jobs": 357,
+    "german_jobs": 0,
+    "top_locations": [
+      [
+        "Hammonton, NJ",
+        32
+      ],
+      [
+        "York, PA",
+        23
+      ],
+      [
+        "East Stroudsburg, PA",
+        20
+      ],
+      [
+        "Philadelphia, PA",
+        18
+      ],
+      [
+        "Pittsburgh, PA",
+        17
+      ]
+    ],
+    "supported_by_current_parser": false
+  },
+  {
+    "slug": "harrison&star",
+    "status": "live",
+    "jobs": 0,
+    "german_jobs": 0,
+    "top_locations": [],
+    "supported_by_current_parser": false
+  },
+  {
+    "slug": "ep+co",
+    "status": "live",
+    "jobs": 0,
+    "german_jobs": 0,
+    "top_locations": [],
+    "supported_by_current_parser": false
+  },
+  {
+    "slug": "science&purpose",
+    "status": "live",
+    "jobs": 0,
+    "german_jobs": 0,
+    "top_locations": [],
+    "supported_by_current_parser": false
+  }
+]

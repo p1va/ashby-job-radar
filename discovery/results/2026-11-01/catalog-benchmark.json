@@ -1,0 +1,54 @@
+{
+  "catalog": {
+    "boards_requested": 8320,
+    "boards_ok": 7827,
+    "boards_not_found": 493,
+    "boards_failed": 0,
+    "jobs_read": 225937,
+    "roles": 894,
+    "companies": 304,
+    "roles_by_source": {
+      "ashby": 540,
+      "greenhouse": 354
+    },
+    "failure_budget_exceeded": []
+  },
+  "measurement": {
+    "elapsed_seconds": 790.295,
+    "max_rss_mib": 2559.0,
+    "exit_code": 0,
+    "http_statuses": {
+      "api.ashbyhq.com": {
+        "404": 493,
+        "200": 3183
+      },
+      "boards-api.greenhouse.io": {
+        "200": 4801,
+        "network_error": 1
+      }
+    },
+    "successful_request_kinds": {
+      "ashby_list": 3183,
+      "greenhouse_list": 4644,
+      "greenhouse_detail": 157
+    }
+  },
+  "new_board_http_requests": {
+    "greenhouse_list": 4283,
+    "greenhouse_detail": 89,
+    "error": 1
+  },
+  "new_board_actual_attempts": 4373,
+  "new_matched_roles": 135,
+  "new_matched_companies": 64,
+  "before_roles": 759,
+  "after_roles": 894,
+  "before_companies": 240,
+  "after_companies": 304,
+  "published_data_bytes": 5539406,
+  "quality_candidates": [],
+  "estimated_new_daily_radar_requests_at_snapshot": 931.429,
+  "extra_catalog_requests_at_snapshot": 4372,
+  "greenhouse_http_429_observed": 0,
+  "scope": "Measured full live build before review exclusions; see final-replay.json and Actions evidence for retained boards."
+}
