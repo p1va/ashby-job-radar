@@ -101,6 +101,8 @@ def report_text(report: dict) -> str:
             f"{report['already_seen']} matching roles already recorded · no publication cutoff")
     if report["boards_failed"]:
         text += f". {report['boards_failed']} boards unavailable; results are incomplete"
+    if report.get("unavailable_sources"):
+        text += ". Sources not refreshed: " + ", ".join(report["unavailable_sources"]) + "; preview uses fresh sources only"
     return text
 
 

@@ -9,11 +9,20 @@ commands. Nothing in these discovery commands sends email or updates sent histor
 ```
 
 Missing `sources` means Ashby only. The fork explicitly enables Greenhouse.
-Workable is implemented but optional: a live local scan hit HTTP 429 on
-31 October. It stays out of normal publication until its reliability is established.
+The fork now also enables `workable`. Its undocumented search is experimental:
+a local scan hit HTTP 429 on 31 October, followed by successful full walks in
+Actions and locally. The 1 November local probe collected 2,892 jobs in 145
+requests (all HTTP 200), yielding 184 matches at 58 companies in 6m13s.
+Those are 144 distinct company/title combinations; many IDs differ by city.
+Recruiting agencies and relocation advertisements are included when their
+advertised location matches the current rules. These are not 184 unique
+direct-employer roles. Details and company websites are available; structured
+salary was absent from every matching result in this probe.
 Use **Actions → Preview additional sources → workable** to collect a separate
 HTML/CSV/JSON artifact, without publishing or recording delivery. The scan is
 serial, paced two seconds between pages, and discards incomplete results.
+Parallel Actions jobs isolate its failures from Ashby and Greenhouse; the
+[combine step](../job-board/README.md#independent-source-steps) handles fallback.
 
 Bare company names are still Ashby. Add `greenhouse:n26` or paste a supported
 Greenhouse URL into a company list. Search, filters and descriptions work across
@@ -117,9 +126,12 @@ python3 -B -m unittest discover -s serper-discovery -p 'test_*.py'
 `job-board/build.py --cache` saves normalized responses beneath the new output
 directory. Pass that `boards` directory to `--fixtures` to replay matching and
 rendering offline. Catalog builds and source previews never advance email
-checkpoints. Failed provider scans always keep the previous catalog up. Up to
-one in twenty per-company failures are tolerated within each provider, with a
-visible "Partially refreshed" label; larger failures withhold publication.
+checkpoints. The direct builder withholds publication after incomplete provider
+scans or more than one failed board in twenty within a provider. The parallel
+Actions pipeline instead isolates that provider and can retain its recent
+compatible results, with a visible stale/unavailable label. If all sources
+fail, it keeps the previous publication. See the catalog guide for the 48-hour
+fallback policy.
 Invalid pasted company links are skipped with warnings and included in run
 reports (and the radar's broken-company list), so one bad row cannot hide the
 remaining companies.

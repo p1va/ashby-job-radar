@@ -176,6 +176,8 @@ def fetch_workable(request, *, delay: float = 2, max_pages: int = 500) -> dict[s
             if normalized["id"] not in ids:
                 boards.setdefault(company, []).append(normalized)
                 ids.add(normalized["id"])
+        if (page + 1) % 10 == 0:
+            print(f"[workable] {page + 1} pages checked; {len(ids)} jobs collected", flush=True)
         token = data.get("nextPageToken")
         if not token:
             if expected is not None and len(ids) < expected:

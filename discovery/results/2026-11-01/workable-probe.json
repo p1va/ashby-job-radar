@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-01",
+  "endpoint": "https://jobs.workable.com/api/v1/jobs?location=Germany",
+  "scan_complete": true,
+  "jobs_read": 2892,
+  "companies_scanned": 273,
+  "matching_postings": 184,
+  "matching_company_keys": 58,
+  "distinct_company_title": 144,
+  "http": {
+    "seconds": 372.737,
+    "http_statuses": {
+      "200": 145
+    }
+  },
+  "styles": {
+    "Remote": 118,
+    "Hybrid": 39,
+    "Office": 27
+  },
+  "matching_jobs_with_description": 184,
+  "matching_jobs_with_company_website": 184,
+  "matching_jobs_with_structured_salary": 0,
+  "german_required_flags": 85,
+  "exact_company_title_overlap_with_873_catalog": 0,
+  "limitations": [
+    "Separate native IDs can represent the same title in multiple cities.",
+    "Recruiting agencies and relocation ads are included if advertised locations match.",
+    "An earlier local scan hit HTTP 429; one successful run is not a reliability guarantee.",
+    "Undocumented public search; incomplete walks are rejected."
+  ]
+}

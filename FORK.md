@@ -1,8 +1,10 @@
 # Testing fixes in this fork
 
-The fork also experiments with opt-in Greenhouse and Workable adapters. Normal
-publication currently enables Ashby and Greenhouse; Workable has a separate
-manual source preview while its public search's rate limits are evaluated.
+The fork publishes Ashby, Greenhouse and Workable through parallel collection
+jobs, then combines their results into one catalog and a read-only digest
+preview. Failed sources can reuse compatible results for up to 48 hours with
+their original collection dates visible. A separate manual source preview is
+also available. Workable's undocumented search remains experimental.
 See [additional sources and backfills](discovery/README.md). No changes or new
 pull requests are made to the original repository by these experiments.
 
@@ -58,7 +60,8 @@ Work through the identified correctness issues in small patches: workflow/state
 persistence together with cutoff recovery, incomplete Common Crawl harvests,
 transient errors and gzip, preview side effects, delivery tracking, overflow,
 and location/state handling. Preserve the owner's preferences and review changes
-to notification behavior explicitly. The larger pipeline design remains parked.
+to notification behavior explicitly. The fork's catalog now tests independent
+provider steps; the original email workflow remains separate.
 
 ## Catch-up preview
 

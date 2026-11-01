@@ -92,6 +92,12 @@ def public_url(value) -> str:
         return ""
 
 
+def config_hash(cfg: dict) -> str:
+    # Every collector uses the same preferences, but selects its own provider.
+    data = {key: value for key, value in cfg.items() if key != "sources"}
+    return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
+
+
 def write_site(out: Path, jobs: list[dict], report: dict, profiles: dict | None = None, featured=()):
     out.mkdir(parents=True, exist_ok=True)
     profiles = profiles or {}
@@ -109,7 +115,9 @@ def write_site(out: Path, jobs: list[dict], report: dict, profiles: dict | None 
     jobs = [{**job, "companyName": companies[job["company"]]["name"]} for job in jobs]
     # A stable public lookup also supplies the independent enrichment workflow.
     (out / "companies.json").write_text(json.dumps(companies, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    data = json.dumps({"generatedAt": report["generated_at"], "partial": bool(report.get("boards_failed")), "jobs": jobs, "companies": companies},
+    data = json.dumps({"generatedAt": report["generated_at"], "partial": bool(report.get("partial") or report.get("boards_failed")),
+                      "configHash": report.get("config_hash"), "sourceStatus": report.get("source_status", {}),
+                      "jobs": jobs, "companies": companies},
                       ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     filename = "jobs-" + hashlib.sha256(data).hexdigest()[:12] + ".json"
     (out / filename).write_bytes(data)
@@ -138,6 +146,8 @@ def main(argv=None) -> int:
     parser.add_argument("--cache", action="store_true", help="save normalized board responses for offline replay")
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--source-info", type=Path)
+    parser.add_argument("--source", choices=sources.SUPPORTED, help="collect only this provider")
+    parser.add_argument("--collect-only", action="store_true", help="save matching normalized jobs for the combine step")
     parser.add_argument("--company-info", type=Path, default=ROOT / "company-info/companies.json")
     parser.add_argument("--featured", type=Path, default=ROOT / "company-info/featured.json")
     parser.add_argument("--out", type=Path, required=True, help="new output directory")
@@ -147,7 +157,11 @@ def main(argv=None) -> int:
     if args.out.exists():
         parser.error("Output directory must be new (avoids publishing stale files)")
     cfg = read_object(args.config)
+    if args.source:
+        cfg["sources"] = [args.source]
     active_sources = sources.enabled(cfg)
+    if args.collect_only and len(active_sources) != 1:
+        parser.error("--collect-only requires one provider; use --source")
     profiles = read_object(args.company_info, required=False)
     if not all(isinstance(profile, dict) for profile in profiles.values()):
         parser.error("company-info entries must be objects")
@@ -218,6 +232,7 @@ def main(argv=None) -> int:
               "companies": len({job["company"] for job in jobs}), "selection": counts,
               "source": read_object(args.source_info) if args.source_info else {}, "failures": failures}
     report["sources"] = active_sources
+    report["config_hash"] = config_hash(cfg)
     report["roles_by_source"] = {source: sum(job["source"] == source for job in jobs) for source in active_sources}
     report["workable_scan_complete"] = workable_ok
     report["invalid_companies"] = [{"value": value, "error": error} for value, error in invalid]
@@ -237,6 +252,17 @@ def main(argv=None) -> int:
     if scan_failed or exceeded or (not boards and not workable_ok):
         print("[catalog] Incomplete fetch; keeping the previous published catalog.", file=sys.stderr)
         return 1
+    if args.collect_only:
+        selected = {}
+        for job in matches:
+            selected.setdefault(job["_slug"], []).append({key: value for key, value in job.items() if not key.startswith("_")})
+        (args.out / "collection.json").write_text(json.dumps(
+            {"version": 1, "provider": active_sources[0], "config_hash": config_hash(cfg),
+             "report": report, "boards": selected}, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"[catalog] Collected {len(jobs)} matches from {active_sources[0]}")
+        return 0
+    report["source_status"] = {source: {"state": "partial" if failures else "fresh", "updatedAt": started}
+                               for source in active_sources}
     write_site(args.out / "site", jobs, report, profiles, featured)
     print(f"[catalog] Built {len(jobs)} roles at {report['companies']} companies: {args.out / 'site'}")
     return 0

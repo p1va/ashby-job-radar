@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--ref", default="FETCH_HEAD", help="already fetched original repository commit")
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--include-seen", action="store_true", help="also snapshot sent history for a read-only digest preview")
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
     commit = git("rev-parse", args.ref).strip()
@@ -41,6 +42,8 @@ def main():
                              if name.endswith(".json") else text)
     (args.out / "extra-companies.txt").write_text("\n".join(extra), encoding="utf-8")
     (args.out / "source.json").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+    if args.include_seen:
+        (args.out / "seen.json").write_text(git("show", commit + ":seen.json"), encoding="utf-8")
     print("Catalog preferences source: " + commit)
 
 

@@ -27,13 +27,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  prepare:
     if: github.repository == 'p1va/ashby-job-radar'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    permissions:
-      contents: read
-      pages: read
+    outputs:
+      sources: ${{ steps.sources.outputs.sources }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -48,19 +47,99 @@ jobs:
           python -B -m unittest discover -s catch-up -p 'test_*.py'
           python -B -m unittest discover -s job-board -p 'test_*.py'
           python -B -m unittest discover -s company-info -p 'test_*.py'
+          python -B -m unittest discover -s serper-discovery -p 'test_*.py'
 
       - name: Snapshot current preferences and company sources
         run: |
           git fetch --no-tags https://github.com/betklab/ashby-job-radar.git main
-          python -B job-board/snapshot.py --out "$RUNNER_TEMP/catalog-inputs"
+          python -B job-board/snapshot.py --include-seen --out "$RUNNER_TEMP/catalog-inputs"
 
-      - name: Fetch all current matching roles and build the site
+      - name: Choose configured providers
+        id: sources
         run: |
-          python -B job-board/build.py \
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          import sources
+          cfg = json.loads((Path(os.environ['RUNNER_TEMP']) / 'catalog-inputs/config.json').read_text())
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('sources=' + json.dumps(sources.enabled(cfg)) + '\n')
+          PY
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: catalog-inputs
+          path: ${{ runner.temp }}/catalog-inputs/
+          retention-days: 30
+          overwrite: true
+
+  collect:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        source: ${{ fromJSON(needs.prepare.outputs.sources) }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v8
+        with:
+          name: catalog-inputs
+          path: ${{ runner.temp }}/catalog-inputs
+      - name: Collect provider matches
+        env:
+          CATALOG_SOURCE: ${{ matrix.source }}
+        run: |
+          python -B job-board/build.py --source "$CATALOG_SOURCE" --collect-only \
             --config "$RUNNER_TEMP/catalog-inputs/config.json" \
             --companies companies.txt \
             --companies "$RUNNER_TEMP/catalog-inputs/extra-companies.txt" \
             --source-info "$RUNNER_TEMP/catalog-inputs/source.json" \
+            --out "$RUNNER_TEMP/source-output"
+      - name: Save collection and diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: catalog-source-${{ matrix.source }}
+          path: ${{ runner.temp }}/source-output/
+          retention-days: 30
+          overwrite: true
+
+  combine:
+    needs: [prepare, collect]
+    if: ${{ !cancelled() && needs.prepare.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v8
+        with:
+          name: catalog-inputs
+          path: ${{ runner.temp }}/catalog-inputs
+      - name: Download available collections
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          pattern: catalog-source-*
+          path: ${{ runner.temp }}/collections
+      - name: Combine catalog and digest preview
+        run: |
+          python -B job-board/combine.py \
+            --collections "$RUNNER_TEMP/collections" \
+            --config "$RUNNER_TEMP/catalog-inputs/config.json" \
+            --seen "$RUNNER_TEMP/catalog-inputs/seen.json" \
+            --source-info "$RUNNER_TEMP/catalog-inputs/source.json" \
+            --previous-url https://p1va.github.io/ashby-job-radar/ \
             --out "$RUNNER_TEMP/catalog-output"
 
       - name: Show collection summary
@@ -78,16 +157,21 @@ jobs:
           path: |
             ${{ runner.temp }}/catalog-output/run.json
             ${{ runner.temp }}/catalog-output/summary.md
+            ${{ runner.temp }}/catalog-output/digest/
+            ${{ runner.temp }}/catalog-output/site/
           retention-days: 30
           if-no-files-found: warn
 
       - uses: actions/configure-pages@v6
+        if: github.ref == 'refs/heads/main'
       - uses: actions/upload-pages-artifact@v5
+        if: github.ref == 'refs/heads/main'
         with:
           path: ${{ runner.temp }}/catalog-output/site
 
   deploy:
-    needs: build
+    needs: combine
+    if: ${{ !cancelled() && needs.combine.result == 'success' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     permissions:
       pages: write
