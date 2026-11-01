@@ -15,8 +15,8 @@ had overlapping IDs, so this is not a consistent snapshot.
 The observed feed covers roughly seven days, rather than every open job.
 `created_at` reflects import time: among 52 company/title matches with our
 catalog, the median lag behind the native ATS posting date was 1.6 days, and
-24 native postings were over seven days old. Some imported ads had already
-closed. It cannot supply reliable publication dates or closure decisions for
+24 native postings were over seven days old. One observed imported ad (Proxima
+Fusion) had already closed. It cannot supply reliable publication dates or closure decisions for
 our catalog.
 
 Fields include the full slug, company name, title, HTML description, location,
@@ -47,7 +47,7 @@ Greenhouse API check confirmed three open jobs, including two German jobs;
 neither matches the current city/remote focus, so it adds zero current catalog
 matches. It is recorded as a candidate rather than imported here. No scalable
 walk of Arbeitnow application redirects was implemented: those redirects are
-undocumented and count as application clicks.
+undocumented and may count as application clicks; that tracking was not verified.
 
 Detailed local notes and probe artifacts are referenced in the shared WORK.md
 under "Claude Code — 1 Nov 2026: Arbeitnow API investigation". This investigation

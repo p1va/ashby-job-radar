@@ -1,0 +1,26 @@
+{
+  "run": "https://github.com/p1va/ashby-job-radar/actions/runs/41294777545",
+  "test_branch": "test/source-pipeline-failure",
+  "test_commit": "61d2b3ac8b1ca721008bb4d606ba7351f54e3d7b",
+  "production_commit_without_test_hook": "b60259d",
+  "conclusion": "Expected overall failure; both injected source failures visible; combine succeeds; branch deployment skipped.",
+  "jobs": {
+    "prepare": "success",
+    "collect (workable)": "failure",
+    "collect (greenhouse)": "failure",
+    "collect (ashby)": "success",
+    "combine": "success",
+    "deploy": "skipped"
+  },
+  "only_source_artifact": "catalog-source-ashby",
+  "download_log": "Total of 1 artifact(s) downloaded",
+  "catalog_roles": 540,
+  "catalog_companies": 184,
+  "digest_unseen": 413,
+  "unavailable_sources": [
+    "greenhouse",
+    "workable"
+  ],
+  "partial": true,
+  "live_site_modified": false
+}
