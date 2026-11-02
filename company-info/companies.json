@@ -4133,6 +4133,18 @@
     "timezone": "America/Los_Angeles",
     "website": "https://whetstone.cc/"
   },
+  "wonderful": {
+    "board_introduction_html": "",
+    "canonical_slug": "wonderful",
+    "careers_url": "",
+    "fetched_at": "2026-11-02T13:31:20.478581+00:00",
+    "logo_url": "https://app.ashbyhq.com/api/images/org-theme-logo/b824716b-13f1-47bb-b00a-05ee4aa4646b/16167430-cbac-4146-8b65-74f4fdfa29ad/0239233b-e7b6-401d-ba7f-276bdabfaee0.png",
+    "name": "Wonderful",
+    "organization_id": "b824716b-13f1-47bb-b00a-05ee4aa4646b",
+    "source": "https://jobs.ashbyhq.com/api/non-user-graphql",
+    "timezone": "Asia/Jerusalem",
+    "website": "https://www.wonderful.ai/"
+  },
   "workerbase": {
     "board_introduction_html": "",
     "canonical_slug": "workerbase",
