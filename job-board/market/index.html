@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="What employers ask for in the roles on bet’s board: draft role archetypes with required skills, nice-to-haves and tools.">
+  <title>Market view · bet’s board</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f7f7f2; --card: #fff; --ink: #29283e; --muted: #646779; --line: #e3e2ea;
+      --accent: #5145b8; --accent-text: #4a3fae; --pale: #eeecfb; --bar: #5145b8; --track: #efeef4;
+      --serif: Georgia, 'Times New Roman', serif;
+      font-family: Inter, 'Helvetica Neue', Arial, sans-serif; font-size: 15px; line-height: 1.45;
+      color: var(--ink); background: var(--paper);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --paper: #16151f; --card: #1f1e2b; --ink: #ecebf5; --muted: #a4a3b8; --line: #34334a;
+        --accent: #8577e6; --accent-text: #b8afff; --pale: #2a2840; --bar: #8577e6; --track: #2b2a3b;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); }
+    a { color: inherit; }
+    button, select { font: inherit; color: inherit; }
+    :focus-visible { outline: 3px solid #8a7cdd; outline-offset: 3px; }
+    .shell { max-width: 860px; margin: 0 auto; padding: 0 16px 64px; }
+    .top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+    .back { text-decoration: none; font-weight: 600; }
+    .back:hover { color: var(--accent-text); }
+    .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
+    .kicker { margin: 18px 0 6px; color: var(--accent-text); font-weight: 600; font-size: 13px; letter-spacing: .02em; }
+    h1 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(32px, 7vw, 48px); line-height: 1.08; }
+    h1 em { color: var(--accent-text); }
+    h2 { margin: 0 0 4px; font-size: 17px; }
+    h3 { margin: 18px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+    .intro { color: var(--muted); max-width: 40em; margin: 12px 0 0; }
+    .note { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+    section { margin-top: 28px; }
+    .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    @media (min-width: 640px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .tile { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+    .tile dt { font-size: 12px; color: var(--muted); }
+    .tile dd { margin: 2px 0 0; font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
+    .tile small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+    .two { display: grid; gap: 24px; }
+    @media (min-width: 720px) { .two { grid-template-columns: 1fr 1fr; } }
+    .bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+    .bars li { display: grid; grid-template-columns: minmax(0, 10.5em) minmax(40px, 1fr) 3em; align-items: center; gap: 10px; font-size: 13.5px; }
+    .bars .label { overflow-wrap: anywhere; }
+    .bars .track { height: 8px; background: var(--track); border-radius: 0 4px 4px 0; }
+    .bars .fill { height: 100%; background: var(--bar); border-radius: 0 4px 4px 0; min-width: 2px; }
+    .bars .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+    .section-head p { margin: 0; color: var(--muted); }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin: 14px 0 12px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 11px; font-size: 13px; cursor: pointer; }
+    .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .controls label { font-size: 13px; color: var(--muted); }
+    .controls select { margin-left: 6px; border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 5px 8px; }
+    details.arc { background: var(--card); border: 1px solid var(--line); border-radius: 16px; margin-bottom: 10px; }
+    details.arc[open] { border-color: var(--accent); }
+    details.arc > summary { list-style: none; cursor: pointer; padding: 14px 16px; }
+    details.arc > summary::-webkit-details-marker { display: none; }
+    .sum-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+    .sum-name { font-weight: 650; font-size: 16px; }
+    .sum-count { white-space: nowrap; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .sum-count b { color: var(--ink); font-size: 16px; }
+    .sum-family { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .size { height: 6px; background: var(--track); border-radius: 0 3px 3px 0; margin: 10px 0 8px; }
+    .size div { height: 100%; background: var(--bar); border-radius: 0 3px 3px 0; }
+    .facts { display: flex; flex-wrap: wrap; gap: 6px; }
+    .fact { font-size: 12.5px; background: var(--pale); border-radius: 6px; padding: 2px 8px; font-variant-numeric: tabular-nums; }
+    .fact.flag { background: transparent; border: 1px dashed var(--line); color: var(--muted); }
+    .body { padding: 0 16px 16px; border-top: 1px solid var(--line); }
+    .body p.def { margin: 14px 0 0; }
+    .body ul.resp { margin: 0; padding-left: 18px; }
+    .body ul.resp li { margin: 3px 0; }
+    .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill { font-size: 13px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
+    .pill span { color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
+    .grid2 { display: grid; gap: 4px 24px; }
+    @media (min-width: 720px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+    .jobs { list-style: none; margin: 0; padding: 0; }
+    .jobs li { padding: 8px 0; border-bottom: 1px solid var(--line); }
+    .jobs li:last-child { border-bottom: 0; }
+    .jobs a { font-weight: 600; text-decoration: none; }
+    .jobs a:hover { color: var(--accent-text); text-decoration: underline; }
+    .jobs .meta { display: block; color: var(--muted); font-size: 13px; }
+    .more { margin-top: 8px; border: 1px solid var(--line); background: transparent; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
+    footer { margin-top: 36px; color: var(--muted); font-size: 13.5px; }
+    footer h2 { color: var(--ink); }
+    footer ul { padding-left: 18px; }
+    footer li { margin: 5px 0; }
+    .error { color: #b3261e; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="top">
+      <a class="back" href="../">← bet’s board</a>
+      <span class="tag">Experiment · snapshot</span>
+    </header>
+
+    <section class="hero" aria-labelledby="title">
+      <p class="kicker">Market view</p>
+      <h1 id="title">What employers <em>ask for</em></h1>
+      <p class="intro" id="intro">Loading…</p>
+    </section>
+
+    <section aria-label="Across all roles">
+      <dl class="tiles" id="tiles"></dl>
+    </section>
+
+    <section class="panel two" aria-label="Most required across all roles">
+      <div>
+        <h2>Most required skills</h2>
+        <p class="note">Share of all roles that require it; the track is 100% (languages are in the tiles above)</p>
+        <ol class="bars" id="top-skills"></ol>
+      </div>
+      <div>
+        <h2>Tools employers name</h2>
+        <p class="note">Share of all roles that require or prefer it</p>
+        <ol class="bars" id="top-tools"></ol>
+      </div>
+    </section>
+
+    <section aria-labelledby="arc-title">
+      <div class="section-head">
+        <h2 id="arc-title">Role archetypes</h2>
+        <p id="arc-intro"></p>
+      </div>
+      <div class="controls">
+        <div class="chips" id="families" role="group" aria-label="Filter by family"></div>
+        <label>Sort
+          <select id="sort">
+            <option value="groups">Most roles</option>
+            <option value="german">Least German required</option>
+            <option value="junior">Most junior</option>
+            <option value="name">A–Z</option>
+          </select>
+        </label>
+      </div>
+      <div id="list"></div>
+    </section>
+
+    <section class="panel" id="unassigned" aria-labelledby="un-title"></section>
+
+    <footer id="about">
+      <h2>How this was made</h2>
+      <ul>
+        <li><strong>Which roles:</strong> the ads on this board on <span data-k="snapshot"></span>, so only the roles that pass bet’s title and location filters at the companies she follows. It describes that slice, not the whole German job market.</li>
+        <li><strong>A role</strong> is one posting. Copies of the same ad for several cities count once.</li>
+        <li><strong>Skills:</strong> Claude Haiku 5.5 read each ad and listed what it asks for as required or nice to have, each with a quote. A skill counts only if its quote appears word for word in the ad. Nobody has reviewed them by hand, and similar names are merged loosely (for example “crm systems” into “crm”).</li>
+        <li><strong>Archetypes:</strong> each role was summarised without its company, embedded with Voyage, and clustered with a cap of three roles per company so big employers don’t dominate. The 21 groups and their descriptions are drafts. A role joins one only when it is clearly closest; otherwise it stays unassigned. “Broad” or “mixed” marks groups that still cover more than one kind of job.</li>
+        <li><strong>Not live:</strong> recomputed by hand, last on <span data-k="computed"></span>. Job links may have closed since.</li>
+      </ul>
+    </footer>
+  </div>
+
+  <script>
+  (() => {
+    const $ = (id) => document.getElementById(id);
+    const pct = (p) => Math.round(p * 100) + '%';
+    const num = (n) => n.toLocaleString('en');
+    const el = (tag, attrs = {}, ...kids) => {
+      const node = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (v == null || v === false) continue;
+        if (k === 'class') node.className = v;
+        else if (k === 'style') node.style.cssText = v;
+        else node.setAttribute(k, v);
+      }
+      for (const kid of kids.flat()) if (kid != null && kid !== false) node.append(kid instanceof Node ? kid : String(kid));
+      return node;
+    };
+    const safeUrl = (u) => /^https?:\/\//i.test(u || '') ? u : null;
+    const date = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    function bars(rows, total) {   // bar length = share of roles, on a 0-100% track
+      return el('ol', { class: 'bars' }, rows.map((r) => el('li',
+        { title: `${r.s}: ${num(r.n)} of ${num(total)} roles (${pct(r.p)})` },
+        el('span', { class: 'label' }, r.s),
+        el('span', { class: 'track', 'aria-hidden': 'true' }, el('span', { class: 'fill', style: `display:block;width:${r.p * 100}%` })),
+        el('span', { class: 'val' }, pct(r.p)))));
+    }
+
+    function render(d) {
+      const c = d.cohort, n = c.groups;
+      const assigned = d.archetypes.reduce((s, a) => s + a.groups, 0);
+      document.querySelectorAll('[data-k="snapshot"]').forEach((x) => { x.textContent = date(d.snapshot); });
+      document.querySelectorAll('[data-k="computed"]').forEach((x) => { x.textContent = date(d.computed); });
+      $('intro').textContent = `The ${num(n)} roles on this board on ${date(d.snapshot)}, from ${num(c.employers)} companies, ` +
+        `grouped by the work they describe rather than their titles. A snapshot recomputed by hand, not live.`;
+
+      const tile = (label, value, sub) => el('div', { class: 'tile' }, el('dt', {}, label), el('dd', {}, value), sub && el('small', {}, sub));
+      $('tiles').append(
+        tile('German required', pct(c.german), `English required: ${pct(c.english)}`),
+        tile('Minimum experience', `${c.yearsMedian} yrs`, `median where stated (${pct(c.yearsStated / n)} of roles); middle half ${c.yearsRange[0]}–${c.yearsRange[1]}`),
+        tile('Senior or above', pct(c.senior), `${pct(c.seniority.find((s) => s.k === 'Not stated').n / n)} don’t say`),
+        tile('Degree mentioned', pct(c.degree), 'any degree requirement or preference'),
+        tile('Salary listed', pct(c.salary / n), `${num(c.salary)} of ${num(n)} roles`),
+        tile('In an archetype', pct(assigned / n), `${num(assigned)} of ${num(n)} roles`));
+      $('top-skills').replaceWith(bars(c.required, n));
+      $('top-tools').replaceWith(bars(c.tools, n));
+
+      $('arc-intro').textContent = `${d.archetypes.length} draft groups of similar work. Open one to see what it requires, ` +
+        `what is nice to have, the tools, and the roles in it.`;
+
+      const fams = Object.fromEntries(d.families.map((f) => [f.id, f]));
+      const maxGroups = Math.max(...d.archetypes.map((a) => a.groups));
+      const cards = d.archetypes.map((a) => ({ a, node: card(a, fams[a.family], maxGroups) }));
+      const state = { family: '', sort: 'groups' };
+
+      const chip = (id, label) => {
+        const b = el('button', { class: 'chip', type: 'button', 'aria-pressed': String(state.family === id) }, label);
+        b.addEventListener('click', () => { state.family = id; draw(); });
+        return b;
+      };
+      const count = (id) => d.archetypes.filter((a) => a.family === id).reduce((s, a) => s + a.groups, 0);
+      function draw() {
+        $('families').replaceChildren(chip('', 'All'), ...d.families.map((f) => chip(f.id, `${f.name} · ${count(f.id)}`)));
+        const order = {
+          groups: (x, y) => y.a.groups - x.a.groups,
+          german: (x, y) => x.a.german - y.a.german || y.a.groups - x.a.groups,
+          junior: (x, y) => x.a.senior - y.a.senior || y.a.groups - x.a.groups,
+          name: (x, y) => x.a.name.localeCompare(y.a.name),
+        }[state.sort];
+        $('list').replaceChildren(...cards.filter((x) => !state.family || x.a.family === state.family).sort(order).map((x) => x.node));
+      }
+      $('sort').addEventListener('change', (e) => { state.sort = e.target.value; draw(); });
+      draw();
+
+      const u = d.unassigned;
+      $('unassigned').append(
+        el('h2', { id: 'un-title' }, `Not in an archetype yet: ${num(u.groups)} roles`),
+        el('p', { class: 'note' }, `From ${num(u.employers)} companies. Too few similar roles to form a group, or not clearly closest to one. ` +
+          'Their nearest themes from an earlier, looser clustering:'),
+        el('div', { class: 'pills' }, u.themes.map((t) => el('span', { class: 'pill' }, t.s === 'Unbucketed' ? 'No close match' : t.s, el('span', {}, num(t.n))))));
+
+      const open = decodeURIComponent(location.hash.slice(1));
+      const target = open && document.getElementById(open);
+      if (target && target.tagName === 'DETAILS') { target.open = true; target.scrollIntoView({ block: 'start' }); }
+    }
+
+    function card(a, fam, maxGroups) {
+      const years = a.yearsMedian == null ? 'years rarely stated' : `${a.yearsMedian} yr${a.yearsMedian === 1 ? '' : 's'} min. (median)`;
+      const flags = [a.coherence && a.coherence !== 'coherent' ? a.coherence : null].filter(Boolean);
+      const details = el('details', { class: 'arc', id: a.id });
+      const summary = el('summary', {},
+        el('div', { class: 'sum-top' },
+          el('div', {}, el('div', { class: 'sum-name' }, a.name), el('div', { class: 'sum-family' }, fam ? fam.name : '')),
+          el('div', { class: 'sum-count' }, el('b', {}, num(a.groups)), ' roles · ', num(a.employers), ' cos.')),
+        el('div', { class: 'size', 'aria-hidden': 'true' }, el('div', { style: `width:${(a.groups / maxGroups) * 100}%` })),
+        el('div', { class: 'facts' },
+          el('span', { class: 'fact' }, `German ${pct(a.german)}`),
+          el('span', { class: 'fact' }, years),
+          el('span', { class: 'fact' }, `${pct(a.senior)} senior+`),
+          flags.map((f) => el('span', { class: 'fact flag', title: 'This draft group still covers more than one kind of job' }, f))));
+      details.append(summary);
+      let built = false;
+      details.addEventListener('toggle', () => {
+        if (details.open) {
+          if (!built) { details.append(body(a)); built = true; }
+          history.replaceState(null, '', '#' + a.id);
+        } else if (location.hash === '#' + a.id) {
+          history.replaceState(null, '', location.pathname);
+        }
+      });
+      return details;
+    }
+
+    function body(a) {
+      const n = a.groups;
+      const pills = (rows, fmt) => el('div', { class: 'pills' }, rows.map((r) => el('span', { class: 'pill' }, r.s, el('span', {}, fmt(r)))));
+      const sen = a.seniority.filter((s) => s.n > 0).map((s) => `${s.k} ${s.n}`).join(' · ');
+      const box = el('div', { class: 'body' },
+        el('p', { class: 'def' }, a.definition),
+        el('h3', {}, 'Typical work'),
+        el('ul', { class: 'resp' }, a.responsibilities.map((r) => el('li', {}, r))),
+        el('div', { class: 'grid2' },
+          el('div', {}, el('h3', {}, 'Required'), a.required.length ? bars(a.required, n) : el('p', { class: 'note' }, 'Nothing required by two or more roles.')),
+          el('div', {}, el('h3', {}, 'Nice to have'), a.preferred.length ? bars(a.preferred, n) : el('p', { class: 'note' }, 'Rarely stated.'))),
+        a.tools.length ? [el('h3', {}, 'Tools (required or nice to have)'), pills(a.tools, (r) => pct(r.p))] : null,
+        a.distinctive.length ? [el('h3', {}, 'Stands out against all roles'), pills(a.distinctive, (r) => `×${r.x}`),
+          el('p', { class: 'note', style: 'margin-top:6px' }, 'How many times more often it is required here than across the board.')] : null,
+        el('h3', {}, 'Seniority'), el('p', { style: 'margin:0' }, sen),
+        el('h3', {}, 'Salary where listed'),
+        a.salaries.length
+          ? [el('p', { class: 'note', style: 'margin-bottom:6px' }, `${a.salary} of ${n} roles list a salary.`),
+             el('div', { class: 'pills' }, a.salaries.map((s) => el('span', { class: 'pill' }, s)))]
+          : el('p', { class: 'note', style: 'margin:0' }, 'None of these roles list a salary.'),
+        el('h3', {}, `Roles (${num(a.jobs.length)}, most typical first)`));
+      const list = el('ul', { class: 'jobs' });
+      const item = (j) => {
+        const url = safeUrl(j.u);
+        return el('li', {}, url ? el('a', { href: url, target: '_blank', rel: 'noopener' }, j.t) : el('strong', {}, j.t),
+          el('span', { class: 'meta' }, [j.c, j.l].filter(Boolean).join(' · ') + (j.k > 1 ? ` · ${j.k} cities` : '')));
+      };
+      const first = 6;
+      list.append(...a.jobs.slice(0, first).map(item));
+      box.append(list);
+      if (a.jobs.length > first) {
+        const more = el('button', { class: 'more', type: 'button' }, `Show all ${num(a.jobs.length)}`);
+        more.addEventListener('click', () => { list.append(...a.jobs.slice(first).map(item)); more.remove(); });
+        box.append(more);
+      }
+      return box;
+    }
+
+    fetch('./data.json', { cache: 'no-cache' })
+      .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(render)
+      .catch((e) => { $('intro').textContent = 'Could not load the data (' + e.message + ').'; $('intro').className = 'intro error'; });
+  })();
+  </script>
+</body>
+</html>

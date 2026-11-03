@@ -142,6 +142,10 @@ jobs:
             --previous-url https://p1va.github.io/ashby-job-radar/ \
             --out "$RUNNER_TEMP/catalog-output"
 
+      # A static snapshot, recomputed by hand; Pages replaces the whole site on every deploy.
+      - name: Add the market view
+        run: cp -R job-board/market "$RUNNER_TEMP/catalog-output/site/market"
+
       - name: Show collection summary
         if: ${{ !cancelled() }}
         run: |
